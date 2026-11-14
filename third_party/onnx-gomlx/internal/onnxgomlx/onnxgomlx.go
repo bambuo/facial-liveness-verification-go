@@ -28,6 +28,10 @@ type Model struct {
 	InputsNameSet       sets.Set[string]
 	VariableNameToValue map[string]*protos.TensorProto
 
+	// DefaultInputs marks initializer names that are also graph inputs.
+	// Per ONNX IR they act as defaults: omitted means use the initializer, provided means override.
+	DefaultInputs map[string]bool
+
 	name                        string
 	InputsNames, OutputsNames   []string
 	InputsShapes, OutputsShapes []shapes.Shape
@@ -70,6 +74,17 @@ type Model struct {
 	disabledPasses map[string]bool
 }
 
+// GetOpsetVersion returns the ONNX default-domain opset version, or defaultVersion
+// when no default-domain opset is declared.
+func (m *Model) GetOpsetVersion(defaultVersion int) int {
+	for _, imported := range m.Proto.OpsetImport {
+		if imported != nil && (imported.GetDomain() == "" || imported.GetDomain() == "ai.onnx") {
+			return int(imported.GetVersion())
+		}
+	}
+	return defaultVersion
+}
+
 // Ensure Model implements onnx.Model.
 var _ onnx.Model = &Model{}
 
@@ -100,15 +115,17 @@ func ParseWithOptions(contents []byte, opts ...ParseOption) (*Model, error) {
 		return nil, errors.WithMessage(err, "ONNX conversion requires GoMLX for processing of tensors, but failed to create the Go backend for GoMLX model")
 	}
 
-	// 解析输入与输出。ONNX 允许 initializer 同时出现在 graph.input 中（兼容旧模型），
-	// 这类输入已由 VariablesToScope 作为常量加载，不应再要求调用方传入。
+	// 解析输入与输出。ONNX 允许 initializer 同时出现在 graph.input 中（兼容旧模型）：
+	// 这类输入是“可覆盖的默认值”，未提供时使用 initializer，提供时由调用方覆盖。
 	initializers := make(map[string]bool, len(m.Proto.Graph.Initializer))
 	for _, init := range m.Proto.Graph.Initializer {
 		initializers[init.Name] = true
 	}
+	m.DefaultInputs = make(map[string]bool)
 	inputInfos := make([]*protos.ValueInfoProto, 0, len(m.Proto.Graph.Input))
 	for _, input := range m.Proto.Graph.Input {
 		if initializers[input.Name] {
+			m.DefaultInputs[input.Name] = true
 			continue
 		}
 		inputInfos = append(inputInfos, input)

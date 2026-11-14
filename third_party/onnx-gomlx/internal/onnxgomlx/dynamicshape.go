@@ -1,15 +1,14 @@
+// Copyright 2023-2026 The GoMLX Authors. SPDX-License-Identifier: Apache-2.0
+
 package onnxgomlx
 
 import (
 	"strconv"
 
-	"github.com/gomlx/compute/shapes"
 	"github.com/gomlx/compute-onnx/support/protos"
+	"github.com/gomlx/compute/shapes"
 	"github.com/pkg/errors"
 )
-
-// UnnamedDynamicDimension is a placeholder name for an unnamed dynamic dimension, that doesn't necessarily match any other (in inputs/outputs).
-const UnnamedDynamicDimension = "?"
 
 // makeShapeFromProto converts from a tensor proto type to a shapes.Shape.
 func makeShapeFromProto(proto *protos.TypeProto_Tensor) (shape shapes.Shape, err error) {
@@ -26,11 +25,11 @@ func makeShapeFromProto(proto *protos.TypeProto_Tensor) (shape shapes.Shape, err
 		if dim, ok := dProto.GetValue().(*protos.TensorShapeProto_Dimension_DimValue); ok {
 			names[ii] = strconv.Itoa(int(dim.DimValue))
 			dimensions[ii] = int(dim.DimValue)
-		} else if dimParam, ok := dProto.GetValue().(*protos.TensorShapeProto_Dimension_DimParam); ok {
+		} else if dimParam, ok := dProto.GetValue().(*protos.TensorShapeProto_Dimension_DimParam); ok && dimParam.DimParam != "" {
 			names[ii] = dimParam.DimParam
 			dimensions[ii] = -1
 		} else {
-			names[ii] = UnnamedDynamicDimension // Un-named dynamic dimension.
+			names[ii] = shapes.UniqueAxisName("#onnx") // Un-named dynamic dimension.
 			dimensions[ii] = -1
 		}
 	}
@@ -61,22 +60,21 @@ func (m *Model) ValidateInputs(inputsShapes ...shapes.Shape) error {
 		}
 		for axis, wantDim := range wantShape.Dimensions {
 			gotDim := givenShape.Dim(axis)
-			if wantDim > 0 {
-				if wantDim != gotDim {
+			if wantDim >= 0 {
+				if gotDim != shapes.DynamicDim && wantDim != gotDim {
 					return errors.Errorf("model input #%d (%q) has invalid shape: want %s, got %s",
 						idx, name, wantShape, givenShape)
 				}
 			} else {
 				dimName := wantShape.AxisName(axis)
-				if dimName != "" && dimName != UnnamedDynamicDimension {
-					var found bool
-					wantDim, found = dimValues[dimName]
-					if !found {
+				if dimName != "" && !shapes.IsGeneratedAxisName(dimName) {
+					prevDim, found := dimValues[dimName]
+					if !found || prevDim == shapes.DynamicDim {
 						// Define dynamic shape based on input.
 						dimValues[dimName] = gotDim
-					} else if wantDim != gotDim {
+					} else if gotDim != shapes.DynamicDim && prevDim != gotDim {
 						return errors.Errorf("model input #%d (%q) shaped %s got unmatching invalid shape %s for axis %q (wanted dim %d)",
-							idx, name, wantShape, givenShape, dimName, wantDim)
+							idx, name, wantShape, givenShape, dimName, prevDim)
 					}
 				}
 			}

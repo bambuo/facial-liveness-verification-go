@@ -90,6 +90,7 @@ docker run --rm -p 8080:8080 --env-file deploy/.env faceservice-go:local
 | YuNet vs ONNX Runtime | 12 个输出最大绝对误差 4.8e-06 |
 | SFace vs ONNX Runtime | 128 维输出最大绝对误差 6.1e-06 |
 | MiniFASNetV2 vs ONNX Runtime | 3 类 logits 最大绝对误差 9.5e-07 |
+| ONNX 规范用例 | PRelu 广播、Dropout 推理/mask 与 ONNX Runtime 误差 0；`training_mode=true` 显式拒绝；initializer 默认值与覆盖语义通过 |
 | HTTP 端到端 | 录入 200、核验 200、score 0.6118、结果令牌签发、主体查询 active、删除后清理 profile 与索引 |
 | 与 .NET 基线对账 | 同一组图片 .NET score 0.62328，Go 0.6118，差 0.0115；动作几何 yaw/mouth 差 ≤ 0.004 |
 

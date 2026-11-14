@@ -99,15 +99,26 @@ func (m *Model) CallGraph(scope *model.Scope, g *Graph, inputs map[string]*Node,
 			convertedOutputs[inputName] = inputN
 		}
 	}
-	for givenName := range inputs {
-		if _, found := convertedOutputs[givenName]; !found {
-			unknownInputs.Insert(givenName)
+	for givenName, givenNode := range inputs {
+		if _, found := convertedOutputs[givenName]; found {
+			continue
 		}
+		if m.DefaultInputs[givenName] {
+			// initializer 同时作为 graph input：调用方显式传入时覆盖默认值。
+			convertedOutputs[givenName] = givenNode
+			continue
+		}
+		unknownInputs.Insert(givenName)
 	}
-	for givenName := range m.InputsAsConstants {
-		if _, found := convertedOutputs[givenName]; !found {
-			unknownInputs.Insert(givenName)
+	for givenName, value := range m.InputsAsConstants {
+		if _, found := convertedOutputs[givenName]; found {
+			continue
 		}
+		if m.DefaultInputs[givenName] {
+			convertedOutputs[givenName] = Const(g, value)
+			continue
+		}
+		unknownInputs.Insert(givenName)
 	}
 	if len(missingInputs) > 0 || len(unknownInputs) > 0 {
 		exceptions.Panicf("onnxgomlx.CallGraph() called with wrong inputs: missing inputs=%q; unknown given inputs=%q; inputs given normally and as constant inputs=%q",
@@ -496,6 +507,8 @@ func (m *Model) convertNode(scope *model.Scope, g *Graph, node *protos.NodeProto
 		result = m.convertLeakyRelu(node, inputs)
 	case "PRelu":
 		result = m.convertPRelu(inputs)
+	case "Elu":
+		result = m.convertElu(node, inputs)
 	case "Selu":
 		result = m.convertSelu(node, inputs)
 	case "HardSigmoid":
@@ -553,7 +566,7 @@ func (m *Model) convertNode(scope *model.Scope, g *Graph, node *protos.NodeProto
 	case "MatMul":
 		result = m.convertMatMul(inputs[0], inputs[1])
 	case "Einsum":
-		result = convertEinsum(node, inputs)
+		result = m.convertEinsum(node, inputs)
 
 	// Ops with special behavior:
 	case "Clip":
@@ -583,7 +596,9 @@ func (m *Model) convertNode(scope *model.Scope, g *Graph, node *protos.NodeProto
 	case "Concat":
 		result = m.convertConcat(node, inputs)
 	case "Softmax":
-		result = convertSoftmax(node, inputs)
+		result = convertSoftmax(m, node, inputs)
+	case "LogSoftmax":
+		result = convertLogSoftmax(m, node, inputs)
 	case "Cast":
 		result = convertCast(node, inputs)
 	case "Transpose":
@@ -600,6 +615,12 @@ func (m *Model) convertNode(scope *model.Scope, g *Graph, node *protos.NodeProto
 		result = convertMatMulInteger(node, inputs)
 	case "QLinearMatMul":
 		result = convertQLinearMatMul(node, inputs)
+	case "MatMulNBits":
+		result = m.convertMatMulNBits(node, inputs)
+	case "ConvInteger":
+		result = convertConvInteger(node, inputs)
+	case "RandomNormalLike":
+		result = convertRandomNormalLike(scope, node, inputs)
 
 	// Ops that require constant sub-expression materialization:
 	// they take dynamic (graph) values in ONNX but only take static values in XLA
@@ -623,6 +644,10 @@ func (m *Model) convertNode(scope *model.Scope, g *Graph, node *protos.NodeProto
 		result = convertReduceProd(m, convertedOutputs, node, inputs)
 	case "ReduceL2":
 		result = convertReduceL2(m, convertedOutputs, node, inputs)
+	case "ReduceLogSumExp":
+		result = convertReduceLogSumExp(m, convertedOutputs, node, inputs)
+	case "OneHot":
+		result = convertOneHot(m, convertedOutputs, node, inputs)
 	case "NonZero":
 		result = convertNonZero(m, convertedOutputs, node, inputs)
 	case "ConstantOfShape":
@@ -643,6 +668,8 @@ func (m *Model) convertNode(scope *model.Scope, g *Graph, node *protos.NodeProto
 		result = convertLSTM(m, convertedOutputs, node, inputs)
 	case "Conv":
 		result = convertConv(m, convertedOutputs, node, inputs)
+	case "ConvTranspose":
+		result = convertConvTranspose(node, inputs)
 	case "AveragePool":
 		result = convertAveragePool(m, convertedOutputs, node, inputs)
 	case "MaxPool":
@@ -651,8 +678,12 @@ func (m *Model) convertNode(scope *model.Scope, g *Graph, node *protos.NodeProto
 		result = convertGlobalAveragePool(m, convertedOutputs, node, inputs)
 	case "Resize":
 		result = convertResize(m, convertedOutputs, node, inputs)
+	case "GridSample":
+		result = convertGridSample(node, inputs)
 	case "BatchNormalization":
 		result = convertBatchNormalization(m, convertedOutputs, node, inputs)
+	case "InstanceNormalization":
+		result = convertInstanceNormalization(node, inputs)
 	case "LayerNormalization":
 		result = convertLayerNormalization(m, convertedOutputs, node, inputs)
 	case "SimplifiedLayerNormalization":
@@ -668,11 +699,7 @@ func (m *Model) convertNode(scope *model.Scope, g *Graph, node *protos.NodeProto
 
 	// Multiple outputs ops:
 	case "Dropout":
-		// 推理期保留概率为 1，输出即输入；可选 mask 输出全 true。
-		result = inputs[0]
-		if len(node.Output) > 1 && node.Output[1] != "" {
-			convertedOutputs[node.Output[1]] = Equal(inputs[0], inputs[0])
-		}
+		result = m.convertDropout(convertedOutputs, node, inputs)
 	case "Pad":
 		result = convertPad(m, convertedOutputs, node, inputs)
 	case "DynamicQuantizeLinear":
@@ -683,6 +710,8 @@ func (m *Model) convertNode(scope *model.Scope, g *Graph, node *protos.NodeProto
 		result = convertTrilu(m, convertedOutputs, node, inputs)
 	case "ScatterND":
 		result = convertScatterND(m, convertedOutputs, node, inputs)
+	case "TreeEnsembleClassifier":
+		result = convertTreeEnsembleClassifier(node, inputs, convertedOutputs)
 
 	// Control flow ops:
 	case "If":

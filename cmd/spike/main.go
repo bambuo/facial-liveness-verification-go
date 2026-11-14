@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gomlx/compute/dtypes"
 	"github.com/gomlx/compute/gobackend"
 	"github.com/gomlx/gomlx/core/graph"
 	"github.com/gomlx/gomlx/core/tensors"
@@ -67,6 +68,18 @@ func main() {
 		dumpDir = os.Args[2]
 	}
 	for i, t := range outs {
+		if t.DType() == dtypes.Bool {
+			var flat []bool
+			t.MustConstFlatData(func(v any) { flat = v.([]bool) })
+			trueCount := 0
+			for _, v := range flat {
+				if v {
+					trueCount++
+				}
+			}
+			fmt.Printf("  [%d] shape=%v dtype=Bool true=%d/%d\n", i, t.Shape().Dimensions, trueCount, len(flat))
+			continue
+		}
 		var flat []float32
 		t.MustConstFlatData(func(v any) { flat = v.([]float32) })
 		head := flat

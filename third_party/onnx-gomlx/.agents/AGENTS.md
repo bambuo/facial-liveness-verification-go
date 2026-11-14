@@ -92,12 +92,13 @@ Backends that do not support dynamic shapes (like static XLA PJRT) will pad inpu
 
 ## 2. Architecture & Codebase Layout
 
-- **`onnx/`**: Public API package. Provides `ReadFile`, `Parse`, and the user-facing `Model` type wrapper.
+- **`onnx/`**: Public API package (`Model` interface) and **`onnx/parser/`** (`Parse`, `ParseFile`, `ParseFromReader`).
 - **`internal/onnxgomlx/`**: Core conversion engine.
-  - **`model.go`**: Manages model state, graph translation lifecycle, and input/output node mappings.
-  - **`ops.go`**: Operator converter dispatch table (`m.converters[opType]`) and individual operator converters (`convertMatMul`, `convertConv`, `convertWhere`, `convertExpand`, etc.).
-  - **`materialize.go`**: Constant subexpression evaluation engine. Evaluates ONNX nodes that compute tensor parameters (shapes, slices, broadcasting dimensions) at graph building time.
-  - **`fusion/`**: Fused operation matchers (`sdpa.go`, `qkvdense.go`, `dense.go`). Detects multi-op subgraphs and emits GoMLX fused operations.
+  - **`model.go` & `graph.go`**: Model state, graph translation lifecycle, and operator dispatch (`convertNode`).
+  - **`ops.go` & `ops_*.go`**: Operator converters (`ops_reshape.go`, `ops_slice.go`, `ops_pad.go`, `ops_pool.go`, `ops_scatter.go`, `ops_conv_integer.go`, `ops_conv_transpose.go`, `ops_grid_sample.go`, `ops_matmul_nbits.go`, `ops_norm_onehot.go`, `ops_random.go`, `ops_tree_ensemble.go`, `ops_einsum.go`, `ops_runtime_broadcast.go`, etc.).
+  - **`dynamicshape.go` & `shapes.go`**: Symbolic/unnamed dynamic axis tracking (`shapes.UniqueAxisName("#onnx")`) and intermediate ONNX shape inference.
+  - **`materialize.go`**: Constant subexpression evaluation engine. Evaluates ONNX nodes that compute tensor parameters (shapes, slices, broadcasting dimensions) at graph building time, while letting dynamic dependencies fall back to runtime graph ops.
+  - **`fusion/`**: Fused operation matchers (`sdpa.go`, `qkvdense.go`, `dense_gelu.go`, `quantized_dense.go`, `quantized_qkv.go`). Detects multi-op subgraphs and emits GoMLX `nn.` / `attention.` fused operations.
 - **`internal/onnxgraph/`**: Topological ordering, dependency tracking, and graph representation of ONNX protobuf nodes.
 - **`internal/benchmarks/`**: Parity tests, benchmarks vs. ONNX Runtime, and integration tests across backends.
 
@@ -108,19 +109,17 @@ Backends that do not support dynamic shapes (like static XLA PJRT) will pad inpu
 ### 3.1 Implementing New Operator Converters
 
 When adding a new ONNX operator:
-1. Define the converter method in `internal/onnxgomlx/ops.go`:
+1. Implement the converter in a focused `internal/onnxgomlx/ops_<category>.go` file (keeping per-op files under ~200 lines) or in `ops.go` for small helpers:
    ```go
-   func (m *Model) convertMyOp(node *protos.NodeProto, inputs []*graph.Node) *graph.Node
+   func convertMyOp(node *protos.NodeProto, inputs []*graph.Node) *graph.Node
    ```
-2. Register it in `init()` or `registerDefaultConverters()`:
-   ```go
-   m.converters["MyOp"] = (*Model).convertMyOp
-   ```
-3. **Pay close attention to broadcasting rules**:
-   - ONNX follows NumPy-style right-aligned multidirectional broadcasting.
-   - GoMLX nodes expect explicit shapes or use `graph.BroadcastInDim` / `graph.BroadcastToDims` for broadcast adjustments.
+   Prefer delegating to GoMLX `nn.` / `attention.` / `activation.` layers (e.g., `nn.QuantizedDense`, `nn.LayerNorm`, `graph.Softmax`, `graph.TopK`) so hardware-accelerated fused kernels are used automatically when supported.
+2. Wire the case into `convertNode` in `internal/onnxgomlx/graph.go` (and `inferShapeForNameDepth` in `shapes.go` when downstream `Shape` materialization benefits from knowing output rank/dims).
+3. **Pay close attention to broadcasting & dynamic axes**:
+   - ONNX follows NumPy-style right-aligned multidirectional broadcasting, including runtime size-1 expansion across distinct dynamic axes.
+   - Use `runtimeBroadcast` / `broadcastWithSpecs` / `runtimeExpand` (`ops_runtime_broadcast.go`) so static and already-aligned dynamic shapes take a zero-overhead fast path while distinct dynamic axes broadcast and validate compatibility at runtime.
 4. **Extracting node attributes**:
-   Use helper functions in `internal/onnxgomlx/` to read attributes from `node.Attribute` (e.g. `getAttrInt`, `getAttrFloat`, `getAttrStrings`, `getAttrTensor`).
+   Use helper functions in `internal/onnxgomlx/` to read attributes from `node.Attribute` (e.g. `GetIntAttrOr`, `GetIntsAttrOr`, `GetFloatAttrOr`, `GetStringAttrOr`, `GetStringsAttrOr`).
 
 ---
 
@@ -160,6 +159,7 @@ GoMLX and its backends provide hardware-accelerated fused operations:
 - **`FusedScaledDotProductAttention`** (`compute.OpTypeFusedScaledDotProductAttention` via `attention.Core`)
 - **`FusedAttentionQKVProjection`** (`compute.OpTypeFusedAttentionQKVProjection`)
 - **`FusedDense`** (`compute.OpTypeFusedDense`)
+- **`FusedQuantizedDense`** (`compute.OpTypeFusedQuantizedDense` via `nn.QuantizedDense` with `QuantizedDenseConfig`)
 - **`FusedLayerNorm`** (`compute.OpTypeFusedLayerNorm`)
 - **`FusedSoftmax`** (`compute.OpTypeFusedSoftmax`)
 
@@ -230,3 +230,38 @@ GOMLX_BACKEND=onnx:cpu go test -tags=onnx ./internal/benchmarks/ -test.run TestR
 # Dynamic call graph parity test:
 GOMLX_BACKEND=go go test -tags=onnx ./internal/benchmarks/ -test.run TestRobSentences_DynamicCallGraph -test.v
 ```
+
+---
+
+## Related Repositories (including this one)
+
+- **[`github.com/gomlx/gomlx`](https://github.com/gomlx/gomlx)**: High-level ML framework in Go (tensors, layers, automatic differentiation, optimizers, model training loops). GoMLX delegates lower-level graph compilation and execution to a `compute.Backend`.
+- **[`github.com/gomlx/compute`](https://github.com/gomlx/compute)**: Foundational execution and backend abstraction interface (`compute.Backend`, `compute.Builder`, `compute.Function`, `compute.Executable`, `compute.Buffer`), shared `dtypes`, `shapes`, `shapeinference`, and backend compliance tests (`compute/support/backendtest`).
+  - It also includes the "go" backend: written in pure Go, portable (including WASM), optionally supporting SIMD.
+- **`github.com/gomlx/go-xla`**: Depends **only** on `github.com/gomlx/compute` (never on `github.com/gomlx/gomlx`, to avoid circular dependencies).
+- **`github.com/gomlx/compute-onnx`**: Implements a ONNX Runtime (ORT) based backend. Supports Dynamic Shapes. Depends **only** on `github.com/gomlx/compute`
+- **`github.com/gomlx/go-darwinml`**: Implements the "mps" (Apple's MPSGraph based) and "mlx" (Apple's MLX based) backends. Depends **only** on `github.com/gomlx/compute`.
+- **`github.com/gomlx/onnx-gomlx`**: Converts `.onnx` models to GoMLX models. 
+- **`github.com/gomlx/go-huggingface`**: Hugging Face models tools: download repo files, iterate over datasets, tokenizer implementations, model implementations (using GoMLX). Currently it supports only a subset of the models ( mainly LLMs for text generation and instruction following) but is expandable.
+
+When navigating the codebase of any of the related projects, read their .agents/AGENTS.md file to get more information about
+the structure of the codebase and their specific conventions.
+
+## Documentation & Git Workflow
+
+- Record user-visible or API changes in `docs/CHANGELOG.md` (with `docs/CHANGELOG-pjrt.md` and `docs/CHANGELOG-stablehlo.md` kept as historical archives).
+- Keep `.agents/AGENTS.md` (symlinked from `GEMINI.md`) updated whenever architecture, conventions, or non-obvious behavior changes.
+- **Never `git commit` or `git push`** without explicit user instruction; leave changes uncommitted in the working tree for review.
+- When changing code, if not explicitly asked, always wait for the operator to review the changes before committing them.
+
+## Coding Style & Dependencies
+
+- **Minimal External Dependencies**: This is a library, we want to avoid adding dependencies to our users.
+- **Error Handling**: Wrap errors with stack traces using `github.com/pkg/errors` (`errors.Errorf`, `errors.Wrapf`, `errors.WithMessagef`) and format with `"%+v"` when logging stack traces. Follow GoMLX conventions: when building graphs, we throw (panic) errors. Outside of graph building functions, or in generic/helper functions that perhaps can be used in both contexts, we return errors instead of panicking.
+- **Follow Existing Patterns**: Before writing new code, read neighboring files in the same package to match established conventions .
+- **Avoid Large Files (Split Per-Op Implementations > 200 Lines)**: Keep files focused so directory listings stay scannable. Place complex op families (> ~200 lines, e.g., `ops_dotgeneral.go`, `ops_reduce.go`, `ops_scatter.go`, `flash.go`) in dedicated files rather than growing a monolith.
+- **Copyright Notes**: Normal source files start with:
+  ```go
+  // Copyright 2023-2026 The GoMLX Authors. SPDX-License-Identifier: Apache-2.0
+  ```
+  Auto-generated files (`gen_*`) omit the copyright header and instead carry a comment identifying the generator tool.

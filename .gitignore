@@ -1,0 +1,12 @@
+# 构建产物与本地凭据
+/models/
+/.env
+deploy/.env
+/bin/
+/tmp/
+/dist/
+.idea/
+*.test
+*.out
+*.log
+.DS_Store

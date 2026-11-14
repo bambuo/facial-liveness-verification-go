@@ -1,0 +1,6 @@
+.git
+deploy/.env
+tmp/
+*.out
+*.test
+.DS_Store

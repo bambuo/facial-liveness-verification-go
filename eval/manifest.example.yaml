@@ -1,0 +1,36 @@
+# 复制为评测清单后替换路径；不要把真实人脸或受许可限制的数据提交到仓库。
+identities:
+  - id: person_001
+    images:
+      - samples/person_001/1.jpg
+      - samples/person_001/2.jpg
+    meta:
+      age_band: "20-30"
+      device: "iphone"
+  - id: person_002
+    images:
+      - samples/person_002/1.jpg
+      - samples/person_002/2.jpg
+    meta:
+      age_band: "30-40"
+      device: "android"
+
+liveness:
+  bona_fide:
+    - id: live_001
+      images:
+        - samples/live_001/1.jpg
+        - samples/live_001/2.jpg
+  attacks:
+    - id: print_001
+      label: print
+      images:
+        - samples/attack_print_001/1.jpg
+    - id: replay_001
+      label: replay
+      images:
+        - samples/attack_replay_001/1.jpg
+
+options:
+  max_impostor_pairs: 200000
+  threshold_step: 0.01

@@ -81,7 +81,24 @@ docker run --rm -p 8080:8080 --env-file deploy/.env faceservice-go:local
 
 配置项与默认值见 [实施方案](docs/需求/0001/0001-Go版人脸核验服务-实施方案.md) 第 3 节。
 
-## 验证结果（本机，2026-11-14）
+### 推荐安全档位
+
+高风险场景（KYC、提现、敏感操作）建议显式设置：
+
+```bash
+export FACE_LIVENESS_THRESHOLD=0.91
+export FACE_ACTIONS_COUNT=3
+export FACE_FRAMES_PER_ACTION=5
+export FACE_ACTION_VERIFY_ENABLED=true
+# 高风险可选：提高 1:1 阈值
+export FACE_MATCH_THRESHOLD=0.36
+```
+
+本机 AxonData 评测：0.85 阈值下 APCER 24.17%、BPCER 17.24%；0.91 阈值下 APCER 16.67%、BPCER 17.24%。0.91 在不增加真人拒绝率的前提下降低攻击放行率。
+
+说明：代码默认值仍保持与 .NET 基线一致的 0.85，便于语义对账；生产高风险环境通过上述环境变量切到 0.91。该档位仍不构成商业 PAD 合规结论。
+
+## 验证结果（本机，2026-11-15）
 
 | 项 | 结果 |
 | --- | --- |
@@ -91,6 +108,8 @@ docker run --rm -p 8080:8080 --env-file deploy/.env faceservice-go:local
 | SFace vs ONNX Runtime | 128 维输出最大绝对误差 6.1e-06 |
 | MiniFASNetV2 vs ONNX Runtime | 3 类 logits 最大绝对误差 9.5e-07 |
 | ONNX 规范用例 | PRelu 广播、Dropout 推理/mask 与 ONNX Runtime 误差 0；`training_mode=true` 显式拒绝；initializer 默认值与覆盖语义通过 |
+| LFW 1:1 公开基线 | 200 人、605 张；EER 2.996%，AUC 0.988190；0.35 阈值 FAR 0.1396%、FRR 4.1721% |
+| AxonData PAD 基线 | 29 段真人、120 段攻击；0.91 阈值 APCER 16.67%、BPCER 17.24% |
 | HTTP 端到端 | 录入 200、核验 200、score 0.6118、结果令牌签发、主体查询 active、删除后清理 profile 与索引 |
 | 与 .NET 基线对账 | 同一组图片 .NET score 0.62328，Go 0.6118，差 0.0115；动作几何 yaw/mouth 差 ≤ 0.004 |
 

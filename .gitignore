@@ -4,6 +4,7 @@ deploy/.env
 /bin/
 /tmp/
 /dist/
+/eval/out/
 .idea/
 *.test
 *.out

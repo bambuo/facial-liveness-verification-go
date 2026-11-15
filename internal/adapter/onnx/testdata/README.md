@@ -9,6 +9,7 @@
 | `dropout_mask.onnx` | Dropout 推理并请求 mask | 输出等于输入，mask 全为 true |
 | `dropout_training_false.onnx` | `training_mode=false` 常量 | 输出等于输入，mask 全为 true |
 | `dropout_training_true.onnx` | `training_mode=true` | 推理转换器应拒绝 |
+| `clip9.onnx` | Clip opset 9，min/max 为属性 | 输出应裁剪到 [-1,2] |
 | `initializer_default.onnx` | initializer `w` 同时作为 graph input | 未传用默认值 `[2,3]`，传入 `[10,20]` 时覆盖 |
 
 生成方式：使用 Python `onnx` 包按官方示例构造，IR version 10，PRelu opset 16，Dropout opset 13。输入固定为 `[1,3,2,2]` float32。

@@ -42,6 +42,7 @@ func (s *EnrollService) Enroll(ctx context.Context, auth *AuthContext, challenge
 	if err != nil {
 		return EnrollResult{}, err
 	}
+	s.support.RecordLiveness(ctx, auth, challenge.DeviceID, vote.Status)
 	liveness := vote.Status
 	if vote.Status == domain.LivenessSpoof {
 		if _, err := s.support.Finalize(ctx, auth, session, "failed", &liveness, nil, &vote, requestID); err != nil {
@@ -56,6 +57,9 @@ func (s *EnrollService) Enroll(ctx context.Context, auth *AuthContext, challenge
 		return EnrollResult{}, domain.Of(domain.CodeLowQuality)
 	}
 	if err := s.actions.Verify(ctx, challenge.Actions, challenge.FramesPerAction, frames, auth.Policy); err != nil {
+		if _, ferr := s.support.Finalize(ctx, auth, session, "failed", &liveness, nil, &vote, requestID); ferr != nil {
+			return EnrollResult{}, ferr
+		}
 		return EnrollResult{}, err
 	}
 	embedding, err := s.engine.ExtractLargest(frames)

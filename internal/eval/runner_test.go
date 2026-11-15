@@ -93,12 +93,15 @@ options:
 	if report.Liveness == nil || report.Liveness.ServicePoint.APCER != 0 || report.Liveness.ServicePoint.BPCER != 0 {
 		t.Fatalf("liveness: %+v", report.Liveness)
 	}
+	if len(report.Liveness.ByLabel) != 1 || report.Liveness.ByLabel[0].Label != "print" || report.Liveness.ByLabel[0].APCER != 0 {
+		t.Fatalf("by label: %+v", report.Liveness.ByLabel)
+	}
 
 	out := filepath.Join(dir, "out")
 	if err := WriteOutputs(out, report, pairs, samples); err != nil {
 		t.Fatal(err)
 	}
-	for _, name := range []string{"report.json", "scores.csv", "roc.csv", "liveness.csv", "liveness_metrics.csv"} {
+	for _, name := range []string{"report.json", "scores.csv", "roc.csv", "liveness.csv", "liveness_metrics.csv", "liveness_by_label.csv"} {
 		if _, err := os.Stat(filepath.Join(out, name)); err != nil {
 			t.Fatalf("%s: %v", name, err)
 		}

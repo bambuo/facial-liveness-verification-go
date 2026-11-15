@@ -29,6 +29,9 @@ func WriteOutputs(dir string, report *Report, pairs []Pair, samples []LivenessSa
 		if err := writeLivenessMetrics(filepath.Join(dir, "liveness_metrics.csv"), report.Liveness.Thresholds); err != nil {
 			return err
 		}
+		if err := writeLivenessByLabel(filepath.Join(dir, "liveness_by_label.csv"), report.Liveness.ByLabel); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -119,4 +122,23 @@ func writeLivenessMetrics(path string, points []LivenessPoint) error {
 
 func formatFloat(v float64) string {
 	return strconv.FormatFloat(v, 'f', 6, 64)
+}
+
+func writeLivenessByLabel(path string, labels []LivenessLabel) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	w := csv.NewWriter(f)
+	defer w.Flush()
+	if err := w.Write([]string{"label", "sequences", "apcer", "min_score", "mean_score"}); err != nil {
+		return err
+	}
+	for _, l := range labels {
+		if err := w.Write([]string{l.Label, strconv.Itoa(l.Sequences), formatFloat(l.APCER), formatFloat(l.MinScore), formatFloat(l.MeanScore)}); err != nil {
+			return err
+		}
+	}
+	return w.Error()
 }

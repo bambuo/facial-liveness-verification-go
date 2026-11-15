@@ -22,13 +22,32 @@ func TestBuildActions(t *testing.T) {
 }
 
 func TestApplyPolicyOverrideAndClamp(t *testing.T) {
-	base := Policy{FramesPerAction: 5, ActionsCount: 2, MatchThreshold: 0.35}
-	got := ApplyPolicy(base, []byte(`{"match_threshold":0.5,"frames_per_action":20,"actions_count":0}`))
+	base := Policy{FramesPerAction: 5, ActionsCount: 2, MatchThreshold: 0.35, MaxRequestsPerMinute: 60, YawThreshold: 0.2, StraightYaw: 0.15, MouthOpenRatio: 1.08}
+	got, err := ApplyPolicy(base, []byte(`{"match_threshold":0.5,"frames_per_action":20,"actions_count":0}`))
+	if err != nil {
+		t.Fatal(err)
+	}
 	if got.MatchThreshold != 0.5 {
 		t.Fatalf("match threshold = %v", got.MatchThreshold)
 	}
 	if got.FramesPerAction != 8 || got.ActionsCount != 1 {
 		t.Fatalf("clamp failed: %+v", got)
+	}
+}
+
+func TestApplyPolicyRejectsOutOfRange(t *testing.T) {
+	base := Policy{FramesPerAction: 5, ActionsCount: 3, ActionVerifyEnabled: true, MatchThreshold: 0.35, MaxRequestsPerMinute: 60, YawThreshold: 0.2, StraightYaw: 0.15, MouthOpenRatio: 1.08}
+	cases := []string{
+		`{"liveness_threshold":1.2}`,
+		`{"match_threshold":-0.1}`,
+		`{"max_requests_per_minute":0}`,
+		`{"frames_per_action":8,"actions_count":3}`,
+		`not-json`,
+	}
+	for _, raw := range cases {
+		if _, err := ApplyPolicy(base, []byte(raw)); err == nil {
+			t.Fatalf("expected error for %s", raw)
+		}
 	}
 }
 

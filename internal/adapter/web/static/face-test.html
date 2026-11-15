@@ -1143,10 +1143,11 @@
                     const remain = Math.ceil((ACTION_TIMEOUT - elapsed) / 1000);
                     $("camSub").textContent = "动作 " + (a + 1) + "/" + actions.length + " · 剩余 " + remain + " 秒";
                     // 每 3 帧预检一次（不消费挑战，仅引导反馈）；张嘴每次都要带基线帧
-                    if (buffer.length >= 3 && buffer.length % 3 === 0) {
+                    if (buffer.length >= per && buffer.length % 3 === 0) {
+                        const segment = buffer.slice(-per); // 预检与最终提交必须是同一组帧
                         const fd = new FormData();
                         fd.append("action", act);
-                        buffer.slice(-6).forEach((b) => fd.append("frames", b, "f.jpg"));
+                        segment.forEach((b) => fd.append("frames", b, "f.jpg"));
                         if (act === "mouth_open" && baselineFrames.length) {
                             baselineFrames.forEach((b) => fd.append("baseline_frames", b, "b.jpg"));
                         }
@@ -1154,11 +1155,7 @@
                             const r = await api("POST", "/v1/action-check", fd, true);
                             if (r.satisfied) {
                                 $("camHint").textContent = "✓ 很好";
-                                for (let k = 0; k < 2; k++) {
-                                    const hb = await grabFrame();
-                                    if (hb) buffer.push(hb);
-                                    await new Promise((r2) => setTimeout(r2, 320));
-                                }
+                                state.frames.push(...segment); // 通过即锁定该段，避免回正帧挤掉动作帧
                                 done = true;
                             } else {
                                 // 展示服务端实测几何量，便于判断还差多少
@@ -1171,8 +1168,7 @@
                     }
                     await new Promise((r) => setTimeout(r, 400));
                 }
-                // 保留本动作最后 per 帧（含确认后的保持帧）用于最终整单校验
-                state.frames.push(...buffer.slice(-per));
+                // 本动作通过时已锁定 per 帧，这里不再重复追加，避免帧数超出契约
                 if (act === "straight" && !baselineFrames.length) baselineFrames = buffer.slice(0, 2);
                 state.collected = state.frames.length;
                 $("ringFg").style.strokeDashoffset = String(c * (1 - Math.min(1, state.collected / need)));

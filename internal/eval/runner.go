@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -55,12 +56,22 @@ type LivenessCounts struct {
 	AttackScored      int `json:"attack_scored"`
 }
 
+// LivenessLabel 是单个攻击类型的汇总。
+type LivenessLabel struct {
+	Label     string  `json:"label"`
+	Sequences int     `json:"sequences"`
+	APCER     float64 `json:"apcer"`
+	MinScore  float64 `json:"min_score"`
+	MeanScore float64 `json:"mean_score"`
+}
+
 // LivenessReport 是活体评测结果。
 type LivenessReport struct {
 	Counts           LivenessCounts  `json:"counts"`
 	ServiceThreshold float64         `json:"service_threshold"`
 	ServicePoint     LivenessPoint   `json:"service_point"`
 	Thresholds       []LivenessPoint `json:"thresholds"`
+	ByLabel          []LivenessLabel `json:"by_label,omitempty"`
 }
 
 // Report 是识别质量评测汇总。
@@ -221,6 +232,7 @@ func (r *Runner) Run(ctx context.Context) (*Report, []Pair, []LivenessSample, er
 	var samples []LivenessSample
 	if r.Manifest.Liveness != nil {
 		var bonaScores, attackScores []float64
+		byLabel := make(map[string][]float64)
 		for _, seq := range r.Manifest.Liveness.BonaFide {
 			sample, min := r.evalSequence(ctx, cache, seq)
 			samples = append(samples, sample)
@@ -230,6 +242,30 @@ func (r *Runner) Run(ctx context.Context) (*Report, []Pair, []LivenessSample, er
 			sample, min := r.evalSequence(ctx, cache, seq)
 			samples = append(samples, sample)
 			attackScores = append(attackScores, min)
+			byLabel[seq.Label] = append(byLabel[seq.Label], min)
+		}
+		labels := make([]string, 0, len(byLabel))
+		for label := range byLabel {
+			labels = append(labels, label)
+		}
+		sort.Strings(labels)
+		byLabelReport := make([]LivenessLabel, 0, len(labels))
+		for _, label := range labels {
+			scores := byLabel[label]
+			passed := 0
+			for _, score := range scores {
+				if score >= r.LivenessThreshold {
+					passed++
+				}
+			}
+			min, mean := MinMean(scores)
+			byLabelReport = append(byLabelReport, LivenessLabel{
+				Label:     label,
+				Sequences: len(scores),
+				APCER:     float64(passed) / float64(len(scores)),
+				MinScore:  min,
+				MeanScore: mean,
+			})
 		}
 		report.Liveness = &LivenessReport{
 			Counts: LivenessCounts{
@@ -241,6 +277,7 @@ func (r *Runner) Run(ctx context.Context) (*Report, []Pair, []LivenessSample, er
 			ServiceThreshold: r.LivenessThreshold,
 			ServicePoint:     LivenessAt(bonaScores, attackScores, r.LivenessThreshold),
 			Thresholds:       LivenessSweep(bonaScores, attackScores, r.Thresholds),
+			ByLabel:          byLabelReport,
 		}
 	}
 	return report, pairs, samples, nil

@@ -189,9 +189,12 @@ type FrameMetric struct {
 
 // LivenessVote 是多帧活体投票结果。
 type LivenessVote struct {
-	Status    LivenessStatus
-	MinScore  float64
-	LiveRatio float64
+	Status       LivenessStatus
+	MinScore     float64
+	LiveRatio    float64
+	FrameScores  []float64
+	LiveFrames   int
+	AttackFrames int
 }
 
 // EndpointClaims 是端上 JWT 的解析结果。

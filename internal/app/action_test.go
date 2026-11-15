@@ -71,8 +71,7 @@ func TestVerifyStraightFails(t *testing.T) {
 	}
 }
 
-func TestVerifyMouthRelativeToBaseline(t *testing.T) {
-	var metrics []domain.FrameMetric
+func TestVerifyMouthRelativeToBaseline(t *testing.T) {	var metrics []domain.FrameMetric
 	for i := 0; i < 5; i++ {
 		metrics = append(metrics, domain.FrameMetric{FaceFound: true, YawRatio: 0.05, MouthRatio: 0.4})
 	}
@@ -101,5 +100,27 @@ func TestVerifyNoFaceInPhase(t *testing.T) {
 	var de *domain.Error
 	if !errors.As(err, &de) || de.Code != domain.CodeNoFace {
 		t.Fatalf("expected NO_FACE, got %v", err)
+	}
+}
+
+// TestPrecheckSixFramesDoesNotGuaranteeFiveFrameSegment 复现“预检 6 帧通过、最终 5 帧失败”的分段漂移。
+func TestPrecheckSixFramesDoesNotGuaranteeFiveFrameSegment(t *testing.T) {
+	six := []domain.FrameMetric{
+		{FaceFound: true, YawRatio: -1.2},
+		{FaceFound: true, YawRatio: -1.1},
+		{FaceFound: true, YawRatio: -1.0},
+		{FaceFound: true, YawRatio: 0.0},
+		{FaceFound: true, YawRatio: 0.05},
+		{FaceFound: true, YawRatio: 0.07},
+	}
+	checked, _, err := NewActionService(&fakeEngine{metrics: six}).CheckAction(context.Background(), "turn_left", frames(6), nil, testPolicy())
+	if err != nil || !checked {
+		t.Fatalf("6 帧预检应通过，got %v err=%v", checked, err)
+	}
+	five := six[1:] // 丢弃第一帧后只剩 2 帧达标
+	err = NewActionService(&fakeEngine{metrics: five}).Verify(context.Background(), []string{"turn_left"}, 5, frames(5), testPolicy())
+	var de *domain.Error
+	if !errors.As(err, &de) || de.Code != domain.CodeActionMismatch {
+		t.Fatalf("5 帧整单应失败，got %v", err)
 	}
 }

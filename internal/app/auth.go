@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"log/slog"
 	mrand "math/rand"
 
 	"github.com/google/uuid"
@@ -51,7 +52,11 @@ func (a *Authenticator) Authenticate(ctx context.Context, bearer string) (*AuthC
 	if tenant == nil || tenant.Status != domain.TenantActive {
 		return nil, domain.Of(domain.CodeTenantDisabled)
 	}
-	policy := domain.ApplyPolicy(a.base, tenant.PolicyJSON)
+	policy, err := domain.ApplyPolicy(a.base, tenant.PolicyJSON)
+	if err != nil {
+		slog.Warn("租户策略配置非法", "tenant", tenant.Code, "err", err)
+		return nil, domain.New(domain.CodeServiceUnavailable, "租户策略配置非法")
+	}
 	ok, err := a.quota.TryIncrement(ctx, tenant.ID, policy.MaxRequestsPerMinute)
 	if err != nil {
 		return nil, domain.New(domain.CodeServiceUnavailable, "配额服务不可用")

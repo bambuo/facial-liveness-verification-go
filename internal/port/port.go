@@ -120,3 +120,10 @@ type ObjectStorage interface {
 	Delete(ctx context.Context, key string) error
 	PresignGet(ctx context.Context, key string, ttl time.Duration) (string, error)
 }
+
+// LivenessGuard 按主体与设备限制连续活体失败。
+type LivenessGuard interface {
+	IsLocked(ctx context.Context, tenantID uuid.UUID, subject, device string) (bool, error)
+	RecordFailure(ctx context.Context, tenantID uuid.UUID, subject, device string) (bool, error)
+	Reset(ctx context.Context, tenantID uuid.UUID, subject, device string) error
+}

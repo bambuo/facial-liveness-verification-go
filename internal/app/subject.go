@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 
 	"github.com/google/uuid"
 
@@ -98,7 +99,9 @@ func (s *SubjectService) Delete(ctx context.Context, tenantID uuid.UUID, externa
 		}
 	}
 	for _, key := range keys {
-		_ = s.storage.Delete(ctx, key)
+		if err := s.storage.Delete(ctx, key); err != nil {
+			slog.Warn("原图删除失败", "key", key, "err", err)
+		}
 	}
 	cleaned["images"] = len(keys) > 0
 

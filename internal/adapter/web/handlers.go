@@ -30,8 +30,13 @@ type Server struct {
 	verify        *app.VerifyService
 	subjects      *app.SubjectService
 	support       *app.VerificationSupport
+	liveness      *app.LivenessService
 	issuer        port.TokenIssuer
 	engineVersion string
+	buildVersion  string
+	buildCommit   string
+	modelHash     string
+	configHash    string
 	dbPing        func(context.Context) error
 	redisPing     func(context.Context) error
 	limiter       *ipLimiter
@@ -47,8 +52,12 @@ type Deps struct {
 	Verify        *app.VerifyService
 	Subjects      *app.SubjectService
 	Support       *app.VerificationSupport
+	Liveness      *app.LivenessService
 	Issuer        port.TokenIssuer
 	EngineVersion string
+	BuildVersion  string
+	BuildCommit   string
+	ModelHash     string
 	DBPing        func(context.Context) error
 	RedisPing     func(context.Context) error
 }
@@ -58,7 +67,10 @@ func NewServer(d Deps) *Server {
 	return &Server{
 		cfg: d.Cfg, auth: d.Auth, challenges: d.Challenges, actions: d.Actions,
 		enroll: d.Enroll, verify: d.Verify, subjects: d.Subjects, support: d.Support,
-		issuer: d.Issuer, engineVersion: d.EngineVersion, dbPing: d.DBPing, redisPing: d.RedisPing,
+		liveness: d.Liveness, issuer: d.Issuer, engineVersion: d.EngineVersion,
+		buildVersion: d.BuildVersion, buildCommit: d.BuildCommit,
+		modelHash: d.ModelHash, configHash: d.Cfg.Fingerprint(),
+		dbPing: d.DBPing, redisPing: d.RedisPing,
 		limiter: newIPLimiter(d.Cfg.RateLimit.PermitPerMinute),
 	}
 }
@@ -68,12 +80,16 @@ func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health/live", s.healthLive)
 	mux.HandleFunc("GET /health/ready", s.healthReady)
+	mux.HandleFunc("GET /version", s.handleVersion)
 	mux.HandleFunc("POST /v1/challenges", s.handleChallenge)
 	mux.HandleFunc("POST /v1/action-check", s.handleActionCheck)
 	mux.HandleFunc("POST /v1/enrollments", s.handleEnroll)
 	mux.HandleFunc("POST /v1/verifications", s.handleVerify)
 	mux.HandleFunc("GET /v1/subjects/{subject_id}", s.handleSubjectGet)
 	mux.HandleFunc("DELETE /v1/subjects/{subject_id}", s.handleSubjectDelete)
+	if s.cfg.LabMode {
+		mux.HandleFunc("POST /v1/liveness-checks", s.handleLivenessCheck)
+	}
 	if s.cfg.IsDevelopment() && s.cfg.Auth.EnableDevToken {
 		mux.HandleFunc("POST /dev/token", s.handleDevToken)
 		mux.HandleFunc("GET /dev/face-test.html", s.handleFaceTest)
@@ -116,22 +132,23 @@ func (s *Server) handleChallenge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var req challengeRequest
+	r.Body = http.MaxBytesReader(w, r.Body, s.cfg.Security.MaxUploadBytes)
 	ct := r.Header.Get("Content-Type")
 	switch {
 	case strings.HasPrefix(ct, "application/json"):
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			writeError(w, r, domain.New(domain.CodeAuthInvalid, "请求体格式不正确"))
+			writeError(w, r, uploadError(err))
 			return
 		}
 	case strings.HasPrefix(ct, "multipart/form-data"):
 		if err := r.ParseMultipartForm(32 << 20); err != nil {
-			writeError(w, r, domain.New(domain.CodeAuthInvalid, "请求体格式不正确"))
+			writeError(w, r, uploadError(err))
 			return
 		}
 		req = challengeRequest{Scene: r.FormValue("scene"), Mode: r.FormValue("mode"), Gallery: r.FormValue("gallery"), DeviceID: r.FormValue("device_id")}
 	default:
 		if err := r.ParseForm(); err != nil {
-			writeError(w, r, domain.New(domain.CodeAuthInvalid, "请求体格式不正确"))
+			writeError(w, r, uploadError(err))
 			return
 		}
 		req = challengeRequest{Scene: r.FormValue("scene"), Mode: r.FormValue("mode"), Gallery: r.FormValue("gallery"), DeviceID: r.FormValue("device_id")}
@@ -160,16 +177,16 @@ func (s *Server) handleActionCheck(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	if err := r.ParseMultipartForm(32 << 20); err != nil {
-		writeError(w, r, domain.New(domain.CodeAuthInvalid, "请求体格式不正确"))
+	if err := s.parseMultipart(w, r); err != nil {
+		writeError(w, r, err)
 		return
 	}
-	frames, err := readFrames(r.MultipartForm.File["frames"])
+	frames, err := readFrames(r.MultipartForm.File["frames"], s.cfg.Face.MaxFrameBytes)
 	if err != nil {
 		writeError(w, r, err)
 		return
 	}
-	baseline, err := readFrames(r.MultipartForm.File["baseline_frames"])
+	baseline, err := readFrames(r.MultipartForm.File["baseline_frames"], s.cfg.Face.MaxFrameBytes)
 	if err != nil {
 		writeError(w, r, err)
 		return
@@ -243,6 +260,96 @@ func (s *Server) handleVerify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeOK(w, r, verifyResponse{Result: result.Result, Score: result.Score, Liveness: result.Liveness, VerificationToken: result.Token})
+}
+
+type livenessCheckResponse struct {
+	Result         string    `json:"result"`
+	Status         string    `json:"status"`
+	PadScore       float64   `json:"pad_score"`
+	PadThreshold   float64   `json:"pad_threshold"`
+	PadDecision    string    `json:"pad_decision"`
+	MinFrameScore  float64   `json:"min_frame_score"`
+	MeanFrameScore float64   `json:"mean_frame_score"`
+	FrameScores    []float64 `json:"frame_scores"`
+	LiveFrames     int       `json:"live_frames"`
+	AttackFrames   int       `json:"attack_frames"`
+	LiveRatio      float64   `json:"live_ratio"`
+	ActionChecked  bool      `json:"action_checked"`
+	ActionPassed   bool      `json:"action_passed"`
+	ActionCode     string    `json:"action_code,omitempty"`
+	ActionDetail   string    `json:"action_detail,omitempty"`
+	ModelVersion   string    `json:"model_version"`
+	ConfigVersion  string    `json:"config_version"`
+	DeviceID       string    `json:"device_id"`
+	RequestID      string    `json:"request_id"`
+}
+
+func (s *Server) handleLivenessCheck(w http.ResponseWriter, r *http.Request) {
+	auth, ok := s.authenticate(w, r)
+	if !ok {
+		return
+	}
+	challengeID, frames, deviceID, err := s.parseUpload(w, r)
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
+	challenge, session, err := s.support.BeginUpload(r.Context(), auth, challengeID, deviceID, domain.ModeLiveness)
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
+	verifyActions := r.FormValue("verify_actions") == "true"
+	result, err := s.liveness.Check(r.Context(), auth, challenge, session, frames, verifyActions, strPtr(requestIDFrom(r)))
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
+	mean := 0.0
+	for _, score := range result.FrameScores {
+		mean += score
+	}
+	if len(result.FrameScores) > 0 {
+		mean /= float64(len(result.FrameScores))
+	}
+	writeOK(w, r, livenessCheckResponse{
+		Result:         result.Result,
+		Status:         string(result.Status),
+		PadScore:       result.MinScore,
+		PadThreshold:   auth.Policy.LivenessThreshold,
+		PadDecision:    string(result.Status),
+		MinFrameScore:  result.MinScore,
+		MeanFrameScore: mean,
+		FrameScores:    result.FrameScores,
+		LiveFrames:     result.LiveFrames,
+		AttackFrames:   result.AttackFrames,
+		LiveRatio:      result.LiveRatio,
+		ActionChecked:  result.ActionChecked,
+		ActionPassed:   result.ActionPassed,
+		ActionCode:     result.ActionCode,
+		ActionDetail:   result.ActionDetail,
+		ModelVersion:   s.engineVersion,
+		ConfigVersion:  s.configHash,
+		DeviceID:       deviceID,
+		RequestID:      requestIDFrom(r),
+	})
+}
+
+func (s *Server) handleVersion(w http.ResponseWriter, _ *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]any{
+		"version":               s.buildVersion,
+		"commit":                s.buildCommit,
+		"env":                   s.cfg.Env,
+		"engine":                s.engineVersion,
+		"model_sha256":          s.modelHash,
+		"config_sha256":         s.configHash,
+		"liveness_threshold":    s.cfg.Face.LivenessThreshold,
+		"live_ratio_threshold":  s.cfg.Face.LiveRatioThreshold,
+		"actions_count":         s.cfg.Face.ActionsCount,
+		"frames_per_action":     s.cfg.Face.FramesPerAction,
+		"action_verify_enabled": s.cfg.Face.ActionVerifyEnabled,
+		"lab_mode":              s.cfg.LabMode,
+	})
 }
 
 type subjectResponse struct {
@@ -345,22 +452,35 @@ func (s *Server) healthReady(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) parseUpload(w http.ResponseWriter, r *http.Request) (string, [][]byte, string, error) {
-	r.Body = http.MaxBytesReader(w, r.Body, s.cfg.Security.MaxUploadBytes)
-	if err := r.ParseMultipartForm(32 << 20); err != nil {
-		var maxErr *http.MaxBytesError
-		if errors.As(err, &maxErr) {
-			return "", nil, "", domain.New(domain.CodeServiceUnavailable, "请求体过大")
-		}
-		return "", nil, "", domain.New(domain.CodeAuthInvalid, "请求体格式不正确")
+	if err := s.parseMultipart(w, r); err != nil {
+		return "", nil, "", err
 	}
-	frames, err := readFrames(r.MultipartForm.File["frames"])
+	frames, err := readFrames(r.MultipartForm.File["frames"], s.cfg.Face.MaxFrameBytes)
 	if err != nil {
 		return "", nil, "", err
 	}
 	return r.FormValue("challenge_id"), frames, r.FormValue("device_id"), nil
 }
 
-func readFrames(files []*multipart.FileHeader) ([][]byte, error) {
+// parseMultipart 统一限制请求体总大小并解析 multipart。
+func (s *Server) parseMultipart(w http.ResponseWriter, r *http.Request) error {
+	r.Body = http.MaxBytesReader(w, r.Body, s.cfg.Security.MaxUploadBytes)
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		return uploadError(err)
+	}
+	return nil
+}
+
+// uploadError 将请求体超限映射为 503，其余解析错误映射为 401。
+func uploadError(err error) error {
+	var maxErr *http.MaxBytesError
+	if errors.As(err, &maxErr) {
+		return domain.New(domain.CodeServiceUnavailable, "请求体过大")
+	}
+	return domain.New(domain.CodeAuthInvalid, "请求体格式不正确")
+}
+
+func readFrames(files []*multipart.FileHeader, maxFrameBytes int64) ([][]byte, error) {
 	if len(files) == 0 {
 		return nil, nil
 	}
@@ -373,10 +493,13 @@ func readFrames(files []*multipart.FileHeader) ([][]byte, error) {
 		if err != nil {
 			return nil, domain.New(domain.CodeLowQuality, "帧读取失败")
 		}
-		data, err := io.ReadAll(f)
+		data, err := io.ReadAll(io.LimitReader(f, maxFrameBytes+1))
 		_ = f.Close()
 		if err != nil {
 			return nil, domain.New(domain.CodeLowQuality, "帧读取失败")
+		}
+		if int64(len(data)) > maxFrameBytes {
+			return nil, domain.New(domain.CodeLowQuality, "单帧超过大小上限")
 		}
 		out = append(out, data)
 	}

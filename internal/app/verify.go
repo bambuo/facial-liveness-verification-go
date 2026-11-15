@@ -40,6 +40,7 @@ func (s *VerifyService) Verify(ctx context.Context, auth *AuthContext, challenge
 	if err != nil {
 		return VerifyResult{}, err
 	}
+	s.support.RecordLiveness(ctx, auth, challenge.DeviceID, vote.Status)
 	liveness := vote.Status
 	if vote.Status == domain.LivenessSpoof {
 		if _, err := s.support.Finalize(ctx, auth, session, "failed", &liveness, nil, &vote, requestID); err != nil {
@@ -61,6 +62,9 @@ func (s *VerifyService) Verify(ctx context.Context, auth *AuthContext, challenge
 		return VerifyResult{}, domain.Of(domain.CodeFaceNotEnrolled)
 	}
 	if err := s.actions.Verify(ctx, challenge.Actions, challenge.FramesPerAction, frames, auth.Policy); err != nil {
+		if _, ferr := s.support.Finalize(ctx, auth, session, "failed", &liveness, nil, &vote, requestID); ferr != nil {
+			return VerifyResult{}, ferr
+		}
 		return VerifyResult{}, err
 	}
 	profile, err := s.profiles.GetActive(ctx, auth.Tenant.ID, subject.ID)

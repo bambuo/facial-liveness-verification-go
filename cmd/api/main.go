@@ -3,11 +3,14 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -23,6 +26,12 @@ import (
 	"facial-liveness-verification-go/internal/adapter/web"
 	"facial-liveness-verification-go/internal/app"
 	"facial-liveness-verification-go/internal/config"
+	"facial-liveness-verification-go/internal/port"
+)
+
+var (
+	buildVersion = "dev"
+	buildCommit  = "unknown"
 )
 
 func main() {
@@ -63,6 +72,11 @@ func run() error {
 	}
 	defer engine.Close()
 
+	modelHash, err := modelFingerprint(cfg.Face.ModelDir)
+	if err != nil {
+		return err
+	}
+
 	clk := clock.System{}
 	validator, err := sec.NewValidator(cfg.Auth.DevSigningKey)
 	if err != nil {
@@ -85,11 +99,16 @@ func run() error {
 	}
 
 	auditor := app.NewAuditor(repo.Audits(), clk)
-	support := app.NewVerificationSupport(challengeStore, repo.Sessions(), repo.Subjects(), issuer, auditor, clk)
+	var guard port.LivenessGuard
+	if cfg.Guard.Enabled {
+		guard = redis.NewLivenessGuard(rdb, cfg.Guard.FailureLimit, cfg.Guard.WindowSeconds, cfg.Guard.LockSeconds)
+	}
+	support := app.NewVerificationSupport(challengeStore, repo.Sessions(), repo.Subjects(), issuer, auditor, clk, guard)
 	actionSvc := app.NewActionService(engine)
 	challengeSvc := app.NewChallengeService(challengeStore, repo.Sessions(), auditor, clk, time.Duration(cfg.Redis.ChallengeTTLSeconds)*time.Second)
 	enrollSvc := app.NewEnrollService(support, actionSvc, engine, encryptor, repo.Subjects(), repo.Profiles(), auditor, clk)
 	verifySvc := app.NewVerifyService(support, actionSvc, engine, encryptor, repo.Subjects(), repo.Profiles())
+	livenessSvc := app.NewLivenessService(support, actionSvc, engine)
 	subjectSvc := app.NewSubjectService(repo.Subjects(), repo.Profiles(), repo.Index(), storage, repo.Audits(), clk)
 	authenticator := app.NewAuthenticator(validator, repo.Tenants(), quotaStore, cfg.BasePolicy())
 
@@ -109,8 +128,12 @@ func run() error {
 		Verify:        verifySvc,
 		Subjects:      subjectSvc,
 		Support:       support,
+		Liveness:      livenessSvc,
 		Issuer:        issuer,
 		EngineVersion: engine.ModelVersion(),
+		BuildVersion:  buildVersion,
+		BuildCommit:   buildCommit,
+		ModelHash:     modelHash,
 		DBPing:        func(ctx context.Context) error { return repo.Pool.Ping(ctx) },
 		RedisPing:     func(ctx context.Context) error { return rdb.Ping(ctx).Err() },
 	})
@@ -122,7 +145,11 @@ func run() error {
 	}
 	errCh := make(chan error, 1)
 	go func() {
-		slog.Info("HTTP 服务已启动", "addr", cfg.HTTPAddr, "engine", engine.ModelVersion(), "env", cfg.Env)
+		slog.Info("HTTP 服务已启动",
+			"addr", cfg.HTTPAddr, "env", cfg.Env, "version", buildVersion, "commit", buildCommit,
+			"engine", engine.ModelVersion(), "model_sha256", modelHash, "config_sha256", cfg.Fingerprint(),
+			"liveness_threshold", cfg.Face.LivenessThreshold, "actions_count", cfg.Face.ActionsCount,
+			"frames_per_action", cfg.Face.FramesPerAction, "lab_mode", cfg.LabMode)
 		if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err
 		}
@@ -138,4 +165,21 @@ func run() error {
 		defer cancel()
 		return httpServer.Shutdown(shutdownCtx)
 	}
+}
+
+func modelFingerprint(dir string) (string, error) {
+	h := sha256.New()
+	for _, name := range []string{
+		"face_detection_yunet_2023mar.onnx",
+		"face_recognition_sface_2021dec.onnx",
+		"2.7_80x80_MiniFASNetV2.onnx",
+	} {
+		data, err := os.ReadFile(filepath.Join(dir, name))
+		if err != nil {
+			return "", err
+		}
+		_, _ = h.Write([]byte(name))
+		_, _ = h.Write(data)
+	}
+	return hex.EncodeToString(h.Sum(nil)), nil
 }

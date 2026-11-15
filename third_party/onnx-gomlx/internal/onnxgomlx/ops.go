@@ -226,21 +226,41 @@ func alignDynamicMatMulOperands(lhs, rhs *Node) (*Node, *Node) {
 //
 // Notice max/min values are optional, hence the special conversion code.
 // Optional inputs in ONNX are represented as empty strings, which result in nil Nodes.
-func (m *Model) convertClip(_ *protos.NodeProto, inputs []*Node) *Node {
-	// Check for nil inputs (optional parameters in ONNX can be empty string)
+func (m *Model) convertClip(node *protos.NodeProto, inputs []*Node) *Node {
+	// Optional inputs can be nil; opset < 11 encodes min/max as attributes.
 	hasMin := len(inputs) > 1 && inputs[1] != nil
 	hasMax := len(inputs) > 2 && inputs[2] != nil
-
-	if !hasMin && !hasMax {
+	var minN, maxN *Node
+	if hasMin {
+		minN = inputs[1]
+	} else if attr := GetNodeAttr(node, "min", false); attr != nil {
+		minN = Scalar(inputs[0].Graph(), inputs[0].DType(), clipAttrValue(attr))
+	}
+	if hasMax {
+		maxN = inputs[2]
+	} else if attr := GetNodeAttr(node, "max", false); attr != nil {
+		maxN = Scalar(inputs[0].Graph(), inputs[0].DType(), clipAttrValue(attr))
+	}
+	if minN == nil && maxN == nil {
 		return inputs[0]
 	}
-	if hasMin && !hasMax {
-		return m.convertBinaryOp(Max, inputs[0], inputs[1])
+	if minN != nil && maxN == nil {
+		return m.convertBinaryOp(Max, inputs[0], minN)
 	}
-	if !hasMin && hasMax {
-		return m.convertBinaryOp(Min, inputs[0], inputs[2])
+	if minN == nil {
+		return m.convertBinaryOp(Min, inputs[0], maxN)
 	}
-	return m.convertBinaryOp(Min, inputs[2], m.convertBinaryOp(Max, inputs[0], inputs[1]))
+	return m.convertBinaryOp(Min, maxN, m.convertBinaryOp(Max, inputs[0], minN))
+}
+
+// clipAttrValue 读取 opset<11 的 Clip min/max 属性。
+func clipAttrValue(attr *protos.AttributeProto) float64 {
+	switch attr.Type {
+	case protos.AttributeProto_INT:
+		return float64(attr.I)
+	default:
+		return float64(attr.F)
+	}
 }
 
 // convertLeakyRelu converts an ONNX LeakyRelu node to a GoMLX node.

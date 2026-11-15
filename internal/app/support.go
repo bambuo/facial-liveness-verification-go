@@ -51,15 +51,25 @@ type VerificationSupport struct {
 	issuer     port.TokenIssuer
 	audit      *Auditor
 	clock      port.Clock
+	guard      port.LivenessGuard
 }
 
 // NewVerificationSupport 构造上传用例共享逻辑。
-func NewVerificationSupport(challenges port.ChallengeStore, sessions port.SessionRepo, subjects port.SubjectRepo, issuer port.TokenIssuer, audit *Auditor, clock port.Clock) *VerificationSupport {
-	return &VerificationSupport{challenges: challenges, sessions: sessions, subjects: subjects, issuer: issuer, audit: audit, clock: clock}
+func NewVerificationSupport(challenges port.ChallengeStore, sessions port.SessionRepo, subjects port.SubjectRepo, issuer port.TokenIssuer, audit *Auditor, clock port.Clock, guard port.LivenessGuard) *VerificationSupport {
+	return &VerificationSupport{challenges: challenges, sessions: sessions, subjects: subjects, issuer: issuer, audit: audit, clock: clock, guard: guard}
 }
 
 // BeginUpload 原子消费 challenge、校验绑定并推进会话到 processing。
 func (s *VerificationSupport) BeginUpload(ctx context.Context, auth *AuthContext, challengeID, deviceID string, mode domain.MatchMode) (*domain.Challenge, *domain.Session, error) {
+	if s.guard != nil {
+		locked, err := s.guard.IsLocked(ctx, auth.Tenant.ID, auth.Claims.Subject, deviceID)
+		if err != nil {
+			return nil, nil, domain.New(domain.CodeServiceUnavailable, "活体风控不可用")
+		}
+		if locked {
+			return nil, nil, domain.New(domain.CodeQuotaExceeded, "活体失败次数过多，请稍后再试")
+		}
+	}
 	challenge, err := s.challenges.Consume(ctx, challengeID)
 	if err != nil {
 		return nil, nil, domain.New(domain.CodeServiceUnavailable, "challenge 存储不可用")
@@ -99,6 +109,18 @@ func (s *VerificationSupport) BeginUpload(ctx context.Context, auth *AuthContext
 		return nil, nil, domain.New(domain.CodeServiceUnavailable, "会话更新失败")
 	}
 	return challenge, session, nil
+}
+
+// RecordLiveness 记录活体结果：real 清零，spoof/fuzzy 累计并按阈值锁定。
+func (s *VerificationSupport) RecordLiveness(ctx context.Context, auth *AuthContext, deviceID string, status domain.LivenessStatus) {
+	if s.guard == nil {
+		return
+	}
+	if status == domain.LivenessReal {
+		_ = s.guard.Reset(ctx, auth.Tenant.ID, auth.Claims.Subject, deviceID)
+		return
+	}
+	_, _ = s.guard.RecordFailure(ctx, auth.Tenant.ID, auth.Claims.Subject, deviceID)
 }
 
 // Finalize 更新会话结果；passed 时签发结果令牌并写审计。

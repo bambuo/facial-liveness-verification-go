@@ -2,6 +2,7 @@ package domain
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"strings"
 )
@@ -40,13 +41,13 @@ func (p Policy) BuildActions(r *rand.Rand) []string {
 }
 
 // ApplyPolicy 以全局策略为基线，用租户 policy_json 覆盖已知键。
-func ApplyPolicy(base Policy, raw []byte) Policy {
+func ApplyPolicy(base Policy, raw []byte) (Policy, error) {
 	if len(raw) == 0 || strings.TrimSpace(string(raw)) == "{}" {
-		return clampPolicy(base)
+		return validatePolicy(clampPolicy(base))
 	}
 	var m map[string]json.RawMessage
 	if err := json.Unmarshal(raw, &m); err != nil {
-		return clampPolicy(base)
+		return Policy{}, fmt.Errorf("租户策略不是合法 JSON: %w", err)
 	}
 	if v := getFloat(m, "match_threshold"); v != nil {
 		base.MatchThreshold = *v
@@ -81,7 +82,45 @@ func ApplyPolicy(base Policy, raw []byte) Policy {
 	if v := getInt(m, "max_requests_per_minute"); v != nil {
 		base.MaxRequestsPerMinute = *v
 	}
-	return clampPolicy(base)
+	return validatePolicy(clampPolicy(base))
+}
+
+// validatePolicy 拒绝越界阈值与不可能的帧数组合。
+func validatePolicy(p Policy) (Policy, error) {
+	check := func(key string, v, min, max float64) error {
+		if v < min || v > max {
+			return fmt.Errorf("%s 必须在 [%g, %g]，当前 %g", key, min, max, v)
+		}
+		return nil
+	}
+	for _, item := range []struct {
+		key      string
+		value    float64
+		min, max float64
+	}{
+		{"match_threshold", p.MatchThreshold, 0, 1},
+		{"liveness_threshold", p.LivenessThreshold, 0, 1},
+		{"live_ratio_threshold", p.LiveRatioThreshold, 0, 1},
+		{"action_pass_ratio", p.ActionPassRatio, 0, 1},
+	} {
+		if err := check(item.key, item.value, item.min, item.max); err != nil {
+			return Policy{}, err
+		}
+	}
+	if p.YawThreshold <= 0 || p.StraightYaw <= 0 || p.MouthOpenRatio <= 0 {
+		return Policy{}, fmt.Errorf("yaw_threshold、straight_yaw、mouth_open_ratio 必须大于 0")
+	}
+	if p.MaxRequestsPerMinute <= 0 {
+		return Policy{}, fmt.Errorf("max_requests_per_minute 必须大于 0")
+	}
+	actions := 1
+	if p.ActionVerifyEnabled {
+		actions = p.ActionsCount
+	}
+	if p.FramesPerAction*actions > 15 {
+		return Policy{}, fmt.Errorf("frames_per_action × 动作数不能超过 15，当前 %d × %d", p.FramesPerAction, actions)
+	}
+	return p, nil
 }
 
 func clampPolicy(p Policy) Policy {

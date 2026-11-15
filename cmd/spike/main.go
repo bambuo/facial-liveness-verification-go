@@ -56,8 +56,22 @@ func main() {
 	}
 	start := time.Now()
 	data := make([]float32, n)
+	divisor := float32(1)
+	zero := false
+	if len(os.Args) > 3 {
+		switch os.Args[3] {
+		case "norm":
+			divisor = 100
+		case "zero":
+			zero = true
+		}
+	}
 	for i := range data {
-		data[i] = float32((i % 97) - 48)
+		if zero {
+			data[i] = 0
+			continue
+		}
+		data[i] = float32((i%97)-48) / divisor
 	}
 	input := tensors.FromFlatDataAndDimensions(data, shape...)
 

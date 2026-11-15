@@ -123,7 +123,9 @@ func (e *Engine) ExtractLargest(frames [][]byte) ([]float32, error) {
 // CheckLiveness 多帧活体投票：任一攻击帧为 spoof，否则按 live 占比判 real/fuzzy。
 func (e *Engine) CheckLiveness(frames [][]byte, threshold, liveRatioThreshold float64) (domain.LivenessVote, error) {
 	live, attack := 0, 0
+	faces := 0
 	minScore := 1.0
+	scores := make([]float64, 0, len(frames))
 	for _, frame := range frames {
 		img, err := decodeImage(frame)
 		if err != nil {
@@ -135,8 +137,13 @@ func (e *Engine) CheckLiveness(frames [][]byte, threshold, liveRatioThreshold fl
 		}
 		box := largestFace(boxes)
 		if box == nil {
+			// 无脸帧同样计为攻击证据，避免攻击序列靠跳过失败帧通过活体。
+			scores = append(scores, 0)
+			minScore = 0
+			attack++
 			continue
 		}
+		faces++
 		crop, err := cropWithMargin(img, *box, e.cfg.LivenessCropScale, fasInputSize)
 		if err != nil {
 			return domain.LivenessVote{}, err
@@ -147,6 +154,14 @@ func (e *Engine) CheckLiveness(frames [][]byte, threshold, liveRatioThreshold fl
 		}
 		probs := softmax(flatF32(out[0]))
 		score := probs[liveIndex]
+		if math.IsNaN(score) || math.IsInf(score, 0) {
+			score = 0
+			scores = append(scores, score)
+			minScore = 0
+			attack++
+			continue
+		}
+		scores = append(scores, score)
 		minScore = math.Min(minScore, score)
 		if score >= threshold || argmax(probs) == liveIndex {
 			live++
@@ -154,10 +169,16 @@ func (e *Engine) CheckLiveness(frames [][]byte, threshold, liveRatioThreshold fl
 			attack++
 		}
 	}
+	if faces == 0 {
+		return domain.LivenessVote{}, domain.Of(domain.CodeNoFace)
+	}
 	vote, ok := domain.AggregateLiveness(live, attack, minScore, domain.Policy{LiveRatioThreshold: liveRatioThreshold})
 	if !ok {
 		return domain.LivenessVote{}, domain.Of(domain.CodeNoFace)
 	}
+	vote.FrameScores = scores
+	vote.LiveFrames = live
+	vote.AttackFrames = attack
 	return vote, nil
 }
 

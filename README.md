@@ -35,7 +35,7 @@ internal/domain                    实体、值对象、领域规则
 ## 前置条件
 
 - Go 1.27 及以上。
-- PostgreSQL 16 + pgvector、Redis 7。
+- PostgreSQL 16、Redis 7。
 - 三个 ONNX 模型：`face_detection_yunet_2023mar.onnx`、`face_recognition_sface_2021dec.onnx`、`2.7_80x80_MiniFASNetV2.onnx`，放在 `models/` 或通过 `FACE_MODEL_DIR` 指定。
 
 ## 快速开始

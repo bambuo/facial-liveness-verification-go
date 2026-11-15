@@ -98,6 +98,21 @@ export FACE_MATCH_THRESHOLD=0.36
 
 说明：代码默认值仍保持与 .NET 基线一致的 0.85，便于语义对账；生产高风险环境通过上述环境变量切到 0.91。该档位仍不构成商业 PAD 合规结论。
 
+### Lab 测试接口
+
+送测/预测试时启用（`LAB_MODE` 在 production 会拒绝启动）：
+
+```bash
+export APP_ENV=staging
+export LAB_MODE=true
+```
+
+- `GET /version`：返回构建版本、模型 SHA-256、配置 SHA-256、阈值与动作参数；
+- `POST /v1/liveness-checks`：返回 `pad_score`、`pad_threshold`、`pad_decision`、`frame_scores`、`attack_frames`、`action_checked`、`action_passed`、`model_version`、`config_version`、`device_id` 等冻结证据；
+- 可选表单字段 `verify_actions=true`：同时校验 challenge 的动作序列，完整复现生产 enroll/verify 的决策链路。
+
+该接口仅用于测试环境；生产不注册。详细字段见 [识别质量评测](docs/功能/05-识别质量评测.md) §7.3。
+
 ## 验证结果（本机，2026-11-15）
 
 | 项 | 结果 |

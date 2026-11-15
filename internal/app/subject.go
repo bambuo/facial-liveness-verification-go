@@ -15,15 +15,14 @@ import (
 type SubjectService struct {
 	subjects port.SubjectRepo
 	profiles port.ProfileRepo
-	index    port.FaceIndex
 	storage  port.ObjectStorage
 	audits   port.AuditRepo
 	clock    port.Clock
 }
 
 // NewSubjectService 构造主体用例。
-func NewSubjectService(subjects port.SubjectRepo, profiles port.ProfileRepo, index port.FaceIndex, storage port.ObjectStorage, audits port.AuditRepo, clock port.Clock) *SubjectService {
-	return &SubjectService{subjects: subjects, profiles: profiles, index: index, storage: storage, audits: audits, clock: clock}
+func NewSubjectService(subjects port.SubjectRepo, profiles port.ProfileRepo, storage port.ObjectStorage, audits port.AuditRepo, clock port.Clock) *SubjectService {
+	return &SubjectService{subjects: subjects, profiles: profiles, storage: storage, audits: audits, clock: clock}
 }
 
 // Get 返回主体状态与 active 档案模型版本。
@@ -45,7 +44,7 @@ func (s *SubjectService) Get(ctx context.Context, tenantID uuid.UUID, externalID
 	return subject, &profile.ModelVersion, nil
 }
 
-// Delete 清理档案、向量成员、原图与可删除审计字段。
+// Delete 清理档案、原图与可删除审计字段。
 func (s *SubjectService) Delete(ctx context.Context, tenantID uuid.UUID, externalID, actor string, requestID *string) (uuid.UUID, map[string]bool, error) {
 	subject, err := s.subjects.GetByExternal(ctx, tenantID, externalID)
 	if err != nil {
@@ -71,11 +70,6 @@ func (s *SubjectService) Delete(ctx context.Context, tenantID uuid.UUID, externa
 	} else {
 		cleaned["profile"] = false
 	}
-
-	if err := s.index.DeleteSubject(ctx, tenantID, subject.ID); err != nil {
-		return uuid.Nil, nil, domain.New(domain.CodeServiceUnavailable, "索引清理失败")
-	}
-	cleaned["gallery_members"] = profile != nil
 
 	logs, err := s.audits.ListByResource(ctx, tenantID, "subject:"+subject.ID.String())
 	if err != nil {

@@ -3,8 +3,7 @@
 set -euo pipefail
 
 SQL_DIR="/sql"
-ORDER=(face_tenants face_tenant_keys face_subjects face_profiles face_galleries \
-       face_gallery_members face_verification_sessions face_documents face_consents \
+ORDER=(face_tenants face_tenant_keys face_subjects face_profiles face_verification_sessions face_documents face_consents \
        face_audit_logs face_operations)
 
 for name in "${ORDER[@]}"; do

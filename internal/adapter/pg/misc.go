@@ -20,9 +20,6 @@ type DocumentRepo struct{ r *Repo }
 // KeyRepo 是租户密钥密文仓储适配器。
 type KeyRepo struct{ r *Repo }
 
-// FaceIndex 是 pgvector 成员清理适配器。
-type FaceIndex struct{ r *Repo }
-
 // Add 写入审计并回填自增 ID。
 func (ar *AuditRepo) Add(ctx context.Context, log *domain.AuditLog) error {
 	return ar.r.Pool.QueryRow(ctx, `
@@ -134,14 +131,5 @@ func (kr *KeyRepo) Insert(ctx context.Context, tenantID uuid.UUID, version int, 
 		INSERT INTO face_tenant_keys (id, tenant_id, key_version, key_cipher, status, created_at)
 		VALUES ($1::uuid,$2::uuid,$3,$4,'active',now()) ON CONFLICT (tenant_id, key_version) DO NOTHING`,
 		uuid.New().String(), tenantID.String(), version, cipher)
-	return err
-}
-
-// DeleteSubject 删除主体在租户全部 gallery 的向量成员。
-func (fi *FaceIndex) DeleteSubject(ctx context.Context, tenantID, subjectID uuid.UUID) error {
-	_, err := fi.r.Pool.Exec(ctx, `
-		DELETE FROM face_gallery_members WHERE subject_id=$1::uuid
-		AND gallery_id IN (SELECT id FROM face_galleries WHERE tenant_id=$2::uuid)`,
-		subjectID.String(), tenantID.String())
 	return err
 }

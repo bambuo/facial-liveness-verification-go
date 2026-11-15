@@ -1,4 +1,4 @@
-// Package pg 提供 PostgreSQL 仓储与 pgvector 成员清理。
+// Package pg 提供 PostgreSQL 仓储。
 package pg
 
 import (
@@ -50,5 +50,3 @@ func (r *Repo) Documents() *DocumentRepo { return &DocumentRepo{r: r} }
 // Keys 返回租户密钥仓储。
 func (r *Repo) Keys() *KeyRepo { return &KeyRepo{r: r} }
 
-// Index 返回向量索引适配器。
-func (r *Repo) Index() *FaceIndex { return &FaceIndex{r: r} }

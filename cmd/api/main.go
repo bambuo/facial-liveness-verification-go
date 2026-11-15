@@ -109,7 +109,7 @@ func run() error {
 	enrollSvc := app.NewEnrollService(support, actionSvc, engine, encryptor, repo.Subjects(), repo.Profiles(), auditor, clk)
 	verifySvc := app.NewVerifyService(support, actionSvc, engine, encryptor, repo.Subjects(), repo.Profiles())
 	livenessSvc := app.NewLivenessService(support, actionSvc, engine)
-	subjectSvc := app.NewSubjectService(repo.Subjects(), repo.Profiles(), repo.Index(), storage, repo.Audits(), clk)
+	subjectSvc := app.NewSubjectService(repo.Subjects(), repo.Profiles(), storage, repo.Audits(), clk)
 	authenticator := app.NewAuthenticator(validator, repo.Tenants(), quotaStore, cfg.BasePolicy())
 
 	if cfg.IsDevelopment() && cfg.Auth.EnableDevToken {

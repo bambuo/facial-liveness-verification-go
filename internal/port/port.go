@@ -109,11 +109,6 @@ type TokenIssuer interface {
 	IssueDev(sub string) (token string, expiresAt time.Time, err error)
 }
 
-// FaceIndex 提供向量成员的合规清理。
-type FaceIndex interface {
-	DeleteSubject(ctx context.Context, tenantID, subjectID uuid.UUID) error
-}
-
 // ObjectStorage 是 S3 兼容对象存储。
 type ObjectStorage interface {
 	Put(ctx context.Context, key string, content []byte, contentType string) error

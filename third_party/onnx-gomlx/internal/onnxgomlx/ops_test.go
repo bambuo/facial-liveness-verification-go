@@ -231,6 +231,75 @@ func TestTile(t *testing.T) {
 	}, -1)
 }
 
+func TestTileDynamic(t *testing.T) {
+	backend, err := gobackend.New("")
+	require.NoError(t, err)
+	defer backend.Finalize()
+
+	exec := MustNewExec(backend, func(x, repeats *Node) *Node {
+		return onnxTileDynamic(x, repeats)
+	})
+	defer exec.Finalize()
+
+	t.Run("broadcast unit axis", func(t *testing.T) {
+		x := [][][]float32{{{1, 2, 3}}, {{4, 5, 6}}}
+		got := exec.MustExec1(x, []int64{1, 4, 1})
+		defer got.FinalizeAll()
+		require.Equal(t, []int{2, 4, 3}, got.Shape().Dimensions)
+		var flat []float32
+		got.MustConstFlatData(func(v any) { flat = v.([]float32) })
+		require.Equal(t, []float32{
+			1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3,
+			4, 5, 6, 4, 5, 6, 4, 5, 6, 4, 5, 6,
+		}, flat)
+	})
+
+	t.Run("general tiling", func(t *testing.T) {
+		x := [][]float32{{1, 2}, {3, 4}}
+		got := exec.MustExec1(x, []int64{3, 2})
+		defer got.FinalizeAll()
+		require.Equal(t, []int{6, 4}, got.Shape().Dimensions)
+		var flat []float32
+		got.MustConstFlatData(func(v any) { flat = v.([]float32) })
+		require.Equal(t, []float32{
+			1, 2, 1, 2,
+			3, 4, 3, 4,
+			1, 2, 1, 2,
+			3, 4, 3, 4,
+			1, 2, 1, 2,
+			3, 4, 3, 4,
+		}, flat)
+	})
+}
+
+func TestBroadcastStaticDimToDynamic(t *testing.T) {
+	backend, err := gobackend.New("")
+	require.NoError(t, err)
+	defer backend.Finalize()
+
+	exec := MustNewExec(backend, func(x, target *Node) *Node {
+		specs := []DimensionSpec{StaticDim(2), DynamicDim(target), StaticDim(3)}
+		return broadcastWithSpecs(x, specs)
+	})
+	defer exec.Finalize()
+
+	x := [][][]float32{make2D(50, 3), make2D(50, 3)}
+	got := exec.MustExec1(x, int64(50))
+	defer got.FinalizeAll()
+	require.Equal(t, []int{2, 50, 3}, got.Shape().Dimensions)
+}
+
+func make2D(rows, cols int) [][]float32 {
+	out := make([][]float32, rows)
+	for i := range out {
+		out[i] = make([]float32, cols)
+		for j := range out[i] {
+			out[i][j] = float32(i*cols + j)
+		}
+	}
+	return out
+}
+
 func TestRangeCount(t *testing.T) {
 	backend := testutil.BuildTestBackend()
 	testFn := func(start, limit, delta any, want int) {

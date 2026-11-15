@@ -110,20 +110,43 @@ func broadcastWithSpecs(operand *Node, specs []DimensionSpec) *Node {
 	// Rename dynamic input axes to match target specs while preserving runtime sizes;
 	// DynamicBroadcastInDim then expands size-1 axes and validates runtime size compatibility.
 	inputSpecs := make([]DimensionSpec, operand.Rank())
+	broadcastSpecs := make([]DimensionSpec, len(specs))
+	restoreSpecs := make([]DimensionSpec, len(specs))
+	copy(broadcastSpecs, specs)
+	copy(restoreSpecs, specs)
 	axes := make([]int, operand.Rank())
+	needsRestore := false
 	for axis := range inputSpecs {
 		axes[axis] = axis
 		dim := operand.Shape().Dim(axis)
+		if specs[axis].IsDynamic() {
+			// 目标为动态维：输入静态/动态都使用目标尺寸，才能把 1 广播到运行时目标。
+			inputSpecs[axis] = NamedDynamicDim(specs[axis].AxisName(), DimensionSize(operand, axis))
+			continue
+		}
 		if dim >= 0 {
 			inputSpecs[axis] = StaticDim(dim)
-		} else if specs[axis].IsStatic() {
-			inputSpecs[axis] = NamedDynamicDim(shapes.UniqueAxisName("#onnx_bcast_in"), DimensionSize(operand, axis))
-		} else {
-			inputSpecs[axis] = NamedDynamicDim(specs[axis].AxisName(), DimensionSize(operand, axis))
+			continue
 		}
+		// 动态输入广播到静态目标：DynamicBroadcastInDim 要求输出轴保持动态。
+		target := specs[axis].Static()
+		if target == 1 {
+			// 广播规则：目标 1 不改变输入尺寸，输出沿用输入动态维。
+			broadcastSpecs[axis] = NamedDynamicDim(shapes.UniqueAxisName("#onnx_bcast_in"), DimensionSize(operand, axis))
+			restoreSpecs[axis] = broadcastSpecs[axis]
+		} else {
+			// 目标 >1：先广播到常量目标尺寸，最后按目标 specs reshape 回静态形状。
+			needsRestore = true
+			broadcastSpecs[axis] = NamedDynamicDim(shapes.UniqueAxisName("#onnx_bcast_in"), Scalar(operand.Graph(), dtypes.Int64, int64(target)))
+		}
+		inputSpecs[axis] = NamedDynamicDim(broadcastSpecs[axis].AxisName(), DimensionSize(operand, axis))
 	}
 	operand = DynamicReshape(operand, inputSpecs...)
-	return DynamicBroadcastInDim(operand, axes, specs...)
+	out := DynamicBroadcastInDim(operand, axes, broadcastSpecs...)
+	if needsRestore {
+		out = DynamicReshape(out, restoreSpecs...)
+	}
+	return out
 }
 
 func runtimeExpand(operand, shape *Node) *Node {

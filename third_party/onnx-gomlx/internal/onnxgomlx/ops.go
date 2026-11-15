@@ -1548,10 +1548,55 @@ func convertTile(m *Model, convertedOutputs map[string]*Node, node *protos.NodeP
 	}
 	repeatsT, err := m.materializeConstantExpression(node.Input[1], convertedOutputs)
 	if err != nil {
-		panic(errors.WithMessagef(err, "while converting 'repeats' to a static value for node %s", NodeToString(node)))
+		// ONNX 允许 repeats 在运行时计算；转入动态形状实现，避免把动态值错误地要求为常量。
+		return onnxTileDynamic(operand, repeatsN)
 	}
 	repeats := tensorToInts(repeatsT)
 	return onnxTile(operand, repeats)
+}
+
+// onnxTileDynamic 实现 repeats 为运行时张量的 ONNX Tile。
+// 先按轴插入长度为 1 的新轴，动态广播到 [r0,d0,r1,d1,...]，再 reshape 为 [d0*r0,d1*r1,...]。
+func onnxTileDynamic(operand, repeats *Node) *Node {
+	rank := operand.Rank()
+	if rank == 0 {
+		return operand
+	}
+	if repeats.Rank() != 1 {
+		exceptions.Panicf("Tile(input, repeats): repeats must be a 1D tensor, got %s", repeats.Shape())
+	}
+	repeatsLen := repeats.Shape().Dim(0)
+	if repeatsLen < 0 {
+		exceptions.Panicf("Tile(input, repeats): repeats length must be statically known, got %s", repeats.Shape())
+	}
+	if repeatsLen != rank {
+		exceptions.Panicf("Tile(input, repeats): len(repeats)=%d must equal input rank=%d", repeatsLen, rank)
+	}
+
+	insertAxes := make([]int, rank)
+	for i := range insertAxes {
+		insertAxes[i] = i
+	}
+	expanded := InsertAxes(operand, insertAxes...)
+
+	// 交错轴：[r0,d0,r1,d1,...]；偶数轴广播 repeats，奇数轴保留输入维度。
+	targetSpecs := make([]DimensionSpec, 2*rank)
+	mergedSpecs := make([]DimensionSpec, rank)
+	broadcastAxes := make([]int, 2*rank)
+	for i := range rank {
+		broadcastAxes[i] = i
+		broadcastAxes[rank+i] = rank + i
+	}
+	dimDType := DimensionSize(operand, 0).DType()
+	for i := range rank {
+		repeat := Squeeze(Slice(repeats, AxisRange(i, i+1)), 0)
+		repeat = ConvertDType(repeat, dimDType)
+		targetSpecs[2*i] = DynamicDim(repeat)
+		targetSpecs[2*i+1] = DimensionSpecFor(operand, i)
+		mergedSpecs[i] = DynamicDim(Mul(repeat, DimensionSize(operand, i)))
+	}
+	broadcast := DynamicBroadcastInDim(expanded, broadcastAxes, targetSpecs...)
+	return DynamicReshape(broadcast, mergedSpecs...)
 }
 
 func onnxTile(operand *Node, repeats []int) *Node {

@@ -28,10 +28,7 @@ func (s *Server) recoverMiddleware(next http.Handler) http.Handler {
 
 func (s *Server) requestIDMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := r.Header.Get("X-Request-Id")
-		if id == "" {
-			id = newRequestID()
-		}
+		id := normalizeRequestID(r.Header.Get("X-Request-Id"))
 		w.Header().Set("X-Request-Id", id)
 		next.ServeHTTP(w, r.WithContext(withRequestID(r.Context(), id)))
 	})

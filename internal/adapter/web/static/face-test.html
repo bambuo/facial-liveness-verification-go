@@ -932,6 +932,12 @@
         return (crypto.randomUUID && crypto.randomUUID()) || "id-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
     }
 
+    function reqId() {
+        const bytes = new Uint8Array(10);
+        crypto.getRandomValues(bytes);
+        return "req_" + Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
     function toast(msg, ms) {
         const t = $("toast");
         t.textContent = msg;
@@ -971,7 +977,7 @@
 
     /* ================= 平台 API（真实契约调用） ================= */
     async function api(method, path, body, isForm, retried) {
-        const headers = {"X-Request-Id": uuid()};
+        const headers = {"X-Request-Id": reqId()};
         if (state.jwt) headers["Authorization"] = "Bearer " + state.jwt;
         if (!isForm) headers["Content-Type"] = "application/json";
         if (method !== "GET") headers["Idempotency-Key"] = uuid();

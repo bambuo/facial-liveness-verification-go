@@ -71,7 +71,8 @@ func TestVerifyStraightFails(t *testing.T) {
 	}
 }
 
-func TestVerifyMouthRelativeToBaseline(t *testing.T) {	var metrics []domain.FrameMetric
+func TestVerifyMouthRelativeToBaseline(t *testing.T) {
+	var metrics []domain.FrameMetric
 	for i := 0; i < 5; i++ {
 		metrics = append(metrics, domain.FrameMetric{FaceFound: true, YawRatio: 0.05, MouthRatio: 0.4})
 	}

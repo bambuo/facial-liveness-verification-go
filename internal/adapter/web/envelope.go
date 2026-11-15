@@ -71,6 +71,17 @@ func newRequestID() string {
 	return "req_" + hex.EncodeToString(buf)
 }
 
+// normalizeRequestID 只接受契约格式 req_ + 20 位十六进制，其余重新生成。
+func normalizeRequestID(id string) string {
+	if len(id) != 24 || id[:4] != "req_" {
+		return newRequestID()
+	}
+	if _, err := hex.DecodeString(id[4:]); err != nil {
+		return newRequestID()
+	}
+	return id
+}
+
 func withRequestID(ctx context.Context, id string) context.Context {
 	return context.WithValue(ctx, ctxRequestID, id)
 }

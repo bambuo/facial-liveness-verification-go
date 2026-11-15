@@ -71,3 +71,16 @@ func TestUploadErrorMapsMaxBytes(t *testing.T) {
 		t.Fatalf("expected SERVICE_UNAVAILABLE, got %v", err)
 	}
 }
+
+func TestNormalizeRequestID(t *testing.T) {
+	valid := "req_0123456789abcdef0123"
+	if got := normalizeRequestID(valid); got != valid {
+		t.Fatalf("valid id changed: %s", got)
+	}
+	for _, in := range []string{"", "3e30e6fb-b465-4ea1-b119-5ec74620ca0f", "req_nothex", "req_0123"} {
+		got := normalizeRequestID(in)
+		if len(got) != 24 || got[:4] != "req_" {
+			t.Fatalf("normalized id invalid for %q: %s", in, got)
+		}
+	}
+}

@@ -1,0 +1,15 @@
+{
+  "sample_rate": 16000,
+  "frames": 100,
+  "mel_bins": 80,
+  "log_guard": "add",
+  "log_guard_value": 5.960464477539063e-08,
+  "frame_length_ms": 25.0,
+  "frame_shift_ms": 10.0,
+  "snip_edges": false,
+  "preemph": 0.97,
+  "low_freq": 20.0,
+  "high_freq": -400.0,
+  "window_type": "povey",
+  "wav_sha256": "8c3c49b6fa18dd019240aec5ae5ed63e8043965ad195be4bf246f8f30fae0d29"
+}

@@ -357,11 +357,80 @@ func TestMaxPoolOptionalIndices(t *testing.T) {
 	got := exec.MustExec1([][][]float32{{{1, 2, 3, 4}}})
 	defer got.FinalizeAll()
 	require.Equal(t, [][][]float32{{{2, 3, 4}}}, got.Value())
+}
 
-	// 非空第二输出表示模型确实请求 Indices，目前应明确报错而不是静默缺少输出。
-	require.Panics(t, func() {
-		convertMaxPool(nil, nil, &protos.NodeProto{Output: []string{"Y", "I"}}, nil)
+func TestMaxPoolIndices(t *testing.T) {
+	backend, err := gobackend.New("")
+	require.NoError(t, err)
+	defer backend.Finalize()
+
+	run := func(dynamic bool, storageOrder int64) (any, any) {
+		node := &protos.NodeProto{
+			Output: []string{"Y", "I"},
+			Attribute: []*protos.AttributeProto{
+				{Name: "kernel_shape", Type: protos.AttributeProto_INTS, Ints: []int64{2, 2}},
+				{Name: "strides", Type: protos.AttributeProto_INTS, Ints: []int64{2, 2}},
+				{Name: "ceil_mode", Type: protos.AttributeProto_INT, I: 1},
+				{Name: "storage_order", Type: protos.AttributeProto_INT, I: storageOrder},
+			},
+		}
+		exec := MustNewExec(backend, func(x *Node) []*Node {
+			outputs := map[string]*Node{}
+			y := convertMaxPool(nil, outputs, node, []*Node{x})
+			require.NotNil(t, outputs["I"])
+			return []*Node{y, outputs["I"]}
+		})
+		if dynamic {
+			exec = exec.WithDynamicAxes([]string{"batch", "", "h", "w"})
+		}
+		defer exec.Finalize()
+		outs := exec.MustExec([][][][]float32{{{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}}})
+		defer outs[0].FinalizeAll()
+		defer outs[1].FinalizeAll()
+		return outs[0].Value(), outs[1].Value()
+	}
+
+	for _, tc := range []struct {
+		name    string
+		dynamic bool
+		storage int64
+		wantIdx [][][][]int64
+	}{
+		{name: "static row major", storage: 0, wantIdx: [][][][]int64{{{{4, 5}, {7, 8}}}}},
+		{name: "static column major", storage: 1, wantIdx: [][][][]int64{{{{4, 7}, {5, 8}}}}},
+		{name: "dynamic row major", dynamic: true, storage: 0, wantIdx: [][][][]int64{{{{4, 5}, {7, 8}}}}},
+		{name: "dynamic column major", dynamic: true, storage: 1, wantIdx: [][][][]int64{{{{4, 7}, {5, 8}}}}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			values, indices := run(tc.dynamic, tc.storage)
+			require.Equal(t, [][][][]float32{{{{5, 6}, {8, 9}}}}, values)
+			require.Equal(t, tc.wantIdx, indices)
+		})
+	}
+}
+
+func TestMaxPoolIndicesTieBreak(t *testing.T) {
+	backend, err := gobackend.New("")
+	require.NoError(t, err)
+	defer backend.Finalize()
+
+	node := &protos.NodeProto{
+		Output: []string{"Y", "I"},
+		Attribute: []*protos.AttributeProto{
+			{Name: "kernel_shape", Type: protos.AttributeProto_INTS, Ints: []int64{2, 2}},
+			{Name: "strides", Type: protos.AttributeProto_INTS, Ints: []int64{2, 2}},
+		},
+	}
+	exec := MustNewExec(backend, func(x *Node) []*Node {
+		outputs := map[string]*Node{}
+		return []*Node{convertMaxPool(nil, outputs, node, []*Node{x}), outputs["I"]}
 	})
+	defer exec.Finalize()
+	outs := exec.MustExec([][][][]float32{{{{1, 1}, {1, 1}}}})
+	defer outs[0].FinalizeAll()
+	defer outs[1].FinalizeAll()
+	require.Equal(t, [][][][]float32{{{{1}}}}, outs[0].Value())
+	require.Equal(t, [][][][]int64{{{{0}}}}, outs[1].Value())
 }
 
 func TestGlobalAveragePoolDynamic(t *testing.T) {
@@ -395,4 +464,55 @@ func flatten4D(v [][][][]float32) []float32 {
 		}
 	}
 	return out
+}
+
+func TestMaxPoolIndicesDilationAndPadding(t *testing.T) {
+	backend, err := gobackend.New("")
+	require.NoError(t, err)
+	defer backend.Finalize()
+
+	run := func(node *protos.NodeProto, input [][][][]float32) (any, any) {
+		exec := MustNewExec(backend, func(x *Node) []*Node {
+			outputs := map[string]*Node{}
+			y := convertMaxPool(nil, outputs, node, []*Node{x})
+			return []*Node{y, outputs["I"]}
+		})
+		defer exec.Finalize()
+		outs := exec.MustExec(input)
+		defer outs[0].FinalizeAll()
+		defer outs[1].FinalizeAll()
+		return outs[0].Value(), outs[1].Value()
+	}
+
+	t.Run("dilation ceil", func(t *testing.T) {
+		node := &protos.NodeProto{
+			Output: []string{"Y", "I"},
+			Attribute: []*protos.AttributeProto{
+				{Name: "kernel_shape", Type: protos.AttributeProto_INTS, Ints: []int64{2, 2}},
+				{Name: "strides", Type: protos.AttributeProto_INTS, Ints: []int64{1, 1}},
+				{Name: "dilations", Type: protos.AttributeProto_INTS, Ints: []int64{2, 2}},
+				{Name: "ceil_mode", Type: protos.AttributeProto_INT, I: 1},
+			},
+		}
+		input := [][][][]float32{{{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}}}}
+		values, indices := run(node, input)
+		require.Equal(t, [][][][]float32{{{{11, 12}, {15, 16}}}}, values)
+		require.Equal(t, [][][][]int64{{{{10, 11}, {14, 15}}}}, indices)
+	})
+
+	t.Run("padding excluded", func(t *testing.T) {
+		node := &protos.NodeProto{
+			Output: []string{"Y", "I"},
+			Attribute: []*protos.AttributeProto{
+				{Name: "kernel_shape", Type: protos.AttributeProto_INTS, Ints: []int64{3, 3}},
+				{Name: "strides", Type: protos.AttributeProto_INTS, Ints: []int64{3, 3}},
+				{Name: "pads", Type: protos.AttributeProto_INTS, Ints: []int64{1, 1, 1, 1}},
+				{Name: "ceil_mode", Type: protos.AttributeProto_INT, I: 1},
+			},
+		}
+		input := [][][][]float32{{{{1, 2}, {3, 4}}}}
+		values, indices := run(node, input)
+		require.Equal(t, [][][][]float32{{{{4}}}}, values)
+		require.Equal(t, [][][][]int64{{{{3}}}}, indices)
+	})
 }

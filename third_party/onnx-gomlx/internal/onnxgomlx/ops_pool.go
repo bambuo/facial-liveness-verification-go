@@ -7,6 +7,7 @@ import (
 	"github.com/gomlx/compute"
 	"github.com/gomlx/compute-onnx/support/protos"
 	"github.com/gomlx/compute/dtypes"
+	"github.com/gomlx/compute/shapes"
 	"github.com/gomlx/exceptions"
 	. "github.com/gomlx/gomlx/core/graph"
 	timage "github.com/gomlx/gomlx/core/tensors/images"
@@ -25,6 +26,7 @@ type poolGeometry struct {
 	startNodes []*Node
 	endNodes   []*Node
 	outNodes   []*Node
+	outDims    []int
 	dynamic    bool
 }
 
@@ -77,10 +79,7 @@ func convertAveragePool(_ *Model, _ map[string]*Node, node *protos.NodeProto, in
 //
 // See ONNX documentation in:
 // https://onnx.ai/onnx/operators/onnx__MaxPool.html
-func convertMaxPool(_ *Model, _ map[string]*Node, node *protos.NodeProto, inputs []*Node) *Node {
-	if len(node.Output) > 1 && node.Output[1] != "" {
-		exceptions.Panicf("MaxPool: Indices output is not implemented")
-	}
+func convertMaxPool(_ *Model, convertedOutputs map[string]*Node, node *protos.NodeProto, inputs []*Node) *Node {
 	autoPad := GetStringAttrOr(node, "auto_pad", "NOTSET")
 	ceilMode := GetIntAttrOr(node, "ceil_mode", 0)
 	storageOrder := GetIntAttrOr(node, "storage_order", 0)
@@ -99,6 +98,11 @@ func convertMaxPool(_ *Model, _ map[string]*Node, node *protos.NodeProto, inputs
 	g, err := computePoolGeometry(x, autoPad, pads, kernelShape, strides, dilations, ceilMode != 0)
 	if err != nil {
 		exceptions.Panicf("MaxPool: %v", err)
+	}
+	if len(node.Output) > 1 && node.Output[1] != "" {
+		values, indices := maxPoolWithIndices(x, g, storageOrder)
+		convertedOutputs[node.Output[1]] = indices
+		return values
 	}
 	if g.dynamic {
 		return dynamicPool(x, g, false, 0, 0)
@@ -170,12 +174,13 @@ func computePoolGeometry(x *Node, autoPad string, pads, kernel, strides, dilatio
 			}
 		}
 		if static {
-			pB, pE, err := staticPoolPads(x.Shape().Dim(axis), autoPad, pB, pE, effKernel, strides[i], ceil)
+			pB, pE, out, err := staticPoolPads(x.Shape().Dim(axis), autoPad, pB, pE, effKernel, strides[i], ceil)
 			if err != nil {
 				return poolGeometry{}, err
 			}
 			g.padBegin = append(g.padBegin, pB)
 			g.padEnd = append(g.padEnd, pE)
+			g.outDims = append(g.outDims, out)
 			continue
 		}
 		startNode, endNode, outNode, err := dynamicPoolPads(x, axis, autoPad, pB, pE, effKernel, strides[i], ceil)
@@ -191,9 +196,9 @@ func computePoolGeometry(x *Node, autoPad string, pads, kernel, strides, dilatio
 }
 
 // staticPoolPads 计算静态空间维的最终 padding；ceil_mode 的尾部额外补零也在此完成。
-func staticPoolPads(in int, autoPad string, padBegin, padEnd, effKernel, stride int, ceil bool) (int, int, error) {
+func staticPoolPads(in int, autoPad string, padBegin, padEnd, effKernel, stride int, ceil bool) (int, int, int, error) {
 	if in < 0 {
-		return 0, 0, fmt.Errorf("dynamic dimension reached static padding calculation")
+		return 0, 0, 0, fmt.Errorf("dynamic dimension reached static padding calculation")
 	}
 	switch autoPad {
 	case "VALID":
@@ -208,12 +213,12 @@ func staticPoolPads(in int, autoPad string, padBegin, padEnd, effKernel, stride 
 			padEnd = total / 2
 			padBegin = total - padEnd
 		}
-		return padBegin, padEnd, nil
+		return padBegin, padEnd, out, nil
 	}
 
 	num := in + padBegin + padEnd - effKernel
 	if num < 0 {
-		return 0, 0, fmt.Errorf("pooling window %d exceeds padded input %d", effKernel, in+padBegin+padEnd)
+		return 0, 0, 0, fmt.Errorf("pooling window %d exceeds padded input %d", effKernel, in+padBegin+padEnd)
 	}
 	out := 0
 	if ceil {
@@ -225,7 +230,7 @@ func staticPoolPads(in int, autoPad string, padBegin, padEnd, effKernel, stride 
 		out = num/stride + 1
 	}
 	extra := maxInt(0, (out-1)*stride+effKernel-(in+padBegin+padEnd))
-	return padBegin, padEnd + extra, nil
+	return padBegin, padEnd + extra, out, nil
 }
 
 // dynamicPoolPads 计算动态空间维的 padding 节点。
@@ -260,6 +265,135 @@ func dynamicPoolPads(x *Node, axis int, autoPad string, padBegin, padEnd, effKer
 	out = Where(LessThan(num, c(0)), c(0), out)
 	extra := Max(c(0), Sub(Add(Mul(Sub(out, c(1)), c(stride)), c(effKernel)), Add(Add(in, pB), pE)))
 	return pB, Add(pE, extra), out, nil
+}
+
+// maxPoolWithIndices 同时计算 MaxPool 的 Y 与 Indices。
+// 窗口按 kernel 轴升序遍历，严格大于才更新，因此并列最大值取最先遇到的位置。
+func maxPoolWithIndices(x *Node, g poolGeometry, storageOrder int) (values, indices *Node) {
+	flatIndex := flatIndexTensor(x, g, storageOrder)
+	fill := poolMinValue(x)
+	zero := Scalar(x.Graph(), x.DType(), 0)
+	minusOne := Scalar(x.Graph(), dtypes.Int64, -1)
+
+	var visit func(dim int, offsets []int)
+	visit = func(dim int, offsets []int) {
+		if dim < len(g.kernel) {
+			for k := 0; k < g.kernel[dim]; k++ {
+				visit(dim+1, append(append([]int(nil), offsets...), k))
+			}
+			return
+		}
+		gathered := x
+		gatheredIdx := flatIndex
+		var mask *Node
+		for i, off := range offsets {
+			axis := 2 + i
+			outVec, padBegin := poolAxisIota(x, g, i)
+			in := DimensionSize(x, axis)
+			stride := Scalar(x.Graph(), dtypes.Int64, int64(g.strides[i]))
+			shift := Scalar(x.Graph(), dtypes.Int64, int64(off*g.dilations[i]))
+			raw := Sub(Add(Mul(outVec, stride), shift), padBegin)
+			idx := Min(Max(raw, Scalar(x.Graph(), dtypes.Int64, 0)), Sub(in, Scalar(x.Graph(), dtypes.Int64, 1)))
+			gathered = onnxGather(gathered, idx, axis)
+			gatheredIdx = onnxGather(gatheredIdx, idx, axis)
+			valid := LogicalAnd(GreaterOrEqual(raw, Scalar(x.Graph(), dtypes.Int64, 0)), LessThan(raw, in))
+			specs := make([]DimensionSpec, x.Rank())
+			for a := range specs {
+				specs[a] = StaticDim(1)
+			}
+			specs[axis] = poolOutputSpec(g, i)
+			valid = DynamicReshape(valid, specs...)
+			if mask == nil {
+				mask = valid
+			} else {
+				mask = LogicalAnd(mask, valid)
+			}
+		}
+		mask = BroadcastLike(mask, gathered)
+		if values == nil {
+			values = Where(mask, gathered, fill)
+			indices = Where(mask, gatheredIdx, minusOne)
+			return
+		}
+		better := LogicalAnd(mask, GreaterThan(gathered, values))
+		values = Where(better, gathered, values)
+		indices = Where(better, gatheredIdx, indices)
+	}
+	visit(0, nil)
+	// 全 padding 的窗口按 ONNX 参考实现保持 Y=0、Indices=-1。
+	values = Where(Equal(indices, minusOne), zero, values)
+	return values, indices
+}
+
+// poolOutputSpec 返回当前空间轴输出长度的 DimensionSpec。
+func poolOutputSpec(g poolGeometry, i int) DimensionSpec {
+	if g.dynamic {
+		return DynamicDim(g.outNodes[i])
+	}
+	return StaticDim(g.outDims[i])
+}
+
+// poolAxisIota 返回当前空间轴的输出位置向量与左 padding 标量。
+func poolAxisIota(x *Node, g poolGeometry, i int) (*Node, *Node) {
+	if g.dynamic {
+		return DynamicIota(x.Graph(), dtypes.Int64, 0, DynamicDim(g.outNodes[i])), g.startNodes[i]
+	}
+	out := g.outDims[i]
+	iota := Iota(x.Graph(), shapes.Make(dtypes.Int64, out), 0)
+	return iota, Scalar(x.Graph(), dtypes.Int64, int64(g.padBegin[i]))
+}
+
+// flatIndexTensor 构造与输入同形状的展平索引张量，支持 storage_order 0/1。
+func flatIndexTensor(x *Node, _ poolGeometry, storageOrder int) *Node {
+	rank := x.Rank()
+	g := x.Graph()
+	var acc *Node
+	for axis := 0; axis < rank; axis++ {
+		var iota *Node
+		if x.Shape().IsDynamic() {
+			iota = DynamicIota(g, dtypes.Int64, 0, DimensionSpecFor(x, axis))
+			specs := make([]DimensionSpec, rank)
+			for a := range specs {
+				specs[a] = StaticDim(1)
+			}
+			specs[axis] = DimensionSpecFor(x, axis)
+			iota = DynamicReshape(iota, specs...)
+		} else {
+			dim := x.Shape().Dim(axis)
+			iota = Iota(g, shapes.Make(dtypes.Int64, dim), 0)
+			dims := make([]int, rank)
+			for a := range dims {
+				dims[a] = 1
+			}
+			dims[axis] = dim
+			iota = Reshape(iota, dims...)
+		}
+		iota = BroadcastLike(iota, x)
+		coeff := indexCoefficient(x, axis, storageOrder)
+		term := Mul(iota, coeff)
+		if acc == nil {
+			acc = term
+		} else {
+			acc = Add(acc, term)
+		}
+	}
+	return acc
+}
+
+// indexCoefficient 返回某一轴的展平系数；storage_order=1 时空间轴使用列优先。
+func indexCoefficient(x *Node, axis, storageOrder int) *Node {
+	g := x.Graph()
+	coeff := Scalar(g, dtypes.Int64, 1)
+	if storageOrder == 0 || axis <= 1 {
+		for j := axis + 1; j < x.Rank(); j++ {
+			coeff = Mul(coeff, DimensionSize(x, j))
+		}
+		return coeff
+	}
+	for j := 2; j < axis; j++ {
+		coeff = Mul(coeff, DimensionSize(x, j))
+	}
+	return coeff
 }
 
 // dynamicPool 在动态空间维上用 Gather 展开窗口实现 ONNX 池化。

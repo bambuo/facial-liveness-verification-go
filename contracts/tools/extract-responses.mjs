@@ -78,7 +78,7 @@ function statusOf(node) {
       && inner.expression.name.text === 'status') {
       const arg = inner.arguments[0];
       if (arg && ts.isNumericLiteral(arg)) return arg.text;
-      return arg ? arg.getText() : 'dynamic';
+      return 'dynamic';
     }
   }
   return '200';
@@ -89,9 +89,16 @@ function shapeOf(entry, arg) {
   if (ts.isObjectLiteralExpression(arg)) {
     const keys = [];
     const spreads = [];
+    const nested = {};
     for (const p of arg.properties) {
       if (ts.isPropertyAssignment(p)) {
-        keys.push(propName(p.name) || p.name.getText(entry.sf));
+        const key = propName(p.name) || p.name.getText(entry.sf);
+        keys.push(key);
+        if (ts.isObjectLiteralExpression(p.initializer)) {
+          nested[key] = p.initializer.properties
+            .map((q) => propName(q.name) || (q.name && q.name.getText(entry.sf)))
+            .filter(Boolean);
+        }
       } else if (ts.isShorthandPropertyAssignment(p)) {
         keys.push(p.name.text);
       } else if (ts.isSpreadAssignment(p)) {
@@ -100,7 +107,7 @@ function shapeOf(entry, arg) {
         keys.push(propName(p.name) || '<method>');
       }
     }
-    return { keys, spreads, kind: 'object' };
+    return { keys, spreads, nested, kind: 'object' };
   }
   if (ts.isCallExpression(arg)) {
     const name = callName(arg);
@@ -215,11 +222,12 @@ function renderMarkdown(result) {
     lines.push('');
     lines.push(`来源：\`${ep.source.file}\``);
     lines.push('');
-    lines.push('| 状态码 | 顶层字段 / 引用 | 源码位置 |');
-    lines.push('| --- | --- | --- |');
+    lines.push('| 状态码 | 顶层字段 / 引用 | 嵌套字段 | 源码位置 |');
+    lines.push('| --- | --- | --- | --- |');
     for (const r of ep.responses) {
       const shape = r.keys.length ? r.keys.join(', ') : r.ref ? `→ ${r.ref}` : '-';
-      lines.push(`| ${r.status} | ${shape} | \`${ep.source.file}:${r.line}\` |`);
+      const nested = Object.entries(r.nested || {}).map(([k, v]) => `${k}{${v.join(',')}}`).join('<br>') || '-';
+      lines.push(`| ${r.status} | ${shape} | ${nested} | \`${ep.source.file}:${r.line}\` |`);
     }
     lines.push('');
   }
@@ -261,6 +269,7 @@ function main() {
       responses: list.map((r) => ({
         status: r.status,
         keys: r.shape.keys,
+        nested: r.shape.nested || {},
         spreads: r.shape.spreads || [],
         ref: r.shape.ref || null,
         kind: r.shape.kind,

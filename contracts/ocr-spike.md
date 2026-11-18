@@ -109,7 +109,10 @@ lines=21
 | 自动方向 | 90° 旋转图选中 270，180° 旋转图选中 180，文本正常识别 |
 | 预热 | 识别宽度预热 280–310 ms，首次请求不再承担全部编译 |
 | 并发 | 4 个引擎并发 0 错误；QPS ≈ 0.345，说明 gobackend 推理全局串行，需进程级并行才能扩容 |
+| 图缓存 | 按输入形状最多保留 4 张编译图，FIFO 释放；30 张中文 mobile 评测峰值 RSS 2.15 GB，无缓存时持续增长 |
 | 黄金集 | 英文 CER 0 / WER 0 / 字段 1.0 / P95 463 ms；中文去空格 CER 0 / 字段 1.0 / P95 371 ms |
+| MIDV-500 | 巴西护照 30 张 TS：英文 mobile 校正后 71.7%（姓名 13.3%）；中文 mobile 校正后 **75.8%**（姓名 53.3%，四字段全对 16/30），P50/P95 7.9/11.2 s |
+| Conv auto_pad | `onnx-gomlx` 已支持 `SAME_UPPER/SAME_LOWER`，含 `TestConvAutoPad` 回归；可加载 PP-OCRv5 server rec（CPU 约 40 s/图，仅离线评测） |
 | API | `/extract/ocr`、`/extract/front` 已接入，真实模型集成测试通过 |
 
 黄金集与复现命令见 [`eval/ocr/README.md`](../eval/ocr/README.md)。
@@ -118,11 +121,11 @@ lines=21
 
 | 项 | 现状 | 生产要求 |
 | --- | --- | --- |
-| 真实证件 | 合成样例 + 演示图 | 多版式、多国家、多拍摄条件黄金集 |
+| 真实证件 | 合成样例 + MIDV-500 公开模拟护照 30 张 | 真实脱敏证件 20–50 张、多版式/多国家黄金集 |
 | 字段规则 | 通用正则/标签抽取 | 按国家证件移植 idswyft 字段规则库 |
 | 条码/MRZ | 未实现 | PDF417/QR/MRZ 与交叉校验 |
 | 篡改/深伪 | 未实现 | Sharp 算法移植、deepfake ONNX |
-| 性能 | 单图 3–4 s，4 并发 QPS 0.345 | 预编译/多进程/后端优化，目标 P95 与 QPS 门禁 |
+| 性能 | 英文 mobile 3–4 s；字段优先中文 mobile P50 7.9 s；4 并发 QPS 0.345 | 预编译/多进程/后端优化，目标 P95 与 QPS 门禁 |
 | 引擎端点 | 2/6 已接入 | front/back/live/ocr/voice-enroll/voice-verify 全量 |
 
 ## 7. 下一步（M2）

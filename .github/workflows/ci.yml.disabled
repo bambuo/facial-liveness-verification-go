@@ -1,0 +1,64 @@
+name: ci
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Create test databases
+        run: |
+          psql -h localhost -U postgres -c 'CREATE DATABASE store;'
+          psql -h localhost -U postgres -c 'CREATE DATABASE gorm;'
+          psql -h localhost -U postgres -c 'CREATE DATABASE baseline;'
+          psql -h localhost -U postgres -c 'CREATE DATABASE concurrent;'
+          psql -h localhost -U postgres -d baseline -v ON_ERROR_STOP=1 -f contracts/ddl/001_baseline.sql
+
+      - name: Build
+        run: CGO_ENABLED=0 go build ./...
+
+      - name: Unit tests
+        run: go test -count=1 ./...
+
+      - name: Store transaction tests
+        env:
+          TEST_DATABASE_URL: host=localhost port=5432 user=postgres password=postgres dbname=store sslmode=disable
+        run: go test -count=1 ./internal/store
+
+      - name: Migration and parity tests
+        env:
+          TEST_GORM_URL: host=localhost port=5432 user=postgres password=postgres dbname=gorm sslmode=disable
+          TEST_BASELINE_URL: host=localhost port=5432 user=postgres password=postgres dbname=baseline sslmode=disable
+          TEST_GORM_CONCURRENT_URL: host=localhost port=5432 user=postgres password=postgres dbname=concurrent sslmode=disable
+        run: go test -count=1 ./internal/adapter/pg -run 'TestAutoMigrateSmoke|TestSchemaParity|TestAutoMigrateConcurrent' -v
+
+      - name: Contract check
+        run: go run ./cmd/contractcheck

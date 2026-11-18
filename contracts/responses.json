@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-18T09:21:58.141Z",
+  "generatedAt": "2026-11-18T11:12:04.209Z",
   "source": {
     "repo": "/Users/johana/Codes/github/idswyft-community-1.12.39",
     "commit": "83dd51bdfb6dec608856b41c110f54f5a8bf3efe",
@@ -83,6 +83,7 @@
             "total_steps",
             "message"
           ],
+          "nested": {},
           "spreads": [
             "(isAgeOnly && { age_threshold: resolvedAgeThreshold })",
             "(complianceApplied.length > 0 && { compliance_applied: complianceApplied, ...((resolvedAddons as any).compliance_require"
@@ -114,6 +115,7 @@
             "total_steps",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -135,6 +137,7 @@
           "keys": [
             "idempotent_retry"
           ],
+          "nested": {},
           "spreads": [
             "cached"
           ],
@@ -154,6 +157,7 @@
             "rejection_detail",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -177,6 +181,7 @@
             "requires_back",
             "message"
           ],
+          "nested": {},
           "spreads": [
             "(ageVerification && { age_verification: ageVerification })",
             "(mapped.final_result && { final_result: mapped.final_result })",
@@ -206,6 +211,7 @@
             "verification_mode",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -223,6 +229,7 @@
             "rejection_detail",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -247,6 +254,7 @@
             "failure_reason",
             "message"
           ],
+          "nested": {},
           "spreads": [
             "(mapped.final_result && { final_result: mapped.final_result })"
           ],
@@ -280,6 +288,7 @@
             "manual_review_reason",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -304,6 +313,7 @@
             "verification_mode",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -321,6 +331,7 @@
             "rejection_detail",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -349,6 +360,13 @@
             "manual_review_reason",
             "message"
           ],
+          "nested": {
+            "liveness_results": [
+              "liveness_passed",
+              "liveness_score",
+              "liveness_mode"
+            ]
+          },
           "spreads": [
             "(liveDedupBlocked && { final_result: 'failed' })",
             "(liveDedupFlags.length > 0 && { duplicate_flags: liveDedupFlags })"
@@ -375,6 +393,7 @@
             "error",
             "current_step"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -389,6 +408,7 @@
             "expires_in_seconds",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -412,6 +432,7 @@
             "error",
             "current_step"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -423,6 +444,7 @@
             "success",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -434,6 +456,7 @@
             "success",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -447,6 +470,7 @@
             "retryable",
             "current_step"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -458,6 +482,7 @@
             "success",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -475,6 +500,7 @@
             "final_result",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -503,6 +529,7 @@
             "rejection_detail",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -525,6 +552,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -537,6 +565,7 @@
             "message",
             "retry_count"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -548,6 +577,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -559,6 +589,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -572,6 +603,7 @@
             "retry_count",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -594,6 +626,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -608,6 +641,7 @@
             "session_token_expires_at",
             "verification_url"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -627,6 +661,7 @@
         {
           "status": "200",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "response",
           "kind": "identifier",
@@ -648,6 +683,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -658,6 +694,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -668,6 +705,7 @@
           "keys": [
             "selfie_url"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -680,6 +718,7 @@
             "selfie_url",
             "expires_in"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -702,6 +741,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -710,6 +750,7 @@
         {
           "status": "200",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "response",
           "kind": "identifier",
@@ -732,6 +773,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -744,6 +786,7 @@
             "message",
             "phone_verified"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -766,6 +809,7 @@
             "token",
             "expires_at"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -787,6 +831,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -797,6 +842,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -807,6 +853,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -817,6 +864,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -830,6 +878,7 @@
             "branding",
             "page_builder_config"
           ],
+          "nested": {},
           "spreads": [
             "(data.verification_id && { verification_id: data.verification_id })"
           ],
@@ -853,6 +902,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -863,6 +913,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -873,6 +924,7 @@
           "keys": [
             "success"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -894,6 +946,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -904,6 +957,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -914,6 +968,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -924,6 +979,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -934,6 +990,7 @@
           "keys": [
             "success"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -955,6 +1012,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -965,6 +1023,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -975,6 +1034,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -985,6 +1045,7 @@
           "keys": [
             "status"
           ],
+          "nested": {},
           "spreads": [
             "(data.verification_id && { verification_id: data.verification_id })",
             "(data.status !== 'pending' && { result: data.result })"
@@ -1010,6 +1071,16 @@
             "developer",
             "message"
           ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "created_at"
+            ]
+          },
           "spreads": [
             "(result.code && { code: result.code })"
           ],
@@ -1041,6 +1112,13 @@
             "security_info",
             "message"
           ],
+          "nested": {
+            "security_info": [
+              "store_securely",
+              "environment_variable",
+              "revocation"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1065,6 +1143,13 @@
             "active_keys",
             "security_recommendations"
           ],
+          "nested": {
+            "security_recommendations": [
+              "rotate_unused_keys",
+              "monitor_usage",
+              "use_environment_variables"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1088,6 +1173,18 @@
             "revoked_key",
             "security_info"
           ],
+          "nested": {
+            "revoked_key": [
+              "id",
+              "name",
+              "key_preview"
+            ],
+            "security_info": [
+              "immediate_effect",
+              "cleanup_recommendation",
+              "regeneration"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1113,6 +1210,7 @@
             "grace_period_hours",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1134,6 +1232,7 @@
           "keys": [
             "webhooks"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1156,6 +1255,11 @@
             "webhook",
             "message"
           ],
+          "nested": {
+            "webhook": [
+              "secret_key"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1177,6 +1281,7 @@
           "keys": [
             "secret_key"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1199,6 +1304,7 @@
             "deliveries",
             "total"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1222,6 +1328,7 @@
             "status_code",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1233,6 +1340,7 @@
             "success",
             "status_code"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1245,6 +1353,7 @@
             "status_code",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1267,6 +1376,13 @@
             "success",
             "delivery"
           ],
+          "nested": {
+            "delivery": [
+              "id",
+              "status",
+              "created_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1288,6 +1404,7 @@
           "keys": [
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1320,6 +1437,7 @@
             "remaining_quota",
             "quota_reset_date"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1344,6 +1462,7 @@
             "total_activities",
             "session_outcomes"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1370,6 +1489,7 @@
             "total_steps",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1378,6 +1498,7 @@
         {
           "status": "200",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "response",
           "kind": "identifier",
@@ -1404,6 +1525,12 @@
             "funnel",
             "daily_webhooks"
           ],
+          "nested": {
+            "quota": [
+              "used",
+              "limit"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1429,6 +1556,7 @@
             "endpoint_url",
             "model"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1443,6 +1571,7 @@
             "endpoint_url",
             "model"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1465,6 +1594,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1480,6 +1610,7 @@
             "endpoint_url",
             "model"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1504,6 +1635,7 @@
             "api_key_preview",
             "phone_number"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1517,6 +1649,7 @@
             "api_key_preview",
             "phone_number"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1539,6 +1672,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1553,6 +1687,7 @@
             "api_key_preview",
             "phone_number"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1577,6 +1712,7 @@
             "accent_color",
             "company_name"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1598,6 +1734,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1611,6 +1748,7 @@
             "accent_color",
             "company_name"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1635,6 +1773,7 @@
             "slug",
             "logo_url"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1656,6 +1795,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1666,6 +1806,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1676,6 +1817,7 @@
           "keys": [
             "success"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1697,6 +1839,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1707,6 +1850,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1718,6 +1862,7 @@
             "success",
             "slug"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1739,6 +1884,7 @@
           "keys": [
             "enabled"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1760,6 +1906,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1771,6 +1918,7 @@
             "success",
             "enabled"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1792,6 +1940,7 @@
           "keys": [
             "enabled"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1813,6 +1962,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1824,6 +1974,7 @@
             "success",
             "enabled"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1845,6 +1996,7 @@
           "keys": [
             "enabled"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1866,6 +2018,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1877,6 +2030,7 @@
             "success",
             "enabled"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1899,6 +2053,7 @@
             "enabled",
             "action"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1920,6 +2075,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1932,6 +2088,7 @@
             "enabled",
             "action"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1954,6 +2111,7 @@
             "enabled",
             "auto_store"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1975,6 +2133,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1985,6 +2144,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -1995,6 +2155,7 @@
           "keys": [
             "success"
           ],
+          "nested": {},
           "spreads": [
             "updates"
           ],
@@ -2018,6 +2179,7 @@
           "keys": [
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2041,6 +2203,16 @@
             "scope",
             "operator"
           ],
+          "nested": {
+            "operator": [
+              "email",
+              "api_key_id",
+              "key_prefix",
+              "service_label",
+              "service_product",
+              "service_environment"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2052,6 +2224,17 @@
             "success",
             "data"
           ],
+          "nested": {
+            "data": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "avatar_url",
+              "locale",
+              "created_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2074,6 +2257,11 @@
             "success",
             "data"
           ],
+          "nested": {
+            "data": [
+              "avatar_url"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2096,6 +2284,11 @@
             "success",
             "data"
           ],
+          "nested": {
+            "data": [
+              "avatar_url"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2118,6 +2311,11 @@
             "success",
             "data"
           ],
+          "nested": {
+            "data": [
+              "logo_url"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2139,6 +2337,7 @@
           "keys": [
             "reviewer"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2160,6 +2359,7 @@
           "keys": [
             "reviewers"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2182,6 +2382,7 @@
             "message",
             "reviewer"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2206,6 +2407,7 @@
             "developer_count",
             "system_health"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2228,6 +2430,14 @@
             "verifications",
             "pagination"
           ],
+          "nested": {
+            "pagination": [
+              "page",
+              "limit",
+              "total",
+              "pages"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2249,6 +2459,14 @@
           "keys": [
             "verification"
           ],
+          "nested": {
+            "verification": [
+              "document_url",
+              "selfie_url",
+              "documents",
+              "debug"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2271,6 +2489,7 @@
             "verification_id",
             "linked_verifications"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2282,6 +2501,7 @@
             "verification_id",
             "linked_verifications"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2304,6 +2524,7 @@
             "verification",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2326,6 +2547,14 @@
             "developers",
             "pagination"
           ],
+          "nested": {
+            "pagination": [
+              "page",
+              "limit",
+              "total",
+              "pages"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2345,6 +2574,7 @@
         {
           "status": "200",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "analytics",
           "kind": "identifier",
@@ -2364,6 +2594,7 @@
         {
           "status": "200",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "health",
           "kind": "identifier",
@@ -2385,6 +2616,7 @@
           "keys": [
             "funnel"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2406,6 +2638,7 @@
           "keys": [
             "rejections"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2427,6 +2660,7 @@
           "keys": [
             "patterns"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2448,6 +2682,7 @@
           "keys": [
             "distribution"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2469,6 +2704,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2477,6 +2713,7 @@
         {
           "status": "200",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "summary",
           "kind": "identifier",
@@ -2501,6 +2738,15 @@
             "filters",
             "records"
           ],
+          "nested": {
+            "filters": [
+              "from",
+              "to",
+              "status",
+              "developer_id",
+              "include_sandbox"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2523,6 +2769,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2545,6 +2792,12 @@
             "success",
             "error"
           ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2556,6 +2809,13 @@
             "success",
             "data"
           ],
+          "nested": {
+            "data": [
+              "production",
+              "sandbox",
+              "meta"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2567,6 +2827,12 @@
             "success",
             "error"
           ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2589,6 +2855,12 @@
             "success",
             "error"
           ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2600,6 +2872,12 @@
             "success",
             "error"
           ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2611,6 +2889,14 @@
             "success",
             "data"
           ],
+          "nested": {
+            "data": [
+              "updated_settings",
+              "production",
+              "sandbox",
+              "meta"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2622,6 +2908,12 @@
             "success",
             "error"
           ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2644,6 +2936,12 @@
             "success",
             "data"
           ],
+          "nested": {
+            "data": [
+              "preview",
+              "explanation"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2655,6 +2953,12 @@
             "success",
             "error"
           ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2677,6 +2981,12 @@
             "success",
             "error"
           ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2688,6 +2998,12 @@
             "success",
             "data"
           ],
+          "nested": {
+            "data": [
+              "message",
+              "default_settings"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2699,6 +3015,12 @@
             "success",
             "error"
           ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2720,6 +3042,7 @@
           "keys": [
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2741,6 +3064,7 @@
           "keys": [
             "csrfToken"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2762,6 +3086,7 @@
           "keys": [
             "requires_totp"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2773,6 +3098,13 @@
             "token",
             "user"
           ],
+          "nested": {
+            "user": [
+              "id",
+              "email",
+              "role"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2794,6 +3126,7 @@
           "keys": [
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2815,6 +3148,7 @@
           "keys": [
             "message"
           ],
+          "nested": {},
           "spreads": [
             "(result.code && { code: result.code, self_hosted: true })"
           ],
@@ -2840,6 +3174,16 @@
             "developer",
             "is_new"
           ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "created_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2851,6 +3195,7 @@
             "registration_token",
             "is_new"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2875,6 +3220,16 @@
             "api_key",
             "is_new"
           ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "created_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2896,6 +3251,7 @@
           "keys": [
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2906,6 +3262,7 @@
           "keys": [
             "message"
           ],
+          "nested": {},
           "spreads": [
             "(result.code && { code: result.code, self_hosted: true })"
           ],
@@ -2930,6 +3287,15 @@
             "token",
             "reviewer"
           ],
+          "nested": {
+            "reviewer": [
+              "id",
+              "email",
+              "name",
+              "developer_id",
+              "role"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2954,6 +3320,17 @@
             "api_key",
             "is_new"
           ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "avatar_url",
+              "created_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2966,6 +3343,17 @@
             "developer",
             "is_new"
           ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "avatar_url",
+              "created_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -2988,6 +3376,7 @@
             "url",
             "configured"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3000,6 +3389,7 @@
             "state",
             "configured"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3021,6 +3411,7 @@
           "keys": [
             "qrCode"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3042,6 +3433,7 @@
           "keys": [
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3061,6 +3453,7 @@
         {
           "status": "200",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "healthcheck",
           "kind": "identifier",
@@ -3078,8 +3471,9 @@
       },
       "responses": [
         {
-          "status": "statusCode",
+          "status": "dynamic",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "healthcheck",
           "kind": "identifier",
@@ -3101,6 +3495,7 @@
           "keys": [
             "status"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3112,6 +3507,7 @@
             "status",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3133,6 +3529,7 @@
           "keys": [
             "status"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3154,14 +3551,16 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
           "line": 113
         },
         {
-          "status": "statusCode",
+          "status": "dynamic",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "diagnostics",
           "kind": "identifier",
@@ -3175,6 +3574,12 @@
             "details",
             "environment"
           ],
+          "nested": {
+            "environment": [
+              "NODE_ENV",
+              "API_KEY_SECRET"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3197,6 +3602,15 @@
             "webhook",
             "message"
           ],
+          "nested": {
+            "webhook": [
+              "id",
+              "url",
+              "is_sandbox",
+              "is_active",
+              "created_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3218,6 +3632,7 @@
           "keys": [
             "webhooks"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3240,6 +3655,15 @@
             "webhook",
             "message"
           ],
+          "nested": {
+            "webhook": [
+              "id",
+              "url",
+              "is_sandbox",
+              "is_active",
+              "created_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3261,6 +3685,7 @@
           "keys": [
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3286,6 +3711,7 @@
             "total",
             "deliveries"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3309,6 +3735,12 @@
             "result",
             "payload"
           ],
+          "nested": {
+            "result": [
+              "delivered",
+              "response_status"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3331,6 +3763,7 @@
             "success",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3342,6 +3775,17 @@
             "success",
             "data"
           ],
+          "nested": {
+            "data": [
+              "id",
+              "email",
+              "phone",
+              "first_name",
+              "last_name",
+              "external_id",
+              "metadata"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3364,6 +3808,7 @@
             "success",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3377,6 +3822,7 @@
             "status",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3399,6 +3845,7 @@
             "success",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3410,6 +3857,15 @@
             "success",
             "verification"
           ],
+          "nested": {
+            "verification": [
+              "id",
+              "status",
+              "confidence_score",
+              "failure_reason",
+              "updated_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3432,6 +3888,7 @@
             "success",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3444,6 +3901,13 @@
             "data",
             "meta"
           ],
+          "nested": {
+            "meta": [
+              "total",
+              "page",
+              "per_page"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3466,6 +3930,7 @@
             "success",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3477,6 +3942,13 @@
             "success",
             "data"
           ],
+          "nested": {
+            "data": [
+              "avatar_url",
+              "api_key_count",
+              "verification_count"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3499,6 +3971,7 @@
             "success",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3510,6 +3983,7 @@
             "success",
             "data"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3532,6 +4006,7 @@
             "success",
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3543,6 +4018,7 @@
             "success",
             "data"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3566,6 +4042,7 @@
             "message",
             "timestamp"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3591,6 +4068,7 @@
             "total_items",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3620,6 +4098,7 @@
             "created_at",
             "completed_at"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3641,6 +4120,7 @@
           "keys": [
             "results"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3663,6 +4143,7 @@
             "error",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3674,6 +4155,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3696,6 +4178,14 @@
             "jobs",
             "pagination"
           ],
+          "nested": {
+            "pagination": [
+              "page",
+              "limit",
+              "total",
+              "pages"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3718,6 +4208,7 @@
             "error",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3730,6 +4221,16 @@
             "verification_id",
             "address_verification"
           ],
+          "nested": {
+            "address_verification": [
+              "status",
+              "score",
+              "name_match_score",
+              "address",
+              "document_fresh",
+              "reasons"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3752,6 +4253,7 @@
             "error",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3764,6 +4266,7 @@
             "address_verification",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3775,6 +4278,17 @@
             "verification_id",
             "address_verification"
           ],
+          "nested": {
+            "address_verification": [
+              "status",
+              "score",
+              "name_match_score",
+              "address",
+              "document_type",
+              "document_fresh",
+              "reasons"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3796,6 +4310,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3806,6 +4321,13 @@
           "keys": [
             "branding"
           ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3816,6 +4338,13 @@
           "keys": [
             "branding"
           ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3827,6 +4356,13 @@
             "branding",
             "page_builder_config"
           ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3849,6 +4385,13 @@
             "branding",
             "page_builder_config"
           ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3860,6 +4403,13 @@
             "branding",
             "page_builder_config"
           ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3881,6 +4431,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3891,6 +4442,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3901,6 +4453,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3911,6 +4464,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3926,6 +4480,13 @@
             "branding",
             "page_builder_config"
           ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
           "spreads": [
             "(verification.age_threshold != null && { age_threshold: verification.age_threshold })"
           ],
@@ -3950,6 +4511,16 @@
             "success",
             "schedule"
           ],
+          "nested": {
+            "schedule": [
+              "id",
+              "user_id",
+              "interval_days",
+              "next_verification_at",
+              "status",
+              "created_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3974,6 +4545,7 @@
             "page",
             "limit"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -3995,6 +4567,17 @@
           "keys": [
             "schedule"
           ],
+          "nested": {
+            "schedule": [
+              "id",
+              "user_id",
+              "interval_days",
+              "next_verification_at",
+              "last_verification_at",
+              "status",
+              "created_at"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4017,6 +4600,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4041,6 +4625,7 @@
             "page",
             "limit"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4064,6 +4649,7 @@
             "services",
             "checked_at"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4085,6 +4671,7 @@
           "keys": [
             "needs_setup"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4095,6 +4682,7 @@
           "keys": [
             "needs_setup"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4118,6 +4706,17 @@
             "developer",
             "api_key"
           ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "locale",
+              "created_at"
+            ]
+          },
           "spreads": [
             "(keyError ? { warning: 'API key creation failed. You can create one from the Developer Portal.' } : {})"
           ],
@@ -4141,6 +4740,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4151,6 +4751,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4161,6 +4762,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4174,6 +4776,7 @@
             "jti",
             "expires_at"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4189,6 +4792,7 @@
             "expires_at",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4199,6 +4803,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4220,6 +4825,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4230,6 +4836,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4240,6 +4847,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4250,6 +4858,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4263,6 +4872,7 @@
             "expires_at",
             "email_sent"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4285,6 +4895,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4295,6 +4906,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4314,6 +4926,7 @@
         {
           "status": "200",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "status",
           "kind": "identifier",
@@ -4335,6 +4948,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4345,6 +4959,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4355,6 +4970,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4368,6 +4984,7 @@
             "jti",
             "expires_at"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4383,6 +5000,7 @@
             "expires_at",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4393,6 +5011,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4414,6 +5033,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4424,6 +5044,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4434,6 +5055,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4444,6 +5066,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4457,6 +5080,7 @@
             "expires_at",
             "email_sent"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4479,6 +5103,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4489,6 +5114,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4508,6 +5134,7 @@
         {
           "status": "200",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "status",
           "kind": "identifier",
@@ -4529,6 +5156,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4540,6 +5168,7 @@
             "success",
             "ruleset"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4562,6 +5191,7 @@
             "success",
             "rulesets"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4583,6 +5213,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4593,6 +5224,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4604,6 +5236,11 @@
             "success",
             "ruleset"
           ],
+          "nested": {
+            "ruleset": [
+              "rules"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4625,6 +5262,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4635,6 +5273,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4645,6 +5284,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4655,6 +5295,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4665,6 +5306,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4676,6 +5318,7 @@
             "success",
             "ruleset"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4697,6 +5340,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4707,6 +5351,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4718,6 +5363,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4739,6 +5385,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4749,6 +5396,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4759,6 +5407,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4769,6 +5418,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4780,6 +5430,7 @@
             "success",
             "rule"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4801,6 +5452,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4811,6 +5463,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4821,6 +5474,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4831,6 +5485,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4841,6 +5496,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4851,6 +5507,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4862,6 +5519,7 @@
             "success",
             "rule"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4883,6 +5541,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4893,6 +5552,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4903,6 +5563,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4914,6 +5575,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4935,6 +5597,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4948,6 +5611,7 @@
             "matches",
             "resolved_action"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4969,6 +5633,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4979,6 +5644,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -4989,6 +5655,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5002,6 +5669,7 @@
             "vault_token",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5012,6 +5680,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5022,6 +5691,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5033,6 +5703,7 @@
             "success",
             "vault_token"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5054,6 +5725,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5064,6 +5736,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5074,6 +5747,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5084,6 +5758,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5094,6 +5769,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5104,6 +5780,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5116,6 +5793,7 @@
             "attributes",
             "expires_at"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5137,6 +5815,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5152,6 +5831,7 @@
             "created_at",
             "expires_at"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5173,6 +5853,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5183,6 +5864,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5195,6 +5877,7 @@
             "attribute",
             "value"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5216,6 +5899,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5226,6 +5910,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5237,6 +5922,7 @@
             "success",
             "message"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5260,6 +5946,14 @@
             "entries",
             "pagination"
           ],
+          "nested": {
+            "pagination": [
+              "page",
+              "limit",
+              "total",
+              "total_pages"
+            ]
+          },
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5281,6 +5975,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5291,6 +5986,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5301,6 +5997,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5311,6 +6008,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5321,6 +6019,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5335,6 +6034,7 @@
             "expires_at",
             "allowed_attributes"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5356,6 +6056,7 @@
           "keys": [
             "error"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5370,6 +6071,7 @@
             "authentication",
             "assertionMethod"
           ],
+          "nested": {},
           "spreads": [],
           "ref": null,
           "kind": "object",
@@ -5389,6 +6091,7 @@
         {
           "status": "200",
           "keys": [],
+          "nested": {},
           "spreads": [],
           "ref": "response",
           "kind": "identifier",

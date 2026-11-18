@@ -3,8 +3,8 @@
 - idswyft 仓库：`/Users/johana/Codes/github/idswyft-community-1.12.39`
 - idswyft 提交：`83dd51bdfb6dec608856b41c110f54f5a8bf3efe`（2026-11-17T00:25:31+07:00）
 - Go 基座仓库：`/Users/johana/Desktop/facial-liveness-verification-go`
-- Go 基座提交：`badcc5c8d343d06845d8eeccfe70965fd95294e8`
-- 生成时间：2026-11-18T09:21:58.438Z
+- Go 基座提交：`97c52771462dcf87d09e0f3ace39ab21156838f8`
+- 生成时间：2026-11-18T10:08:50.692Z
 - 解析方式：静态 SQL 解析（注释/字符串/美元引用块掩码后按语句切分）
 
 ## 汇总

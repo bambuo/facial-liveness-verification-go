@@ -22,6 +22,7 @@ func main() {
 	bucket := flag.Int("bucket", 32, "分桶粒度")
 	orientation := flag.String("orientation", "0", "方向: 0|auto|90|180|270")
 	warmup := flag.String("warmup", "", "预热宽度，逗号分隔")
+	maxSide := flag.Int("max-side", 0, "检测长边上限，0 使用默认 640")
 	flag.Parse()
 
 	if *recModel == "" {
@@ -31,6 +32,7 @@ func main() {
 		*dictPath = filepath.Join(*modelDir, "dict.txt")
 	}
 	cfg := ocr.Config{
+		MaxSide:     *maxSide,
 		DetModel:    filepath.Join(*modelDir, "det.onnx"),
 		RecModel:    *recModel,
 		DictPath:    *dictPath,

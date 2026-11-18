@@ -1,12 +1,11 @@
 package web
 
 import (
-	"fmt"
 	"io"
 	"net/http"
-	"regexp"
 	"strings"
 
+	"facial-liveness-verification-go/internal/document/fields"
 	"facial-liveness-verification-go/internal/domain"
 	"facial-liveness-verification-go/internal/ocr"
 )
@@ -185,137 +184,14 @@ func (f frontFields) missing() []string {
 	return out
 }
 
-var (
-	dateISO   = regexp.MustCompile(`\b(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})\b`)
-	dateLocal = regexp.MustCompile(`\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\b`)
-	idToken   = regexp.MustCompile(`\b[A-Z0-9]{6,20}\b`)
-	nameLabel = regexp.MustCompile(`(?i)(name|nama|nombre|nome|姓名|氏名)\s*[:：]?\s*(.+)`)
-	dateLabel = regexp.MustCompile(`(?i)(dob|birth|出生|生日|date of birth)\s*[:：]?\s*(.+)`)
-	expLabel  = regexp.MustCompile(`(?i)(exp|expiry|expires|valid|有效|到期)\s*[:：]?\s*(.+)`)
-)
-
-// extractFrontFields 用标签优先、正则兜底的方式抽取证件正面前四个必填字段。
+// extractFrontFields 调用证件字段规则 v1（MRZ + 国家规则 + 通用兜底）。
 func extractFrontFields(text, issuingCountry string) frontFields {
-	out := frontFields{IssuingCountry: strings.ToUpper(strings.TrimSpace(issuingCountry))}
-	lines := strings.Split(text, "\n")
-	for _, line := range lines {
-		if out.FullName == "" {
-			if m := nameLabel.FindStringSubmatch(line); len(m) == 3 {
-				out.FullName = cleanName(m[2])
-			}
-		}
-		if out.DateOfBirth == "" {
-			if m := dateLabel.FindStringSubmatch(line); len(m) == 3 {
-				out.DateOfBirth = normalizeDate(m[2])
-			}
-		}
-		if out.ExpiryDate == "" {
-			if m := expLabel.FindStringSubmatch(line); len(m) == 3 {
-				out.ExpiryDate = normalizeDate(m[2])
-			}
-		}
+	r := fields.Extract(text, issuingCountry)
+	return frontFields{
+		FullName:       r.FullName,
+		DateOfBirth:    r.DateOfBirth,
+		IDNumber:       r.IDNumber,
+		ExpiryDate:     r.ExpiryDate,
+		IssuingCountry: r.IssuingCountry,
 	}
-	if out.DateOfBirth == "" || out.ExpiryDate == "" {
-		dates := allDates(text)
-		if out.DateOfBirth == "" && len(dates) > 0 {
-			out.DateOfBirth = dates[0]
-		}
-		if out.ExpiryDate == "" && len(dates) > 1 {
-			out.ExpiryDate = dates[len(dates)-1]
-		}
-	}
-	if out.IDNumber == "" {
-		out.IDNumber = pickID(text)
-	}
-	if out.FullName == "" {
-		out.FullName = firstPersonName(lines)
-	}
-	return out
-}
-
-func normalizeDate(raw string) string {
-	if m := dateISO.FindStringSubmatch(raw); len(m) == 4 {
-		return fmt.Sprintf("%04s-%02s-%02s", m[1], pad2(m[2]), pad2(m[3]))
-	}
-	if m := dateLocal.FindStringSubmatch(raw); len(m) == 4 {
-		return fmt.Sprintf("%04s-%02s-%02s", m[3], pad2(m[2]), pad2(m[1]))
-	}
-	return ""
-}
-
-func allDates(text string) []string {
-	seen := map[string]bool{}
-	out := make([]string, 0)
-	for _, m := range dateISO.FindAllStringSubmatch(text, -1) {
-		d := fmt.Sprintf("%04s-%02s-%02s", m[1], pad2(m[2]), pad2(m[3]))
-		if !seen[d] {
-			seen[d] = true
-			out = append(out, d)
-		}
-	}
-	for _, m := range dateLocal.FindAllStringSubmatch(text, -1) {
-		d := fmt.Sprintf("%04s-%02s-%02s", m[3], pad2(m[2]), pad2(m[1]))
-		if !seen[d] {
-			seen[d] = true
-			out = append(out, d)
-		}
-	}
-	return out
-}
-
-func pickID(text string) string {
-	for _, token := range idToken.FindAllString(text, -1) {
-		digits := 0
-		for _, r := range token {
-			if r >= '0' && r <= '9' {
-				digits++
-			}
-		}
-		if digits >= 4 && !dateISO.MatchString(token) {
-			return token
-		}
-	}
-	return ""
-}
-
-func firstPersonName(lines []string) string {
-	for _, line := range lines {
-		fields := strings.Fields(strings.TrimSpace(line))
-		if len(fields) < 2 || len(fields) > 5 {
-			continue
-		}
-		ok := true
-		for _, f := range fields {
-			if len([]rune(f)) < 2 || strings.ContainsAny(f, "0123456789:/") || !isUpperStart(f) {
-				ok = false
-				break
-			}
-		}
-		if ok {
-			return strings.Join(fields, " ")
-		}
-	}
-	return ""
-}
-
-// isUpperStart 判断单词是否以大写字母开头，降低把普通句子误判为姓名的概率。
-func isUpperStart(word string) bool {
-	r := []rune(word)
-	return len(r) > 0 && r[0] >= 'A' && r[0] <= 'Z'
-}
-
-func cleanName(raw string) string {
-	name := strings.TrimSpace(raw)
-	name = strings.Trim(name, "\"'")
-	if i := strings.IndexAny(name, "|,;"); i > 0 {
-		name = name[:i]
-	}
-	return strings.TrimSpace(name)
-}
-
-func pad2(s string) string {
-	if len(s) == 1 {
-		return "0" + s
-	}
-	return s
 }

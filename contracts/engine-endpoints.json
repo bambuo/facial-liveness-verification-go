@@ -1,0 +1,15 @@
+{
+  "source": {
+    "repo": "idswyft-community-1.12.39",
+    "commit": "83dd51bdfb6dec608856b41c110f54f5a8bf3efe",
+    "file": "engine/src/routes/extract.ts"
+  },
+  "endpoints": [
+    { "method": "POST", "path": "/extract/front" },
+    { "method": "POST", "path": "/extract/back" },
+    { "method": "POST", "path": "/extract/live" },
+    { "method": "POST", "path": "/extract/ocr" },
+    { "method": "POST", "path": "/extract/voice-enroll" },
+    { "method": "POST", "path": "/extract/voice-verify" }
+  ]
+}

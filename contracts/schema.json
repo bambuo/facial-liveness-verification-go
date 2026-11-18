@@ -3,8 +3,8 @@
   "idswyftCommit": "83dd51bdfb6dec608856b41c110f54f5a8bf3efe",
   "idswyftDate": "2026-11-17T00:25:31+07:00",
   "goRepo": "/Users/johana/Desktop/facial-liveness-verification-go",
-  "goCommit": "badcc5c8d343d06845d8eeccfe70965fd95294e8",
-  "generatedAt": "2026-11-18T09:21:58.438Z",
+  "goCommit": "97c52771462dcf87d09e0f3ace39ab21156838f8",
+  "generatedAt": "2026-11-18T10:08:50.692Z",
   "validation": {
     "expectedTables": 31,
     "actualTables": 31,
@@ -192,6 +192,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "17_add_aml_screening.sql"
         }
       ],
@@ -248,6 +249,7 @@
           "references": "api_keys",
           "default": null,
           "check": null,
+          "onDelete": "SET NULL",
           "addedIn": "28_formalize_api_activity_logs.sql"
         },
         {
@@ -259,6 +261,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "28_formalize_api_activity_logs.sql"
         },
         {
@@ -449,6 +452,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "01_initial_schema.sql"
         },
         {
@@ -619,9 +623,9 @@
       ],
       "constraints": [
         "api_keys_service_fields_consistent CHECK ( (is_service = TRUE AND service_product IS NOT NULL AND service_environment IS NOT NULL) OR (is_service = FALSE AND service_product IS NULL AND service_environment IS NULL) )",
-        "api_keys_service_environment_valid CHECK ( service_environment IS NULL OR service_environment IN (' ', ' ', ' ') )",
-        "api_keys_service_product_valid CHECK ( service_product IS NULL OR service_product IN (' ', ' ') )",
-        "api_keys_service_product_valid CHECK ( service_product IS NULL OR service_product IN (' ', ' ', ' ') )",
+        "api_keys_service_environment_valid CHECK ( service_environment IS NULL OR service_environment IN ('production', 'staging', 'development') )",
+        "api_keys_service_product_valid CHECK ( service_product IS NULL OR service_product IN ('gatepass', 'idswyft-internal') )",
+        "api_keys_service_product_valid CHECK ( service_product IS NULL OR service_product IN ('gatepass', 'idswyft-internal', 'kazivio') )",
         "api_keys_operator_email_service_only CHECK (operator_email IS NULL OR is_service = TRUE)"
       ],
       "rls": true,
@@ -704,6 +708,7 @@
           "references": "batch_jobs",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "19_add_batch_verification.sql"
         },
         {
@@ -859,6 +864,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "19_add_batch_verification.sql"
         },
         {
@@ -1036,6 +1042,7 @@
           "references": "compliance_rulesets",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "48_add_compliance_engine.sql"
         }
       ],
@@ -1107,6 +1114,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "48_add_compliance_engine.sql"
         },
         {
@@ -1230,6 +1238,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "43_add_duplicate_detection.sql"
         },
         {
@@ -1274,6 +1283,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "43_add_duplicate_detection.sql"
         }
       ],
@@ -2094,6 +2104,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "01_initial_schema.sql"
         }
       ],
@@ -2190,6 +2201,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "21_add_monitoring.sql"
         },
         {
@@ -2201,6 +2213,7 @@
           "references": "documents",
           "default": null,
           "check": null,
+          "onDelete": "SET NULL",
           "addedIn": "21_add_monitoring.sql"
         },
         {
@@ -2234,6 +2247,7 @@
           "references": "users",
           "default": null,
           "check": null,
+          "onDelete": "SET NULL",
           "addedIn": "21_add_monitoring.sql"
         },
         {
@@ -2245,6 +2259,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "21_add_monitoring.sql"
         },
         {
@@ -2450,6 +2465,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "46_add_identity_vault.sql"
         },
         {
@@ -2538,6 +2554,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "46_add_identity_vault.sql"
         }
       ],
@@ -2847,6 +2864,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "37_add_phone_otp.sql"
         }
       ],
@@ -2914,6 +2932,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "37_add_phone_otp.sql"
         },
         {
@@ -3049,6 +3068,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "SET NULL",
           "addedIn": "11_add_provider_metrics.sql"
         }
       ],
@@ -3236,6 +3256,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "21_add_monitoring.sql"
         },
         {
@@ -3313,6 +3334,7 @@
           "references": "users",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "21_add_monitoring.sql"
         },
         {
@@ -3324,6 +3346,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "SET NULL",
           "addedIn": "21_add_monitoring.sql"
         }
       ],
@@ -3485,6 +3508,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "01_initial_schema.sql"
         }
       ],
@@ -3673,6 +3697,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "46_add_identity_vault.sql"
         },
         {
@@ -3739,6 +3764,7 @@
           "references": "identity_vault",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "46_add_identity_vault.sql"
         }
       ],
@@ -3821,6 +3847,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "44_add_verifiable_credentials.sql"
         },
         {
@@ -3887,6 +3914,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "44_add_verifiable_credentials.sql"
         }
       ],
@@ -4071,6 +4099,7 @@
           "references": "api_keys",
           "default": null,
           "check": null,
+          "onDelete": "SET NULL",
           "addedIn": "20260629_add_api_key_id_to_verification_requests.sql"
         },
         {
@@ -4137,6 +4166,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "01_initial_schema.sql"
         },
         {
@@ -4148,6 +4178,7 @@
           "references": "documents",
           "default": null,
           "check": null,
+          "onDelete": "SET NULL",
           "addedIn": "03_add_missing_verification_columns.sql"
         },
         {
@@ -4346,6 +4377,7 @@
           "references": "selfies",
           "default": null,
           "check": null,
+          "onDelete": "SET NULL",
           "addedIn": "03_add_missing_verification_columns.sql"
         },
         {
@@ -4445,6 +4477,7 @@
           "references": "users",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "01_initial_schema.sql"
         },
         {
@@ -4504,10 +4537,10 @@
         }
       ],
       "constraints": [
-        "verification_requests_status_check CHECK (status IN (' ', ' ', ' ', ' '))",
-        "verification_requests_status_check CHECK (status IN (' ', ' ', ' ', ' ', ' '))",
-        "verification_requests_verification_mode_check CHECK (verification_mode IN (' ', ' ', ' ', ' '))",
-        "verification_requests_verification_mode_check CHECK (verification_mode IN (' ', ' ', ' ', ' ', ' ', ' '))",
+        "verification_requests_status_check CHECK (status IN ('pending', 'verified', 'failed', 'manual_review'))",
+        "verification_requests_status_check CHECK (status IN ('pending', 'processing', 'verified', 'failed', 'manual_review'))",
+        "verification_requests_verification_mode_check CHECK (verification_mode IN ('full', 'liveness_only', 'document_refresh', 'age_only'))",
+        "verification_requests_verification_mode_check CHECK (verification_mode IN ('full', 'document_only', 'identity', 'liveness_only', 'document_refresh', 'age_only'))",
         "chk_session_token_expiry CHECK (session_token_hash IS NULL OR session_token_expires_at IS NOT NULL)"
       ],
       "rls": true,
@@ -4664,6 +4697,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "33_verification_reviewers.sql"
         },
         {
@@ -4859,6 +4893,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "18_add_risk_scores.sql"
         }
       ],
@@ -5021,6 +5056,7 @@
           "references": "verification_requests",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "20260319_add_webhook_deliveries.sql"
         },
         {
@@ -5032,6 +5068,7 @@
           "references": "webhooks",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "20260319_add_webhook_deliveries.sql"
         }
       ],
@@ -5084,6 +5121,7 @@
           "references": "api_keys",
           "default": null,
           "check": null,
+          "onDelete": "SET NULL",
           "addedIn": "20260319_webhook_api_key_scope.sql"
         },
         {
@@ -5106,6 +5144,7 @@
           "references": "developers",
           "default": null,
           "check": null,
+          "onDelete": "CASCADE",
           "addedIn": "01_initial_schema.sql"
         },
         {
@@ -6113,7 +6152,7 @@
         "developer_id",
         "user_id"
       ],
-      "where": "status = ' '",
+      "where": "status = 'active'",
       "file": "21_add_monitoring.sql"
     },
     {
@@ -6133,7 +6172,7 @@
       "columns": [
         "next_verification_at"
       ],
-      "where": "status = ' '",
+      "where": "status = 'active'",
       "file": "21_add_monitoring.sql"
     },
     {
@@ -6223,7 +6262,7 @@
       "columns": [
         "expires_at"
       ],
-      "where": "status = ' '",
+      "where": "status = 'active'",
       "file": "46_add_identity_vault.sql"
     },
     {
@@ -6344,7 +6383,7 @@
         "source",
         "created_at"
       ],
-      "where": "source = ' '",
+      "where": "source = 'demo'",
       "file": "22_source_separation.sql"
     },
     {

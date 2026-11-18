@@ -3,8 +3,8 @@
   "idswyftCommit": "83dd51bdfb6dec608856b41c110f54f5a8bf3efe",
   "idswyftDate": "2026-11-17T00:25:31+07:00",
   "goRepo": "/Users/johana/Desktop/facial-liveness-verification-go",
-  "goCommit": "badcc5c8d343d06845d8eeccfe70965fd95294e8",
-  "generatedAt": "2026-11-18T09:21:58.438Z",
+  "goCommit": "97c52771462dcf87d09e0f3ace39ab21156838f8",
+  "generatedAt": "2026-11-18T10:08:50.692Z",
   "appliedFiles": [
     "face_audit_logs.sql",
     "face_consents.sql",
@@ -1444,7 +1444,7 @@
       "columns": [
         "subject_id"
       ],
-      "where": "status = ' '",
+      "where": "status = 'active'",
       "file": "face_profiles.sql"
     }
   ],

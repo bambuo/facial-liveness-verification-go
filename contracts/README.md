@@ -8,8 +8,11 @@
 | --- | --- | --- |
 | `endpoints.json` / `endpoints.md` | 154 条路由注册、挂载前缀、中间件、鉴权推断、源码位置 | 注册 154 / 可达路径 158 |
 | `fields.json` / `fields.md` | 16 个 Zod schema（86 字段）、73 条接口的请求字段、状态/拒绝原因词表 | 16 schema / 2 词表冲突 |
-| `responses.json` / `responses.md` | 158/158 接口的响应证据、317 个 `res.json`、12 类状态码、`buildVerificationResponse` 字段 | 158 覆盖 |
-| `auth.json` / `auth-review.md` | 126 中间件鉴权 / 15 内联鉴权 / 17 公开候选，含源码行号证据 | 158 覆盖 |
+| `responses.json` / `responses.md` | 158/158 接口的响应证据、317 个 `res.json`、12 类状态码、嵌套字段、`buildVerificationResponse` 字段 | 158 覆盖 / 44 含嵌套 |
+| `fixtures.json` | 158 条可达路径的请求/响应夹具（鉴权、请求字段、状态码、嵌套响应、实现标记） | 158 |
+| `errors-i18n.md` | en / zh-CN 142 键与源码 `messageKey` 引用对账 | 142/142，1 个未定义 |
+| `auth.json` / `auth-review.md` / `auth-decisions.md` | 126 中间件 / 15 内联 / 17 公开候选取证与签字 | 158 覆盖，17 签字 |
+| `coverage.md` | 契约与实现覆盖（fixtures、后端/引擎实现率） | 后端 0/158，引擎 2/6 |
 | `schema.json` | idswyft 31 表、329 列、10 个 SQL 函数、6 个触发器、53 条 RLS 策略、77 个索引 | 31 表通过 |
 | `go-schema.json` | Go 基座 9 表、84 列、17 个索引 | 9 表 |
 | `schema-diff.md` | idswyft vs Go 基座差异、需新增表、函数/触发器/RLS 清单 | 需新增 22 表 |
@@ -49,7 +52,7 @@ node extract-schema.mjs --out ..
 5. **storage/auth 内置对象**：策略/触发器引用 `storage.objects`、`auth.uid()`，C4 已决定仅 S3。
 6. **迁移顺序**：存在重复数字前缀（两个 04），当前按文件名自然序应用；M1 需与 idswyft 迁移器顺序一致。
 7. **同名表为 0**：Go 9 表与 idswyft 31 表是两套主体模型，C1 已决定新库独立。
-8. **OCR**：中英模型、精确/分桶、自动方向、黄金集与 `/extract/ocr`、`/extract/front` 已完成；真实多版式证件、字段规则库、条码/MRZ/篡改与并发扩容待 M2（`ocr-spike.md`、`eval/ocr/`）。
+8. **OCR**：中英模型、精确/分桶、自动方向、字段规则 v1（MRZ/US/UK/CN）、黄金集与 `/extract/ocr`、`/extract/front` 已完成；真实 20–50 张证件样本、条码/篡改/深伪与单机并发扩容仍待（`ocr-spike.md`、`eval/ocr/`）。
 
 ## 冻结门禁
 

@@ -13,6 +13,9 @@ import (
 	"github.com/gomlx/onnx-gomlx/onnx/parser"
 )
 
+// maxCachedExecs 限制按输入形状缓存的图数量，避免长跑时图缓存无界增长。
+const maxCachedExecs = 4
+
 // runner 是一个 ONNX 模型，按输入形状缓存已编译的 Exec。
 type runner struct {
 	m     onnx.Model
@@ -20,6 +23,7 @@ type runner struct {
 	input string
 	mu    sync.Mutex
 	execs map[string]*model.Exec
+	order []string
 }
 
 // loadRunner 加载 ONNX 模型并准备按输入形状缓存的执行器。
@@ -38,7 +42,12 @@ func loadRunner(path string) (*runner, error) {
 		_ = m.Close()
 		return nil, err
 	}
-	return &runner{m: m, store: store, input: inNames[0], execs: make(map[string]*model.Exec)}, nil
+	return &runner{
+		m:     m,
+		store: store,
+		input: inNames[0],
+		execs: make(map[string]*model.Exec),
+	}, nil
 }
 
 // close 释放已编译执行器与模型资源。
@@ -46,10 +55,12 @@ func (r *runner) close() {
 	for _, e := range r.execs {
 		e.Finalize()
 	}
+	r.execs = nil
+	r.order = nil
 	_ = r.m.Close()
 }
 
-// run 执行一次推理；同一输入形状复用已编译图。调用串行化以避免后端并发问题。
+// run 执行一次推理；同一输入形状复用已编译图，超出上限时按 FIFO 释放。
 func (r *runner) run(data []float32, dims ...int) ([]float32, []int, error) {
 	key := fmt.Sprint(dims)
 	r.mu.Lock()
@@ -57,11 +68,20 @@ func (r *runner) run(data []float32, dims ...int) ([]float32, []int, error) {
 
 	exec := r.execs[key]
 	if exec == nil {
+		if len(r.order) >= maxCachedExecs {
+			oldest := r.order[0]
+			r.order = r.order[1:]
+			if old := r.execs[oldest]; old != nil {
+				old.Finalize()
+			}
+			delete(r.execs, oldest)
+		}
 		build := func(scope *model.Scope, input *graph.Node) []*graph.Node {
 			return r.m.CallGraph(scope, input.Graph(), map[string]*graph.Node{r.input: input})
 		}
 		exec = model.MustNewExec(gobackend.GetBackend(), r.store, build)
 		r.execs[key] = exec
+		r.order = append(r.order, key)
 	}
 	out, err := exec.Call(tensors.FromFlatDataAndDimensions(data, dims...))
 	if err != nil {

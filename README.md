@@ -6,7 +6,7 @@
 
 | 状态 | 内容 |
 | --- | --- |
-| 已实现已验证 | 人脸 1:1（YuNet + SFace）、活体（MiniFASNetV2）、动作校验、challenge 一次性/配额/失败锁定、档案加密、合规删除、纯 Go ONNX（PRelu/Dropout/initializer/Clip/MaxPool 等规范补丁）、纯 Go OCR（PP-OCRv5 检测/识别/行分组、中英模型、自动方向、Slice 属性补丁） |
+| 已实现已验证 | 人脸 1:1（YuNet + SFace）、活体（MiniFASNetV2）、动作校验、challenge 一次性/配额/失败锁定、档案加密、合规删除、纯 Go ONNX（PRelu/Dropout/initializer/Clip/MaxPool 等规范补丁）、纯 Go OCR（PP-OCRv5 检测/识别/行分组、中英模型、自动方向、Slice 属性补丁、MRZ/US/UK/CN 字段规则 v1）、GORM 31 模型与启动 AutoMigrate（advisory lock、schema parity、双副本并发） |
 | 已实现未验证 | 语音离线算子（Kaldi fbank、NeMo 归一化、CTC、CAM++/NeMo int8，WER 4–6%）；S3 关闭、Docker 构建、并发 P95、CI 集成测试 |
 | 未实现 | 条码/MRZ、文档字段规则库、地址验证、批量、移动交接、VaaS、可验证凭证、保险库、合规规则、AML、风险评分、去重、审核工作台、开发者门户、22 页前端、3 套 SDK、9 个定时任务 |
 | 基线不做 | 1:N 识别、pgvector、cgo、Node sidecar、cloud `platform/*` 路由 |
@@ -109,7 +109,7 @@ node extract-schema.mjs --out ..      # 31 表 / 329 列 / 10 函数 / 6 触发�
 
 只列字段名，真实值通过环境变量/`deploy/.env` 注入：
 
-`APP_ENV`、`DATABASE_URL`、`REDIS_ADDR`、`REDIS_PASSWORD`、`FACE_MODEL_DIR`、`AUTH_DEV_SIGNING_KEY`、`AUTH_RESULT_TOKEN_SIGNING_KEY`、`SECURITY_MASTER_KEY`、`LIVENESS_GUARD_ENABLED`、`LIVENESS_FAILURE_LIMIT`、`LIVENESS_WINDOW_SECONDS`、`LIVENESS_LOCK_SECONDS`、`LIVENESS_LAB_ENABLED`、`OCR_ENABLED`、`OCR_MODEL_DIR`、`OCR_DET_MODEL`、`OCR_REC_MODEL`、`OCR_DICT`、`OCR_WIDTH_MODE`、`OCR_ORIENTATION`、`S3_*`、`DATA_RETENTION_DAYS`。
+`APP_ENV`、`DATABASE_URL`、`DB_AUTO_MIGRATE`、`DB_MIGRATION_LOCK_SECONDS`、`DB_MIGRATION_STATEMENT_SECONDS`、`REDIS_ADDR`、`REDIS_PASSWORD`、`FACE_MODEL_DIR`、`AUTH_DEV_SIGNING_KEY`、`AUTH_RESULT_TOKEN_SIGNING_KEY`、`SECURITY_MASTER_KEY`、`LIVENESS_GUARD_ENABLED`、`LIVENESS_FAILURE_LIMIT`、`LIVENESS_WINDOW_SECONDS`、`LIVENESS_LOCK_SECONDS`、`LIVENESS_LAB_ENABLED`、`OCR_ENABLED`、`OCR_MODEL_DIR`、`OCR_DET_MODEL`、`OCR_REC_MODEL`、`OCR_DICT`、`OCR_WIDTH_MODE`、`OCR_ORIENTATION`、`S3_*`、`DATA_RETENTION_DAYS`。
 
 ## 测试
 

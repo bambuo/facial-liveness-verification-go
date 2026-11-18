@@ -1,0 +1,7462 @@
+{
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/initialize",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "user_id",
+            "validators": [
+              "body",
+              "isUUID",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "document_type",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "issuing_country",
+            "validators": [
+              "body",
+              "optional",
+              "isLength",
+              "isAlpha",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "sandbox",
+            "validators": [
+              "body",
+              "optional",
+              "isBoolean",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "source",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "addons",
+            "validators": [
+              "body",
+              "optional",
+              "isObject",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "addons.aml_screening",
+            "validators": [
+              "body",
+              "optional",
+              "isBoolean",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "addons.address_verification",
+            "validators": [
+              "body",
+              "optional",
+              "isBoolean",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "verification_mode",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "age_threshold",
+            "validators": [
+              "body",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "verification_id",
+            "session_token",
+            "verification_url",
+            "verification_mode",
+            "status",
+            "current_step",
+            "total_steps",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/re-verify",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "user_id",
+            "validators": [
+              "body",
+              "isUUID",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "previous_verification_id",
+            "validators": [
+              "body",
+              "isUUID",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "source",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "verification_id",
+            "parent_verification_id",
+            "verification_mode",
+            "status",
+            "current_step",
+            "total_steps",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/front-document",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "document_type",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "issuing_country",
+            "validators": [
+              "body",
+              "optional",
+              "isLength",
+              "isAlpha",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [
+          {
+            "name": "document",
+            "validators": [
+              "upload.single"
+            ]
+          }
+        ],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "idempotent_retry"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "final_result",
+            "rejection_reason",
+            "rejection_detail",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "verification_mode",
+            "status",
+            "current_step",
+            "total_steps",
+            "document_id",
+            "ocr_data",
+            "detected_document_type",
+            "classification_confidence",
+            "rejection_reason",
+            "rejection_detail",
+            "requires_back",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/back-document",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "document_type",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "issuing_country",
+            "validators": [
+              "body",
+              "optional",
+              "isLength",
+              "isAlpha",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [
+          {
+            "name": "document",
+            "validators": [
+              "upload.single"
+            ]
+          }
+        ],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "verification_id",
+            "verification_mode",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "final_result",
+            "rejection_reason",
+            "rejection_detail",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "verification_mode",
+            "status",
+            "current_step",
+            "total_steps",
+            "document_id",
+            "barcode_data",
+            "barcode_extraction_failed",
+            "documents_match",
+            "cross_validation_results",
+            "rejection_reason",
+            "rejection_detail",
+            "failure_reason",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/cross-validation",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "documents_match",
+            "cross_validation_results",
+            "rejection_reason",
+            "rejection_detail",
+            "failure_reason",
+            "manual_review_reason",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/live-capture",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [
+          {
+            "name": "selfie",
+            "validators": [
+              "upload.single"
+            ]
+          }
+        ],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "verification_id",
+            "verification_mode",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "final_result",
+            "rejection_reason",
+            "rejection_detail",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "verification_mode",
+            "status",
+            "current_step",
+            "total_steps",
+            "selfie_id",
+            "face_match_results",
+            "liveness_results",
+            "deepfake_check",
+            "age_estimation",
+            "velocity_analysis",
+            "geo_analysis",
+            "final_result",
+            "rejection_reason",
+            "rejection_detail",
+            "failure_reason",
+            "manual_review_reason",
+            "message"
+          ],
+          "nested": {
+            "liveness_results": [
+              "liveness_passed",
+              "liveness_score",
+              "liveness_mode"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/voice-challenge",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "error",
+            "current_step"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "challenge_digits",
+            "expires_in_seconds",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/voice-capture",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [
+          {
+            "name": "file",
+            "validators": [
+              "upload.single"
+            ]
+          }
+        ],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "error",
+            "current_step"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "410",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "503",
+          "keys": [
+            "success",
+            "error",
+            "retryable",
+            "current_step"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "503",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "total_steps",
+            "voice_match_results",
+            "final_result",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/finalize",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "final_result",
+            "rejection_reason",
+            "rejection_detail",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/restart",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "message",
+            "retry_count"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "503",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "retry_count",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/internal/session",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "session_token",
+            "session_token_expires_at",
+            "verification_url"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/status",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "nested": {},
+          "ref": "response",
+          "kind": "identifier"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/selfie",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "selfie_url"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "selfie_url",
+            "expires_in"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/phone-otp/send",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "phone_number",
+            "validators": [
+              "body",
+              "matches",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "429",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [],
+          "nested": {},
+          "ref": "response",
+          "kind": "identifier"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/phone-otp/verify",
+      "module": "newVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "code",
+            "validators": [
+              "body",
+              "matches",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message",
+            "phone_verified"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/verify/handoff/create",
+      "module": "handoff",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "token",
+            "expires_at"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/verify/handoff/:token/session",
+      "module": "handoff",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "409",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "user_id",
+            "source",
+            "branding",
+            "page_builder_config"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/verify/handoff/:token/link",
+      "module": "handoff",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/verify/handoff/:token/complete",
+      "module": "handoff",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "409",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/verify/handoff/:token/status",
+      "module": "handoff",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "status"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/register",
+      "module": "developer/register",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "email",
+            "validators": [
+              "body",
+              "isEmail",
+              "normalizeEmail",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "name",
+            "validators": [
+              "body",
+              "trim",
+              "escape",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "company",
+            "validators": [
+              "body",
+              "optional",
+              "trim",
+              "escape",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "webhook_url",
+            "validators": [
+              "body",
+              "optional",
+              "isURL",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "developer",
+            "message"
+          ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/api-key",
+      "module": "developer/apiKeys",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "name",
+            "validators": [
+              "body",
+              "trim",
+              "escape",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "is_sandbox",
+            "validators": [
+              "body",
+              "optional",
+              "isBoolean",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "expires_in_days",
+            "validators": [
+              "body",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "api_key",
+            "key_id",
+            "name",
+            "is_sandbox",
+            "created_at",
+            "expires_at",
+            "key_prefix",
+            "security_info",
+            "message"
+          ],
+          "nested": {
+            "security_info": [
+              "store_securely",
+              "environment_variable",
+              "revocation"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/api-keys",
+      "module": "developer/apiKeys",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "api_keys",
+            "total_keys",
+            "active_keys",
+            "security_recommendations"
+          ],
+          "nested": {
+            "security_recommendations": [
+              "rotate_unused_keys",
+              "monitor_usage",
+              "use_environment_variables"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/api-key/:keyId",
+      "module": "developer/apiKeys",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "keyId",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message",
+            "revoked_key",
+            "security_info"
+          ],
+          "nested": {
+            "revoked_key": [
+              "id",
+              "name",
+              "key_preview"
+            ],
+            "security_info": [
+              "immediate_effect",
+              "cleanup_recommendation",
+              "regeneration"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/api-key/:id/rotate",
+      "module": "developer/apiKeys",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "gracePeriodHours",
+            "validators": [
+              "body",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "new_key",
+            "new_key_id",
+            "old_key_expires_at",
+            "grace_period_hours",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks",
+      "module": "developer/webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "webhooks"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks",
+      "module": "developer/webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "url",
+            "validators": [
+              "body",
+              "isURL",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "is_sandbox",
+            "validators": [
+              "body",
+              "optional",
+              "isBoolean",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "events",
+            "validators": [
+              "body",
+              "optional",
+              "isArray",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "secret",
+            "validators": [
+              "body",
+              "optional",
+              "isString",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "api_key_id",
+            "validators": [
+              "body",
+              "optional",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "webhook",
+            "message"
+          ],
+          "nested": {
+            "webhook": [
+              "secret_key"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks/:webhookId/secret",
+      "module": "developer/webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "webhookId",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "secret_key"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks/:webhookId/deliveries",
+      "module": "developer/webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "webhookId",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "deliveries",
+            "total"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks/:webhookId/test",
+      "module": "developer/webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "webhookId",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "status_code",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "status_code"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "status_code",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks/:webhookId/deliveries/:deliveryId/resend",
+      "module": "developer/webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "webhookId",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "deliveryId",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "delivery"
+          ],
+          "nested": {
+            "delivery": [
+              "id",
+              "status",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/webhooks/:webhookId",
+      "module": "developer/webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "webhookId",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/stats",
+      "module": "developer/analytics",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "period",
+            "period_start",
+            "total_requests",
+            "successful_requests",
+            "failed_requests",
+            "pending_requests",
+            "manual_review_requests",
+            "success_rate",
+            "monthly_limit",
+            "monthly_usage",
+            "remaining_quota",
+            "quota_reset_date"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/activity",
+      "module": "developer/analytics",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "statistics",
+            "recent_activities",
+            "total_activities",
+            "session_outcomes"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/verifications/:verificationId",
+      "module": "developer/analytics",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "verificationId",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "total_steps",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [],
+          "nested": {},
+          "ref": "response",
+          "kind": "identifier"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/analytics",
+      "module": "developer/analytics",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "daily_volume",
+            "rejection_breakdown",
+            "daily_latency",
+            "quota",
+            "funnel",
+            "daily_webhooks"
+          ],
+          "nested": {
+            "quota": [
+              "used",
+              "limit"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/llm",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "provider",
+            "api_key_preview",
+            "endpoint_url",
+            "model"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "provider",
+            "api_key_preview",
+            "endpoint_url",
+            "model"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/llm",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "provider",
+            "validators": [
+              "body",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "api_key",
+            "validators": [
+              "body",
+              "optional",
+              "isString",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "endpoint_url",
+            "validators": [
+              "body",
+              "optional",
+              "isURL",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "model",
+            "validators": [
+              "body",
+              "optional",
+              "isString",
+              "isLength",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message",
+            "provider",
+            "api_key_preview",
+            "endpoint_url",
+            "model"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/sms",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "provider",
+            "api_key_preview",
+            "phone_number"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "provider",
+            "api_key_preview",
+            "phone_number"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/sms",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "provider",
+            "validators": [
+              "body",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "api_key",
+            "validators": [
+              "body",
+              "optional",
+              "isString",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "api_secret",
+            "validators": [
+              "body",
+              "optional",
+              "isString",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "phone_number",
+            "validators": [
+              "body",
+              "optional",
+              "matches",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message",
+            "provider",
+            "api_key_preview",
+            "phone_number"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/branding",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "logo_url",
+            "accent_color",
+            "company_name"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/branding",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "logo_url",
+            "validators": [
+              "body",
+              "optional",
+              "isURL",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "accent_color",
+            "validators": [
+              "body",
+              "optional",
+              "matches",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "company_name",
+            "validators": [
+              "body",
+              "optional",
+              "isString",
+              "trim",
+              "isLength",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "logo_url",
+            "accent_color",
+            "company_name"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/page-builder",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "config",
+            "slug",
+            "logo_url"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/page-builder",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/page-builder/slug",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "slug",
+            "validators": [
+              "body",
+              "optional",
+              "isString",
+              "matches",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "409",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "slug"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/aml",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "enabled"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/aml",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "enabled",
+            "validators": [
+              "body",
+              "isBoolean",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "enabled"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/voice-auth",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "enabled"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/voice-auth",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "enabled",
+            "validators": [
+              "body",
+              "isBoolean",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "enabled"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/vc",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "enabled"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/vc",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "enabled",
+            "validators": [
+              "body",
+              "isBoolean",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "enabled"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/duplicate-detection",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "enabled",
+            "action"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/duplicate-detection",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "enabled",
+            "validators": [
+              "body",
+              "isBoolean",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "action",
+            "validators": [
+              "body",
+              "isIn",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "enabled",
+            "action"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/vault",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "enabled",
+            "auto_store"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/vault",
+      "module": "developer/settings",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "enabled",
+            "validators": [
+              "body",
+              "optional",
+              "isBoolean",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "auto_store",
+            "validators": [
+              "body",
+              "optional",
+              "isBoolean",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/account",
+      "module": "developer/profile",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "confirm_email",
+            "validators": [
+              "body",
+              "isEmail",
+              "normalizeEmail",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/profile",
+      "module": "developer/profile",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "scope",
+            "operator"
+          ],
+          "nested": {
+            "operator": [
+              "email",
+              "api_key_id",
+              "key_prefix",
+              "service_label",
+              "service_product",
+              "service_environment"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {
+            "data": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "avatar_url",
+              "locale",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/profile",
+      "module": "developer/profile",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "name",
+            "validators": [
+              "body",
+              "trim",
+              "escape",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "company",
+            "validators": [
+              "body",
+              "optional",
+              "trim",
+              "escape",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "locale",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {
+            "data": [
+              "avatar_url"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/avatar",
+      "module": "developer/profile",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {
+            "data": [
+              "avatar_url"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/branding/logo",
+      "module": "developer/profile",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {
+            "data": [
+              "logo_url"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/reviewers/invite",
+      "module": "developer/profile",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "email",
+            "validators": [
+              "body",
+              "isEmail",
+              "normalizeEmail",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "name",
+            "validators": [
+              "body",
+              "optional",
+              "trim",
+              "escape",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "role",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "reviewer"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/reviewers",
+      "module": "developer/profile",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "reviewers"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/reviewers/:id",
+      "module": "developer/profile",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message",
+            "reviewer"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/dashboard",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "stats",
+            "recent_verifications",
+            "developer_count",
+            "system_health"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verifications",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "status",
+            "validators": [
+              "query",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "developer_id",
+            "validators": [
+              "query",
+              "optional",
+              "isUUID",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "page",
+            "validators": [
+              "query",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "limit",
+            "validators": [
+              "query",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "verifications",
+            "pagination"
+          ],
+          "nested": {
+            "pagination": [
+              "page",
+              "limit",
+              "total",
+              "pages"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verification/:id",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "verification"
+          ],
+          "nested": {
+            "verification": [
+              "document_url",
+              "selfie_url",
+              "documents",
+              "debug"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verification/:id/duplicates",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "linked_verifications"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "linked_verifications"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/verification/:id/review",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "decision",
+            "validators": [
+              "body",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "reason",
+            "validators": [
+              "body",
+              "optional",
+              "trim",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "new_status",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "verification",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/developers",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "page",
+            "validators": [
+              "query",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "limit",
+            "validators": [
+              "query",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "developers",
+            "pagination"
+          ],
+          "nested": {
+            "pagination": [
+              "page",
+              "limit",
+              "total",
+              "pages"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "period",
+            "validators": [
+              "query",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "developer_id",
+            "validators": [
+              "query",
+              "optional",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "nested": {},
+          "ref": "analytics",
+          "kind": "identifier"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/health",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "nested": {},
+          "ref": "health",
+          "kind": "identifier"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/funnel",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "period",
+            "validators": [
+              "query",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "developer_id",
+            "validators": [
+              "query",
+              "optional",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "funnel"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/rejections",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "period",
+            "validators": [
+              "query",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "rejections"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/fraud-patterns",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "period",
+            "validators": [
+              "query",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "patterns"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/risk-distribution",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "period",
+            "validators": [
+              "query",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "distribution"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/provider-metrics",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [],
+          "nested": {},
+          "ref": "summary",
+          "kind": "identifier"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/audit/export",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "from",
+            "validators": [
+              "query",
+              "optional",
+              "isISO8601",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "to",
+            "validators": [
+              "query",
+              "optional",
+              "isISO8601",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "status",
+            "validators": [
+              "query",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "developer_id",
+            "validators": [
+              "query",
+              "optional",
+              "isUUID",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "format",
+            "validators": [
+              "query",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "limit",
+            "validators": [
+              "query",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "offset",
+            "validators": [
+              "query",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "include_sandbox",
+            "validators": [
+              "query",
+              "optional",
+              "isBoolean",
+              "withMessage"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "export_date",
+            "record_count",
+            "filters",
+            "records"
+          ],
+          "nested": {
+            "filters": [
+              "from",
+              "to",
+              "status",
+              "developer_id",
+              "include_sandbox"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/user/:userId/data",
+      "module": "admin",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/thresholds",
+      "module": "admin-thresholds",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {
+            "data": [
+              "production",
+              "sandbox",
+              "meta"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/thresholds",
+      "module": "admin-thresholds",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {
+            "data": [
+              "updated_settings",
+              "production",
+              "sandbox",
+              "meta"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/thresholds/preview",
+      "module": "admin-thresholds",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {
+            "data": [
+              "preview",
+              "explanation"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/thresholds/reset",
+      "module": "admin-thresholds",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {
+            "data": [
+              "message",
+              "default_settings"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {
+            "error": [
+              "code",
+              "message"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "module": "auth",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/csrf-token",
+      "module": "auth",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "csrfToken"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/admin/login",
+      "module": "auth",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "email",
+            "validators": [
+              "body",
+              "isEmail",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "password",
+            "validators": [
+              "body",
+              "notEmpty",
+              "withMessage",
+              "isLength",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "401",
+          "keys": [
+            "requires_totp"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "token",
+            "user"
+          ],
+          "nested": {
+            "user": [
+              "id",
+              "email",
+              "role"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/admin/escalate",
+      "module": "auth",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "410",
+          "keys": [
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/send",
+      "module": "auth",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/verify",
+      "module": "auth",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "code",
+            "validators": [
+              "body",
+              "isString",
+              "isLength",
+              "isNumeric",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "token",
+            "developer",
+            "is_new"
+          ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "registration_token",
+            "is_new"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/complete-registration",
+      "module": "auth",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "registration_token",
+            "validators": [
+              "body",
+              "isString",
+              "notEmpty",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "name",
+            "validators": [
+              "body",
+              "isString",
+              "trim",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "company",
+            "validators": [
+              "body",
+              "optional",
+              "isString",
+              "trim"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "token",
+            "developer",
+            "api_key",
+            "is_new"
+          ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reviewer/otp/send",
+      "module": "auth",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reviewer/otp/verify",
+      "module": "auth",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "code",
+            "validators": [
+              "body",
+              "isString",
+              "isLength",
+              "isNumeric",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "token",
+            "reviewer"
+          ],
+          "nested": {
+            "reviewer": [
+              "id",
+              "email",
+              "name",
+              "developer_id",
+              "role"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/github/callback",
+      "module": "auth",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "code",
+            "validators": [
+              "body",
+              "isString",
+              "matches",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "state",
+            "validators": [
+              "body",
+              "isString",
+              "notEmpty",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "token",
+            "developer",
+            "api_key",
+            "is_new"
+          ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "avatar_url",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "token",
+            "developer",
+            "is_new"
+          ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "avatar_url",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/developer/github/url",
+      "module": "auth",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "url",
+            "configured"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "url",
+            "state",
+            "configured"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp/setup",
+      "module": "auth",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "qrCode"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp/verify",
+      "module": "auth",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "module": "health",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "nested": {},
+          "ref": "healthcheck",
+          "kind": "identifier"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/detailed",
+      "module": "health",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "dynamic",
+          "keys": [],
+          "nested": {},
+          "ref": "healthcheck",
+          "kind": "identifier"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/ready",
+      "module": "health",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "status"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "503",
+          "keys": [
+            "status",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/live",
+      "module": "health",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "status"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/api-key-diagnostic",
+      "module": "health",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "dynamic",
+          "keys": [],
+          "nested": {},
+          "ref": "diagnostics",
+          "kind": "identifier"
+        },
+        {
+          "status": "500",
+          "keys": [
+            "timestamp",
+            "error",
+            "details",
+            "environment"
+          ],
+          "nested": {
+            "environment": [
+              "NODE_ENV",
+              "API_KEY_SECRET"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/webhooks/register",
+      "module": "webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "url",
+            "validators": [
+              "body",
+              "isURL",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "is_sandbox",
+            "validators": [
+              "body",
+              "optional",
+              "isBoolean",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "secret_token",
+            "validators": [
+              "body",
+              "optional",
+              "isLength",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "webhook",
+            "message"
+          ],
+          "nested": {
+            "webhook": [
+              "id",
+              "url",
+              "is_sandbox",
+              "is_active",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/webhooks",
+      "module": "webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "webhooks"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/webhooks/:webhookId",
+      "module": "webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "url",
+            "validators": [
+              "body",
+              "optional",
+              "isURL",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "is_active",
+            "validators": [
+              "body",
+              "optional",
+              "isBoolean",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "secret_token",
+            "validators": [
+              "body",
+              "optional",
+              "isLength",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "webhook",
+            "message"
+          ],
+          "nested": {
+            "webhook": [
+              "id",
+              "url",
+              "is_sandbox",
+              "is_active",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/webhooks/:webhookId",
+      "module": "webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/webhooks/:webhookId/deliveries",
+      "module": "webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "webhook_id",
+            "page",
+            "limit",
+            "total",
+            "deliveries"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/webhooks/:webhookId/test",
+      "module": "webhooks",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message",
+            "result",
+            "payload"
+          ],
+          "nested": {
+            "result": [
+              "delivered",
+              "response_status"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/users",
+      "module": "vaas",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {
+            "data": [
+              "id",
+              "email",
+              "phone",
+              "first_name",
+              "last_name",
+              "external_id",
+              "metadata"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/verify",
+      "module": "vaas",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/verify/:verification_id/status",
+      "module": "vaas",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification"
+          ],
+          "nested": {
+            "verification": [
+              "id",
+              "status",
+              "confidence_score",
+              "failure_reason",
+              "updated_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/developers",
+      "module": "vaas",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data",
+            "meta"
+          ],
+          "nested": {
+            "meta": [
+              "total",
+              "page",
+              "per_page"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/developers/:id",
+      "module": "vaas",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {
+            "data": [
+              "avatar_url",
+              "api_key_count",
+              "verification_count"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/developers/:id/suspend",
+      "module": "vaas",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/developers/:id/unsuspend",
+      "module": "vaas",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/health",
+      "module": "vaas",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message",
+            "timestamp"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/batch/upload",
+      "module": "batch",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "items",
+            "validators": [
+              "body",
+              "isArray",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "items.*.user_id",
+            "validators": [
+              "body",
+              "isUUID",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "items.*.document_type",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "items.*.front_document_url",
+            "validators": [
+              "body",
+              "optional",
+              "isURL",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "items.*.back_document_url",
+            "validators": [
+              "body",
+              "optional",
+              "isURL",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "batch_id",
+            "status",
+            "total_items",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch/:id/status",
+      "module": "batch",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "batch_id",
+            "status",
+            "total_items",
+            "processed_items",
+            "succeeded_items",
+            "failed_items",
+            "progress_percentage",
+            "created_at",
+            "completed_at"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch/:id/results",
+      "module": "batch",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "results"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/batch/:id/cancel",
+      "module": "batch",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "id",
+            "validators": [
+              "param",
+              "isUUID",
+              "withMessage"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch",
+      "module": "batch",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "page",
+            "validators": [
+              "query",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "limit",
+            "validators": [
+              "query",
+              "optional",
+              "isInt",
+              "withMessage"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "jobs",
+            "pagination"
+          ],
+          "nested": {
+            "pagination": [
+              "page",
+              "limit",
+              "total",
+              "pages"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/address-document",
+      "module": "addressVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "document_type",
+            "validators": [
+              "body",
+              "isIn",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "address_verification"
+          ],
+          "nested": {
+            "address_verification": [
+              "status",
+              "score",
+              "name_match_score",
+              "address",
+              "document_fresh",
+              "reasons"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/address-status",
+      "module": "addressVerification",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "verification_id",
+            "validators": [
+              "param",
+              "isUUID"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "address_verification",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "address_verification"
+          ],
+          "nested": {
+            "address_verification": [
+              "status",
+              "score",
+              "name_match_score",
+              "address",
+              "document_type",
+              "document_fresh",
+              "reasons"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/page-config",
+      "module": "pageConfig",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "branding"
+          ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "branding"
+          ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "branding",
+            "page_builder_config"
+          ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/page-config/slug/:slug",
+      "module": "pageConfig",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "branding",
+            "page_builder_config"
+          ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "branding",
+            "page_builder_config"
+          ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/session-info",
+      "module": "pageConfig",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "user_id",
+            "status",
+            "verification_mode",
+            "branding",
+            "page_builder_config"
+          ],
+          "nested": {
+            "branding": [
+              "logo_url",
+              "accent_color",
+              "company_name"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/monitoring/schedules",
+      "module": "monitoring",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "user_id",
+            "validators": [
+              "body",
+              "isUUID",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "interval_days",
+            "validators": [
+              "body",
+              "isInt",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "verification_request_id",
+            "validators": [
+              "body",
+              "optional",
+              "isUUID"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "schedule"
+          ],
+          "nested": {
+            "schedule": [
+              "id",
+              "user_id",
+              "interval_days",
+              "next_verification_at",
+              "status",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/schedules",
+      "module": "monitoring",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "status",
+            "validators": [
+              "query",
+              "optional",
+              "isIn"
+            ]
+          },
+          {
+            "name": "page",
+            "validators": [
+              "query",
+              "optional",
+              "isInt"
+            ]
+          },
+          {
+            "name": "limit",
+            "validators": [
+              "query",
+              "optional",
+              "isInt"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "schedules",
+            "total",
+            "page",
+            "limit"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/schedules/:schedule_id",
+      "module": "monitoring",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "schedule_id",
+            "validators": [
+              "param",
+              "isUUID"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "schedule"
+          ],
+          "nested": {
+            "schedule": [
+              "id",
+              "user_id",
+              "interval_days",
+              "next_verification_at",
+              "last_verification_at",
+              "status",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/monitoring/schedules/:schedule_id",
+      "module": "monitoring",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [
+          {
+            "name": "schedule_id",
+            "validators": [
+              "param",
+              "isUUID"
+            ]
+          }
+        ],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/expiring-documents",
+      "module": "monitoring",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": [
+          {
+            "name": "days_ahead",
+            "validators": [
+              "query",
+              "optional",
+              "isInt"
+            ]
+          },
+          {
+            "name": "page",
+            "validators": [
+              "query",
+              "optional",
+              "isInt"
+            ]
+          },
+          {
+            "name": "limit",
+            "validators": [
+              "query",
+              "optional",
+              "isInt"
+            ]
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "alerts",
+            "total",
+            "page",
+            "limit"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/status",
+      "module": "status",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "overall",
+            "services",
+            "checked_at"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/setup/status",
+      "module": "setup",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "needs_setup"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "needs_setup"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/setup/initialize",
+      "module": "setup",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [
+          {
+            "name": "name",
+            "validators": [
+              "body",
+              "isString",
+              "trim",
+              "escape",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "email",
+            "validators": [
+              "body",
+              "isEmail",
+              "normalizeEmail",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "company",
+            "validators": [
+              "body",
+              "optional",
+              "isString",
+              "trim",
+              "escape",
+              "isLength",
+              "withMessage"
+            ]
+          },
+          {
+            "name": "locale",
+            "validators": [
+              "body",
+              "optional",
+              "isIn",
+              "withMessage"
+            ]
+          }
+        ],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "token",
+            "developer",
+            "api_key"
+          ],
+          "nested": {
+            "developer": [
+              "id",
+              "email",
+              "name",
+              "company",
+              "is_verified",
+              "locale",
+              "created_at"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:id/credential",
+      "module": "credentials",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "503",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "403",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "credential",
+            "jti",
+            "expires_at"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "already_issued",
+            "jti",
+            "issued_at",
+            "expires_at",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:id/credential/send",
+      "module": "credentials",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "503",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "403",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "jti",
+            "expires_at",
+            "email_sent"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/credentials/:jti/revoke",
+      "module": "credentials",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/credentials/:jti/status",
+      "module": "credentials",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "nested": {},
+          "ref": "status",
+          "kind": "identifier"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/:id/credential",
+      "module": "credentials",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "503",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "403",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "credential",
+            "jti",
+            "expires_at"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "already_issued",
+            "jti",
+            "issued_at",
+            "expires_at",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/:id/credential/send",
+      "module": "credentials",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "503",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "403",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "jti",
+            "expires_at",
+            "email_sent"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/credentials/:jti/revoke",
+      "module": "credentials",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/credentials/:jti/status",
+      "module": "credentials",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "nested": {},
+          "ref": "status",
+          "kind": "identifier"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/rulesets",
+      "module": "compliance",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "ruleset"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/compliance/rulesets",
+      "module": "compliance",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "rulesets"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "module": "compliance",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "ruleset"
+          ],
+          "nested": {
+            "ruleset": [
+              "rules"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "module": "compliance",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "ruleset"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "module": "compliance",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/rulesets/:id/rules",
+      "module": "compliance",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "rule"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/compliance/rules/:id",
+      "module": "compliance",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "rule"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/compliance/rules/:id",
+      "module": "compliance",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/evaluate",
+      "module": "compliance",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "matched_rules",
+            "matches",
+            "resolved_action"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/vault/store",
+      "module": "vault",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "already_stored",
+            "vault_token",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "vault_token"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/share/:shareToken",
+      "module": "vault",
+      "auth": "inline",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "attributes",
+            "expires_at"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/:token",
+      "module": "vault",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "vault_token",
+            "status",
+            "data",
+            "created_at",
+            "expires_at"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/:token/attributes/:attr",
+      "module": "vault",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "attribute",
+            "value"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/vault/:token",
+      "module": "vault",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault",
+      "module": "vault",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "entries",
+            "pagination"
+          ],
+          "nested": {
+            "pagination": [
+              "page",
+              "limit",
+              "total",
+              "total_pages"
+            ]
+          },
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/vault/:token/share",
+      "module": "vault",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "share_url",
+            "share_token",
+            "expires_at",
+            "allowed_attributes"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/.well-known/did.json",
+      "module": "well-known",
+      "auth": "public-candidate",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        },
+        {
+          "status": "200",
+          "keys": [
+            "@context",
+            "id",
+            "verificationMethod",
+            "authentication",
+            "assertionMethod"
+          ],
+          "nested": {},
+          "ref": "",
+          "kind": "object"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/system/version",
+      "module": "system",
+      "auth": "middleware",
+      "implemented": false,
+      "request": {
+        "body": [],
+        "files": [],
+        "param": [],
+        "query": []
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "nested": {},
+          "ref": "response",
+          "kind": "identifier"
+        }
+      ]
+    }
+  ],
+  "generatedAt": "2026-11-18T11:15:05Z",
+  "source": "contracts/endpoints.json + responses.json + fields.json"
+}

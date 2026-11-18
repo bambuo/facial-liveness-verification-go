@@ -1921,9 +1921,6 @@ func convertLSTM(_ *Model, convertedOutputs map[string]*Node, node *protos.NodeP
 // https://onnx.ai/onnx/operators/onnx__Conv.html
 func convertConv(_ *Model, _ map[string]*Node, node *protos.NodeProto, inputs []*Node) *Node {
 	autoPad := GetStringAttrOr(node, "auto_pad", "NOTSET")
-	if autoPad != "NOTSET" {
-		exceptions.Panicf("Conv: support for attribute 'auto_pad' (%s) is not yet implemented", autoPad)
-	}
 	kernelShape := GetIntsAttrOr(node, "kernel_shape", nil)
 	strides := GetIntsAttrOr(node, "strides", nil)
 	pads := GetIntsAttrOr(node, "pads", nil)
@@ -1946,15 +1943,46 @@ func convertConv(_ *Model, _ map[string]*Node, node *protos.NodeProto, inputs []
 
 	var paddings [][2]int
 	numSpatialDims := x.Rank() - 2
-	if pads != nil {
-		if len(pads) != 2*numSpatialDims {
-			exceptions.Panicf("invalid number of padding values: %d spatial axes, got %d padding values -- expected 2 pads per axis", numSpatialDims, len(pads))
+	switch autoPad {
+	case "NOTSET":
+		if pads != nil {
+			if len(pads) != 2*numSpatialDims {
+				exceptions.Panicf("invalid number of padding values: %d spatial axes, got %d padding values -- expected 2 pads per axis", numSpatialDims, len(pads))
+			}
+			paddings = make([][2]int, numSpatialDims)
+			for i := range numSpatialDims {
+				paddings[i][0] = pads[i]
+				paddings[i][1] = pads[i+numSpatialDims]
+			}
 		}
+	case "VALID":
+		// No padding.
+	case "SAME_UPPER", "SAME_LOWER":
 		paddings = make([][2]int, numSpatialDims)
 		for i := range numSpatialDims {
-			paddings[i][0] = pads[i]
-			paddings[i][1] = pads[i+numSpatialDims]
+			inDim := x.Shape().Dim(i + 2)
+			if inDim < 0 {
+				exceptions.Panicf("Conv: auto_pad=%q with dynamic spatial axis %d is not supported", autoPad, i+2)
+			}
+			stride, dilation := 1, 1
+			if i < len(strides) {
+				stride = strides[i]
+			}
+			if i < len(dilations) {
+				dilation = dilations[i]
+			}
+			outDim := (inDim + stride - 1) / stride
+			effectiveKernel := (kernelShape[i]-1)*dilation + 1
+			totalPad := max((outDim-1)*stride+effectiveKernel-inDim, 0)
+			padBefore := totalPad / 2
+			padAfter := totalPad - padBefore
+			if autoPad == "SAME_LOWER" {
+				padBefore, padAfter = padAfter, padBefore
+			}
+			paddings[i] = [2]int{padBefore, padAfter}
 		}
+	default:
+		exceptions.Panicf("Conv: unsupported auto_pad %q", autoPad)
 	}
 
 	inputRank := x.Rank()

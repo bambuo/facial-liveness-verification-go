@@ -58,6 +58,7 @@ func main() {
 	bucket := flag.Int("bucket", 32, "分桶粒度")
 	iters := flag.Int("iters", 3, "每种模式迭代次数")
 	warmup := flag.String("warmup", "64,128,192,256,320,384,448,512", "预热宽度")
+	maxSide := flag.Int("max-side", 0, "检测长边上限，0 使用默认 640")
 	orientation := flag.String("orientation", "0", "方向")
 	concurrency := flag.Int("concurrency", 0, "并发请求数；0 不压测")
 	jsonOut := flag.String("json", "", "JSON 输出路径")
@@ -93,6 +94,7 @@ func main() {
 			continue
 		}
 		cfg := ocr.Config{
+			MaxSide:     *maxSide,
 			DetModel:    filepath.Join(*modelDir, "det.onnx"),
 			RecModel:    *recModel,
 			DictPath:    *dictPath,

@@ -64,6 +64,7 @@ type Face struct {
 type OCR struct {
 	Enabled     bool
 	ModelDir    string
+	MaxSide     int
 	DetModel    string
 	RecModel    string
 	DictPath    string
@@ -73,7 +74,10 @@ type OCR struct {
 
 // DB 是 PostgreSQL 配置。
 type DB struct {
-	URL string
+	URL                       string
+	AutoMigrate               bool
+	MigrationLockSeconds      int
+	MigrationStatementSeconds int
 }
 
 // Redis 是缓存配置。
@@ -178,7 +182,12 @@ func load(worker bool) (*Config, error) {
 			LivenessCropScale:   floatVal("FACE_LIVENESS_CROP_SCALE", 2.7),
 			MaxFrameBytes:       int64(intVal("FACE_MAX_FRAME_BYTES", 2*1024*1024)),
 		},
-		DB: DB{URL: getString("DATABASE_URL", "")},
+		DB: DB{
+			URL:                       getString("DATABASE_URL", ""),
+			AutoMigrate:               boolVal("DB_AUTO_MIGRATE", true),
+			MigrationLockSeconds:      intVal("DB_MIGRATION_LOCK_SECONDS", 30),
+			MigrationStatementSeconds: intVal("DB_MIGRATION_STATEMENT_SECONDS", 120),
+		},
 		Redis: Redis{
 			Addr:                getString("REDIS_ADDR", ""),
 			Password:            getString("REDIS_PASSWORD", ""),
@@ -210,6 +219,7 @@ func load(worker bool) (*Config, error) {
 		OCR: OCR{
 			Enabled:     boolVal("OCR_ENABLED", false),
 			ModelDir:    getString("OCR_MODEL_DIR", "models/ocr"),
+			MaxSide:     intVal("OCR_MAX_SIDE", 640),
 			DetModel:    getString("OCR_DET_MODEL", ""),
 			RecModel:    getString("OCR_REC_MODEL", ""),
 			DictPath:    getString("OCR_DICT", ""),
@@ -242,6 +252,9 @@ func validate(c *Config, worker bool) []error {
 		add("生产配置不得启用 LAB_MODE")
 	}
 	if c.OCR.Enabled {
+		if c.OCR.MaxSide <= 0 {
+			add("OCR_MAX_SIDE 必须大于 0")
+		}
 		if c.OCR.ModelDir == "" && c.OCR.DetModel == "" {
 			add("OCR_ENABLED 时 OCR_MODEL_DIR 或 OCR_DET_MODEL 不能为空")
 		}
@@ -258,6 +271,14 @@ func validate(c *Config, worker bool) []error {
 	}
 	if c.DB.URL == "" {
 		add("DATABASE_URL 不能为空")
+	}
+	if c.DB.AutoMigrate {
+		if c.DB.MigrationLockSeconds <= 0 {
+			add("DB_MIGRATION_LOCK_SECONDS 必须大于 0")
+		}
+		if c.DB.MigrationStatementSeconds <= 0 {
+			add("DB_MIGRATION_STATEMENT_SECONDS 必须大于 0")
+		}
 	}
 	if c.Redis.Addr == "" {
 		add("REDIS_ADDR 不能为空")

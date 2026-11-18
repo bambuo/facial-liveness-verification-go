@@ -10,6 +10,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	_ "golang.org/x/image/tiff"
 )
 
 const (

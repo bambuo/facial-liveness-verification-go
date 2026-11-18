@@ -189,7 +189,9 @@ export function parseColumn(defRaw) {
     check: null,
   };
   const ref = /\bREFERENCES\s+([\w."]+)/i.exec(tail);
-  if (ref) flags.references = ref[1];
+  if (ref) flags.references = ref[1].replace(/"/g, '');
+  const onDel = /\bON\s+DELETE\s+(CASCADE|SET\s+NULL|SET\s+DEFAULT|RESTRICT|NO\s+ACTION)/i.exec(tail);
+  if (onDel) flags.onDelete = onDel[1].toUpperCase().replace(/\s+/g, ' ');
   const def = /\bDEFAULT\s+(.+?)(?=\bNOT\s+NULL\b|\bNULL\b|\bPRIMARY\s+KEY\b|\bUNIQUE\b|\bREFERENCES\b|\bCHECK\b|$)/i.exec(tail);
   if (def) flags.default = def[1].trim().replace(/\s+/g, ' ');
   const chk = /\bCHECK\s*(\([^;]*?\))/i.exec(tail);
@@ -254,7 +256,8 @@ export function parseAlterTable(stmt) {
     }
     const addConstraint = /^ADD\s+CONSTRAINT\s+([\s\S]+)$/i.exec(actionMasked);
     if (addConstraint) {
-      op.actions.push({ type: 'add-constraint', definition: addConstraint[1].trim().replace(/\s+/g, ' ') });
+      const definition = actionRaw.replace(/^ADD\s+CONSTRAINT\s+/i, '').trim().replace(/\s+/g, ' ');
+      op.actions.push({ type: 'add-constraint', definition });
       continue;
     }
     const setDefault = /^ALTER\s+COLUMN\s+((?:"[^"]+"|[A-Za-z_][\w$]*))\s+SET\s+DEFAULT\s+([\s\S]+)$/i.exec(actionMasked);
@@ -277,14 +280,18 @@ export function parseCreateIndex(stmt) {
   const open = stmt.masked.indexOf('(', m.index + m[0].length - 1);
   const close = open >= 0 ? findMatchingParen(stmt.masked, open) : -1;
   const columnsRaw = close > open ? stmt.raw.slice(open + 1, close) : '';
-  const whereMatch = /\bWHERE\b([\s\S]*)$/i.exec(stmt.masked.slice(close + 1));
+  const tailMasked = close > 0 ? stmt.masked.slice(close + 1) : '';
+  const wherePos = /\bWHERE\b/i.exec(tailMasked);
+  const whereRaw = wherePos
+    ? stmt.raw.slice(close + 1 + wherePos.index + wherePos[0].length).trim().replace(/\s+/g, ' ')
+    : null;
   const parts = m[3].split('.');
   return {
     name: unquoteIdent(m[2]),
     table: unquoteIdent(parts[parts.length - 1]),
     unique: Boolean(m[1]),
     columns: columnsRaw.split(',').map((x) => x.trim()).filter(Boolean),
-    where: whereMatch ? whereMatch[1].trim().replace(/\s+/g, ' ').slice(0, 160) : null,
+    where: whereRaw ? whereRaw.slice(0, 160) : null,
   };
 }
 

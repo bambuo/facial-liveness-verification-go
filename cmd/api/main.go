@@ -50,6 +50,20 @@ func run() error {
 	}
 	ctx := context.Background()
 
+	if cfg.DB.AutoMigrate {
+		gormDB, err := pg.OpenGORM(cfg.DB.URL)
+		if err != nil {
+			return fmt.Errorf("打开 GORM: %w", err)
+		}
+		defer func() { _ = pg.CloseGORM(gormDB) }()
+		if err := pg.AutoMigrate(ctx, gormDB,
+			time.Duration(cfg.DB.MigrationLockSeconds)*time.Second,
+			time.Duration(cfg.DB.MigrationStatementSeconds)*time.Second); err != nil {
+			return fmt.Errorf("启动迁移: %w", err)
+		}
+		slog.Info("数据库迁移完成")
+	}
+
 	repo, err := pg.New(ctx, cfg.DB.URL)
 	if err != nil {
 		return err
@@ -88,7 +102,7 @@ func run() error {
 		if dict == "" {
 			dict = filepath.Join(cfg.OCR.ModelDir, "dict.txt")
 		}
-		ocrCfg := ocr.Config{DetModel: det, RecModel: rec, DictPath: dict, Orientation: cfg.OCR.Orientation}
+		ocrCfg := ocr.Config{DetModel: det, RecModel: rec, DictPath: dict, Orientation: cfg.OCR.Orientation, MaxSide: cfg.OCR.MaxSide}
 		if cfg.OCR.WidthMode == "bucket" {
 			ocrCfg.WidthBucket = 32
 		}

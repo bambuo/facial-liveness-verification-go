@@ -1,0 +1,78 @@
+{
+  "image": "eval/ocr/en_doc.png",
+  "reference": "eval/ocr/en_doc.txt",
+  "orientation": "0",
+  "modes": [
+    {
+      "mode": "exact",
+      "iterations": 3,
+      "cer": 0,
+      "cer_nospace": 0,
+      "wer": 0,
+      "field_accuracy": 1,
+      "fields": {
+        "dob": true,
+        "exp": true,
+        "id": true,
+        "name": true,
+        "total": true
+      },
+      "latency_ms": [
+        460.49,
+        462.536,
+        435.24
+      ],
+      "det_ms": [
+        35.421875,
+        33.802958,
+        38.21125
+      ],
+      "rec_ms": [
+        424.1565,
+        427.931292,
+        396.146334
+      ],
+      "p50_ms": 460.49,
+      "p95_ms": 462.536,
+      "mean_ms": 452.75533333333334,
+      "text": "NAME: JOHN DOE DOB: 1990-01-01 ID NO: AB1234567 EXP: 2030-01-01 TOTAL: 44,900"
+    },
+    {
+      "mode": "bucket",
+      "iterations": 3,
+      "cer": 0,
+      "cer_nospace": 0,
+      "wer": 0,
+      "field_accuracy": 1,
+      "fields": {
+        "dob": true,
+        "exp": true,
+        "id": true,
+        "name": true,
+        "total": true
+      },
+      "latency_ms": [
+        449.24,
+        456.312,
+        458.94
+      ],
+      "det_ms": [
+        38.953416,
+        32.66575,
+        34.944042
+      ],
+      "rec_ms": [
+        409.474917,
+        422.786709,
+        423.129083
+      ],
+      "p50_ms": 456.312,
+      "p95_ms": 458.94,
+      "mean_ms": 454.8306666666667,
+      "text": "NAME: JOHN DOE DOB: 1990-01-01 ID NO: AB1234567 EXP: 2030-01-01 TOTAL: 44,900"
+    }
+  ],
+  "concurrency": 0,
+  "concurrent_qps": 0,
+  "concurrent_errors": 0
+}

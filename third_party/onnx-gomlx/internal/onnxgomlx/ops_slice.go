@@ -114,15 +114,99 @@ func (m *Model) findDynamicDimensionSource(outputName string, convertedOutputs m
 	}
 }
 
-// convertSlice converts a ONNX node to a GoMLX node.
+// convertSliceAttributes 实现 opset<10 的属性式 Slice（starts/ends/axes 为节点属性）。
+func convertSliceAttributes(node *protos.NodeProto, inputs []*Node) *Node {
+	if len(inputs) < 1 || inputs[0] == nil {
+		exceptions.Panicf("Slice with attributes requires an input tensor in node %s", NodeToString(node))
+	}
+	startsAttr := GetNodeAttr(node, "starts", true)
+	endsAttr := GetNodeAttr(node, "ends", true)
+	axesAttr := GetNodeAttr(node, "axes", false)
+	starts := startsAttr.Ints
+	ends := endsAttr.Ints
+	if len(starts) != len(ends) {
+		exceptions.Panicf("Slice starts/ends length mismatch in node %s", NodeToString(node))
+	}
+	axes := make([]int, len(starts))
+	for i := range starts {
+		axes[i] = i
+	}
+	if axesAttr != nil {
+		if len(axesAttr.Ints) != len(starts) {
+			exceptions.Panicf("Slice axes length mismatch in node %s", NodeToString(node))
+		}
+		for i, axis := range axesAttr.Ints {
+			axes[i] = int(axis)
+		}
+	}
+	steps := make([]int, len(starts))
+	for i := range steps {
+		steps[i] = 1
+	}
+	operand := inputs[0]
+	rank := operand.Rank()
+	specs := make([]SliceAxisSpec, rank)
+	for d := range rank {
+		specs[d] = AxisRange()
+	}
+	for i, axis := range axes {
+		if axis < 0 {
+			axis += rank
+		}
+		if axis < 0 || axis >= rank {
+			exceptions.Panicf("Slice axis %d out of bounds for rank %d in node %s", axis, rank, NodeToString(node))
+		}
+		dim := operand.Shape().Dim(axis)
+		if dim < 0 {
+			// 动态维退回运行时 gather 路径。
+			g := operand.Graph()
+			startsNode := Const(g, tensors.FromFlatDataAndDimensions(starts, len(starts)))
+			endsNode := Const(g, tensors.FromFlatDataAndDimensions(ends, len(ends)))
+			return runtimeSlice(operand, startsNode, endsNode, nil, axes, steps)
+		}
+		dim64 := int64(dim)
+		start := starts[i]
+		end := ends[i]
+		if start < 0 {
+			start += dim64
+		}
+		if end < 0 {
+			end += dim64
+		}
+		if start < 0 {
+			start = 0
+		}
+		if start > dim64 {
+			start = dim64
+		}
+		if end < 0 {
+			end = 0
+		}
+		if end > dim64 {
+			end = dim64
+		}
+		if start >= end {
+			outDims := make([]int, rank)
+			for d := 0; d < rank; d++ {
+				outDims[d] = operand.Shape().Dim(d)
+			}
+			outDims[axis] = 0
+			return Zeros(operand.Graph(), shapes.Make(operand.DType(), outDims...))
+		}
+		specs[axis] = AxisRange(int(start), int(end))
+	}
+	return Slice(operand, specs...)
+}
+
+// convertSlice 转换 ONNX Slice，兼容输入式（opset>=10）与属性式（opset<10）。
 //
 // See ONNX documentation in:
 // https://onnx.ai/onnx/operators/onnx__Slice.html
 func convertSlice(m *Model, convertedOutputs map[string]*Node, node *protos.NodeProto, inputs []*Node) *Node {
+	// Opset < 10 represents starts/ends/axes as attributes instead of inputs.
 	if len(inputs) < 3 {
-		exceptions.Panicf("Slice requires at least 3 inputs, got %d in node %s", len(inputs), NodeToString(node))
+		return convertSliceAttributes(node, inputs)
 	}
-
 	operand := inputs[0]
 	rank := operand.Rank()
 

@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -26,6 +27,7 @@ import (
 	"facial-liveness-verification-go/internal/adapter/web"
 	"facial-liveness-verification-go/internal/app"
 	"facial-liveness-verification-go/internal/config"
+	"facial-liveness-verification-go/internal/ocr"
 	"facial-liveness-verification-go/internal/port"
 )
 
@@ -71,6 +73,34 @@ func run() error {
 		return err
 	}
 	defer engine.Close()
+
+	var ocrSvc web.OCRService
+	if cfg.OCR.Enabled {
+		det := cfg.OCR.DetModel
+		if det == "" {
+			det = filepath.Join(cfg.OCR.ModelDir, "det.onnx")
+		}
+		rec := cfg.OCR.RecModel
+		if rec == "" {
+			rec = filepath.Join(cfg.OCR.ModelDir, "rec.onnx")
+		}
+		dict := cfg.OCR.DictPath
+		if dict == "" {
+			dict = filepath.Join(cfg.OCR.ModelDir, "dict.txt")
+		}
+		ocrCfg := ocr.Config{DetModel: det, RecModel: rec, DictPath: dict, Orientation: cfg.OCR.Orientation}
+		if cfg.OCR.WidthMode == "bucket" {
+			ocrCfg.WidthBucket = 32
+		}
+		ocrEngine, err := ocr.New(ocrCfg)
+		if err != nil {
+			return fmt.Errorf("加载 OCR: %w", err)
+		}
+		defer ocrEngine.Close()
+		ocrSvc = ocrEngine
+		slog.Info("OCR 已启用", "det", det, "rec", rec, "dict", dict,
+			"width_mode", cfg.OCR.WidthMode, "orientation", cfg.OCR.Orientation)
+	}
 
 	modelHash, err := modelFingerprint(cfg.Face.ModelDir)
 	if err != nil {
@@ -130,6 +160,8 @@ func run() error {
 		Support:       support,
 		Liveness:      livenessSvc,
 		Issuer:        issuer,
+		OCR:           ocrSvc,
+		Face:          engine,
 		EngineVersion: engine.ModelVersion(),
 		BuildVersion:  buildVersion,
 		BuildCommit:   buildCommit,

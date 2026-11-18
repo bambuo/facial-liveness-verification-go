@@ -1,0 +1,74 @@
+{
+  "image": "eval/ocr/zh_doc.png",
+  "reference": "eval/ocr/zh_doc.txt",
+  "orientation": "0",
+  "modes": [
+    {
+      "mode": "exact",
+      "iterations": 3,
+      "cer": 0.05405405405405406,
+      "cer_nospace": 0,
+      "wer": 1,
+      "field_accuracy": 1,
+      "fields": {
+        "dob": true,
+        "id": true,
+        "name": true
+      },
+      "latency_ms": [
+        371.354,
+        349.118,
+        349.386
+      ],
+      "det_ms": [
+        58.364208,
+        48.424875,
+        47.1145
+      ],
+      "rec_ms": [
+        312.2655,
+        300.039625,
+        301.625375
+      ],
+      "p50_ms": 349.386,
+      "p95_ms": 371.354,
+      "mean_ms": 356.6193333333333,
+      "text": "姓名：张三出生日期：1990-01-01证件号码：1234567890"
+    },
+    {
+      "mode": "bucket",
+      "iterations": 3,
+      "cer": 0.05405405405405406,
+      "cer_nospace": 0,
+      "wer": 1,
+      "field_accuracy": 1,
+      "fields": {
+        "dob": true,
+        "id": true,
+        "name": true
+      },
+      "latency_ms": [
+        361.548,
+        366.654,
+        360.63
+      ],
+      "det_ms": [
+        56.710875,
+        56.502792,
+        60.858042
+      ],
+      "rec_ms": [
+        304.18975,
+        309.480417,
+        299.096458
+      ],
+      "p50_ms": 361.548,
+      "p95_ms": 366.654,
+      "mean_ms": 362.94399999999996,
+      "text": "姓名：张三出生日期：1990-01-01证件号码：1234567890"
+    }
+  ],
+  "concurrency": 0,
+  "concurrent_qps": 0,
+  "concurrent_errors": 0
+}

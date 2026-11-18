@@ -32,6 +32,8 @@ type Server struct {
 	support       *app.VerificationSupport
 	liveness      *app.LivenessService
 	issuer        port.TokenIssuer
+	ocr           OCRService
+	face          port.FaceEngine
 	engineVersion string
 	buildVersion  string
 	buildCommit   string
@@ -54,6 +56,8 @@ type Deps struct {
 	Support       *app.VerificationSupport
 	Liveness      *app.LivenessService
 	Issuer        port.TokenIssuer
+	OCR           OCRService
+	Face          port.FaceEngine
 	EngineVersion string
 	BuildVersion  string
 	BuildCommit   string
@@ -67,7 +71,7 @@ func NewServer(d Deps) *Server {
 	return &Server{
 		cfg: d.Cfg, auth: d.Auth, challenges: d.Challenges, actions: d.Actions,
 		enroll: d.Enroll, verify: d.Verify, subjects: d.Subjects, support: d.Support,
-		liveness: d.Liveness, issuer: d.Issuer, engineVersion: d.EngineVersion,
+		liveness: d.Liveness, issuer: d.Issuer, ocr: d.OCR, face: d.Face, engineVersion: d.EngineVersion,
 		buildVersion: d.BuildVersion, buildCommit: d.BuildCommit,
 		modelHash: d.ModelHash, configHash: d.Cfg.Fingerprint(),
 		dbPing: d.DBPing, redisPing: d.RedisPing,
@@ -87,6 +91,8 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /v1/verifications", s.handleVerify)
 	mux.HandleFunc("GET /v1/subjects/{subject_id}", s.handleSubjectGet)
 	mux.HandleFunc("DELETE /v1/subjects/{subject_id}", s.handleSubjectDelete)
+	mux.HandleFunc("POST /extract/ocr", s.handleExtractOCR)
+	mux.HandleFunc("POST /extract/front", s.handleExtractFront)
 	if s.cfg.LabMode {
 		mux.HandleFunc("POST /v1/liveness-checks", s.handleLivenessCheck)
 	}

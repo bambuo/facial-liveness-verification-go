@@ -29,6 +29,7 @@ type Config struct {
 	RateLimit RateLimit
 	Storage   Storage
 	Guard     Guard
+	OCR       OCR
 }
 
 // Auth 是 JWT 与 dev 令牌配置。
@@ -57,6 +58,17 @@ type Face struct {
 	ActionVerifyEnabled bool
 	LivenessCropScale   float64
 	MaxFrameBytes       int64
+}
+
+// OCR 是 PaddleOCR 引擎配置。
+type OCR struct {
+	Enabled     bool
+	ModelDir    string
+	DetModel    string
+	RecModel    string
+	DictPath    string
+	WidthMode   string
+	Orientation string
 }
 
 // DB 是 PostgreSQL 配置。
@@ -195,6 +207,15 @@ func load(worker bool) (*Config, error) {
 			SecretKey:      getString("STORAGE_SECRET_KEY", ""),
 			ForcePathStyle: boolVal("STORAGE_FORCE_PATH_STYLE", true),
 		},
+		OCR: OCR{
+			Enabled:     boolVal("OCR_ENABLED", false),
+			ModelDir:    getString("OCR_MODEL_DIR", "models/ocr"),
+			DetModel:    getString("OCR_DET_MODEL", ""),
+			RecModel:    getString("OCR_REC_MODEL", ""),
+			DictPath:    getString("OCR_DICT", ""),
+			WidthMode:   getString("OCR_WIDTH_MODE", "exact"),
+			Orientation: getString("OCR_ORIENTATION", "0"),
+		},
 	}
 
 	errs = append(errs, validate(c, worker)...)
@@ -219,6 +240,21 @@ func validate(c *Config, worker bool) []error {
 	}
 	if c.Env == "production" && c.LabMode {
 		add("生产配置不得启用 LAB_MODE")
+	}
+	if c.OCR.Enabled {
+		if c.OCR.ModelDir == "" && c.OCR.DetModel == "" {
+			add("OCR_ENABLED 时 OCR_MODEL_DIR 或 OCR_DET_MODEL 不能为空")
+		}
+		switch c.OCR.WidthMode {
+		case "bucket", "exact":
+		default:
+			add("OCR_WIDTH_MODE 必须是 bucket 或 exact，当前 %q", c.OCR.WidthMode)
+		}
+		switch c.OCR.Orientation {
+		case "0", "auto", "90", "180", "270":
+		default:
+			add("OCR_ORIENTATION 必须是 0/auto/90/180/270，当前 %q", c.OCR.Orientation)
+		}
 	}
 	if c.DB.URL == "" {
 		add("DATABASE_URL 不能为空")

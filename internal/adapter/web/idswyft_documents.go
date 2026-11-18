@@ -408,11 +408,17 @@ func (s *Server) handleFinalize(w http.ResponseWriter, r *http.Request) {
 	_ = s.idswyft.UpdateVerification(r.Context(), verification.ID, map[string]any{
 		"status": status, "processing_completed_at": time.Now().UTC(), "updated_at": time.Now().UTC(),
 	})
+	external := "HARD_REJECTED"
+	if status == "verified" {
+		external = "COMPLETE"
+	} else if status == "manual_review" {
+		external = "COMPLETE"
+	}
 	writeJSON(w, http.StatusOK, map[string]any{
-		"success": true, "verification_id": verification.ID.String(), "status": status,
-		"current_step": "complete", "final_result": final, "message": "Verification finalized",
+		"success": true, "verification_id": verification.ID.String(), "status": external,
+		"current_step": 5, "final_result": final, "message": "Verification finalized",
 	})
-	s.dispatchVerificationWebhook(verification, status, final)
+	s.dispatchVerificationWebhook(verification, external, final)
 }
 
 // handleRestart 实现 POST /api/v2/verify/:id/restart。

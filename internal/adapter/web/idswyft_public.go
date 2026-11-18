@@ -3,8 +3,12 @@ package web
 import (
 	"net/http"
 	"net/mail"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
+
+	"facial-liveness-verification-go/internal/adapter/pg/gormmodel"
 	"facial-liveness-verification-go/internal/domain"
 )
 
@@ -81,9 +85,59 @@ func (s *Server) handlePageConfigSlug(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"success": true, "slug": r.PathValue("slug"), "config": map[string]any{}})
 }
 
-// handleDeveloperRegister 是公开注册入口；P1 先返回明确的未实现信号。
+// handleDeveloperRegister 创建未验证开发者并发送邮箱 OTP。
 func (s *Server) handleDeveloperRegister(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusNotImplemented, map[string]any{"success": false, "message": "开发者注册尚未实现"})
+	if s.idswyft == nil {
+		writeError(w, r, domain.New(domain.CodeServiceUnavailable, "注册存储未启用"))
+		return
+	}
+	var req struct {
+		Email      string  `json:"email"`
+		Name       string  `json:"name"`
+		Company    *string `json:"company"`
+		WebhookURL *string `json:"webhook_url"`
+	}
+	if err := decodeJSONBody(w, r, &req); err != nil {
+		writeError(w, r, err)
+		return
+	}
+	req.Email = strings.TrimSpace(req.Email)
+	req.Name = strings.TrimSpace(req.Name)
+	if _, err := mail.ParseAddress(req.Email); err != nil || len(req.Name) < 2 || len(req.Name) > 100 {
+		writeError(w, r, domain.New(domain.CodeDocumentInvalid, "email 或 name 无效"))
+		return
+	}
+	if _, err := s.idswyft.FindDeveloperByEmail(r.Context(), req.Email); err == nil {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"success": false, "error": "Developer with this email already exists"})
+		return
+	}
+	now := time.Now().UTC()
+	verified := false
+	developer := &gormmodel.Developer{
+		ID: uuid.New(), Email: req.Email, Name: req.Name, Company: req.Company,
+		WebhookURL: req.WebhookURL, IsVerified: &verified, Status: "active", Locale: "en",
+		CreatedAt: &now, UpdatedAt: &now,
+	}
+	if err := s.idswyft.CreateDeveloper(r.Context(), developer); err != nil {
+		writeError(w, r, err)
+		return
+	}
+	code, _ := randomDigits(6)
+	_ = s.idswyft.CreateDeveloperOTP(r.Context(), req.Email, hashToken(s.apiKeySecret(), code), 10*time.Minute)
+	if s.cfg.SMTP.Enabled && s.mail != nil {
+		_ = s.mail.Send(req.Email, "Verify your idswyft account", "Verification code: "+code)
+	}
+	response := map[string]any{
+		"developer": map[string]any{
+			"id": developer.ID, "email": developer.Email, "name": developer.Name,
+			"company": developer.Company, "is_verified": false, "created_at": developer.CreatedAt,
+		},
+		"message": "Verification email sent. Complete email verification to activate your account.",
+	}
+	if !s.cfg.SMTP.Enabled && s.cfg.Env == "development" {
+		response["code"] = code
+	}
+	writeJSON(w, http.StatusCreated, response)
 }
 
 // handleAdminEscalate 按参考实现固定返回 410。

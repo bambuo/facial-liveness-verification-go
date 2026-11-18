@@ -6,7 +6,7 @@
 
 | 状态 | 内容 |
 | --- | --- |
-| 已实现已验证 | 人脸 1:1（YuNet + SFace）、活体（MiniFASNetV2）、动作校验、challenge 一次性/配额/失败锁定、档案加密、合规删除、纯 Go ONNX（PRelu/Dropout/initializer/Clip/MaxPool 等规范补丁）、纯 Go OCR（PP-OCRv5 检测/识别/行分组、中英模型、自动方向、Slice 属性补丁、MRZ/US/UK/CN 字段规则 v1）、GORM 31 模型与启动 AutoMigrate（advisory lock、schema parity、双副本并发）、idswyft 核心 15 接口与 6/6 引擎端点、API Key/handoff/session 鉴权、9 个周期任务、S3/SMTP/SMS/Webhook 适配器 |
+| 已实现已验证 | 人脸 1:1（YuNet + SFace）、活体（MiniFASNetV2）、动作校验、challenge 一次性/配额/失败锁定、档案加密、合规删除、纯 Go ONNX（PRelu/Dropout/initializer/Clip/MaxPool 等规范补丁）、纯 Go OCR（PP-OCRv5 检测/识别/行分组、中英模型、自动方向、Slice 属性补丁、MRZ/US/UK/CN 字段规则 v1）、GORM 31 模型与启动 AutoMigrate（advisory lock、schema parity、双副本并发）、idswyft 154 接口代码基线（156/158 静态、158/158 运行时）、6/6 引擎端点、handoff/batch/vault/VC/webhooks/admin/developer/compliance/VaaS/monitoring、PDF417/MRZ/篡改/深伪、S3/SMTP/SMS/Webhook 与 9 个周期任务 |
 | 已实现未验证 | 语音离线算子（Kaldi fbank、NeMo 归一化、CTC、CAM++/NeMo int8，WER 4–6%）；SMTP/SMS/Webhook 真实外部服务联调；idswyft 全量 154 接口、Docker 构建、并发 P95、CI 集成测试 |
 | 未实现 | 条码/MRZ、文档字段规则库、地址验证、批量、移动交接、VaaS、可验证凭证、保险库、合规规则、AML、风险评分、去重、审核工作台、开发者门户、22 页前端、3 套 SDK、9 个定时任务 |
 | 基线不做 | 1:N 识别、pgvector、cgo、Node sidecar、cloud `platform/*` 路由 |

@@ -3,13 +3,11 @@
 package onnxgomlx
 
 import (
-	"github.com/gomlx/compute"
 	"github.com/gomlx/compute-onnx/support/protos"
 	"github.com/gomlx/compute/dtypes"
 	"github.com/gomlx/compute/shapes"
 	"github.com/gomlx/exceptions"
 	. "github.com/gomlx/gomlx/core/graph"
-	"github.com/gomlx/gomlx/ml/nn"
 )
 
 // convertMatMulNBits implements Microsoft's block-quantized MatMulNBits operator
@@ -72,61 +70,31 @@ func (m *Model) convertMatMulNBits(node *protos.NodeProto, inputs []*Node) *Node
 		return out
 	}
 
+	// Dequantize weights and use a regular MatMul. This preserves dynamic
+	// contracting dimensions, which FusedQuantizedDense does not support.
 	g := a.Graph()
-	scales2D := Reshape(ConvertDType(scales, dtypes.Float32), n, blocks)
-	zpNode := matMulNBitsZeroPoint(g, inputs, n, blocks, bits)
-
-	var weightNode *Node
-	if bits == 8 {
-		weightNode = Reshape(packed, n, blocks*block)
-		if k != blocks*block {
-			weightNode = Slice(weightNode, AxisRange(), AxisRange(0, k))
-		}
-	} else {
-		var subDType dtypes.DType
-		if bits == 4 {
-			subDType = dtypes.Uint4
-		} else {
-			subDType = dtypes.Uint2
-		}
-		backend := g.Backend()
-		canSubByteFused := k == blocks*block &&
-			backend != nil &&
-			backend.Capabilities().Operations[compute.OpTypeFusedQuantizedDense] &&
-			backend.Capabilities().DTypes[subDType]
-		if canSubByteFused {
-			err := exceptions.TryCatch[error](func() {
-				flatPacked := Reshape(packed, n, blocks*blobBytes)
-				weightNode = Reshape(Bitcast(flatPacked, subDType), n, k)
-			})
-			if err != nil {
-				weightNode = nil
-			}
-		}
-		if weightNode == nil {
-			unpacked := unpackNBits(Reshape(packed, n, blocks, blobBytes), bits)
-			weightNode = ConvertDType(Reshape(unpacked, n, blocks*block), dtypes.Uint8)
-			if k != blocks*block {
-				weightNode = Slice(weightNode, AxisRange(), AxisRange(0, k))
-			}
-		}
+	unpacked := unpackNBits(Reshape(packed, n, blocks, blobBytes), bits)
+	weights := ConvertDType(unpacked, a.DType())
+	zp := matMulNBitsZeroPoint(g, inputs, n, blocks, bits)
+	zp = ConvertDType(zp, a.DType())
+	if !zp.IsScalar() {
+		zp = Reshape(zp, n, blocks, 1)
 	}
-
-	if bias != nil && bias.DType() != a.DType() {
-		bias = ConvertDType(bias, a.DType())
+	scalesTyped := Reshape(ConvertDType(scales, a.DType()), n, blocks, 1)
+	weights = Mul(Sub(weights, zp), scalesTyped)
+	weights = Reshape(weights, n, blocks*block)
+	if k != blocks*block {
+		weights = Slice(weights, AxisRange(), AxisRange(0, k))
 	}
-
-	cfg := QuantizedDenseConfig{
-		WeightQuantization: &Quantization{
-			Scheme:    compute.QuantLinear,
-			Scale:     scales2D,
-			ZeroPoint: zpNode,
-			BlockAxis: 1,
-			BlockSize: block,
-		},
-		WeightLayout: compute.DenseLayoutOutputsInput,
+	out := m.convertMatMul(a, Transpose(weights, 0, 1))
+	if bias != nil {
+		if bias.DType() != a.DType() {
+			bias = ConvertDType(bias, a.DType())
+		}
+		out = m.convertBinaryOp(Add, out, bias)
 	}
-	return nn.QuantizedDense(a, weightNode, bias, cfg)
+	return out
+
 }
 
 func matMulNBitsZeroPoint(g *Graph, inputs []*Node, n, blocks, bits int) *Node {

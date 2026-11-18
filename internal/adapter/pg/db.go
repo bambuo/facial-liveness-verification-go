@@ -49,4 +49,3 @@ func (r *Repo) Documents() *DocumentRepo { return &DocumentRepo{r: r} }
 
 // Keys 返回租户密钥仓储。
 func (r *Repo) Keys() *KeyRepo { return &KeyRepo{r: r} }
-

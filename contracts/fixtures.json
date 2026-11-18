@@ -1029,7 +1029,7 @@
       "path": "/api/verify/handoff/create",
       "module": "handoff",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1054,7 +1054,7 @@
       "path": "/api/verify/handoff/:token/session",
       "module": "handoff",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1117,7 +1117,7 @@
       "path": "/api/verify/handoff/:token/link",
       "module": "handoff",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1159,7 +1159,7 @@
       "path": "/api/verify/handoff/:token/complete",
       "module": "handoff",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1219,7 +1219,7 @@
       "path": "/api/verify/handoff/:token/status",
       "module": "handoff",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1344,7 +1344,7 @@
       "path": "/api/developer/api-key",
       "module": "developer/apiKeys",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -1411,7 +1411,7 @@
       "path": "/api/developer/api-keys",
       "module": "developer/apiKeys",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1444,7 +1444,7 @@
       "path": "/api/developer/api-key/:keyId",
       "module": "developer/apiKeys",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1490,7 +1490,7 @@
       "path": "/api/developer/api-key/:id/rotate",
       "module": "developer/apiKeys",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -1537,7 +1537,7 @@
       "path": "/api/developer/webhooks",
       "module": "developer/webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1561,7 +1561,7 @@
       "path": "/api/developer/webhooks",
       "module": "developer/webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -1635,7 +1635,7 @@
       "path": "/api/developer/webhooks/:webhookId/secret",
       "module": "developer/webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1668,7 +1668,7 @@
       "path": "/api/developer/webhooks/:webhookId/deliveries",
       "module": "developer/webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1702,7 +1702,7 @@
       "path": "/api/developer/webhooks/:webhookId/test",
       "module": "developer/webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1758,7 +1758,7 @@
       "path": "/api/developer/webhooks/:webhookId/deliveries/:deliveryId/resend",
       "module": "developer/webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1806,7 +1806,7 @@
       "path": "/api/developer/webhooks/:webhookId",
       "module": "developer/webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1839,7 +1839,7 @@
       "path": "/api/developer/stats",
       "module": "developer/analytics",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1874,7 +1874,7 @@
       "path": "/api/developer/activity",
       "module": "developer/analytics",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1901,7 +1901,7 @@
       "path": "/api/developer/verifications/:verificationId",
       "module": "developer/analytics",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1946,7 +1946,7 @@
       "path": "/api/developer/analytics",
       "module": "developer/analytics",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -1980,7 +1980,7 @@
       "path": "/api/developer/settings/llm",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2021,7 +2021,7 @@
       "path": "/api/developer/settings/llm",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2098,7 +2098,7 @@
       "path": "/api/developer/settings/sms",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2137,7 +2137,7 @@
       "path": "/api/developer/settings/sms",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2213,7 +2213,7 @@
       "path": "/api/developer/settings/branding",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2240,7 +2240,7 @@
       "path": "/api/developer/settings/branding",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2306,7 +2306,7 @@
       "path": "/api/developer/settings/page-builder",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2333,7 +2333,7 @@
       "path": "/api/developer/settings/page-builder",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2375,7 +2375,7 @@
       "path": "/api/developer/settings/page-builder/slug",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2429,7 +2429,7 @@
       "path": "/api/developer/settings/aml",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2453,7 +2453,7 @@
       "path": "/api/developer/settings/aml",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2496,7 +2496,7 @@
       "path": "/api/developer/settings/voice-auth",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2520,7 +2520,7 @@
       "path": "/api/developer/settings/voice-auth",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2563,7 +2563,7 @@
       "path": "/api/developer/settings/vc",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2587,7 +2587,7 @@
       "path": "/api/developer/settings/vc",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2630,7 +2630,7 @@
       "path": "/api/developer/settings/duplicate-detection",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2655,7 +2655,7 @@
       "path": "/api/developer/settings/duplicate-detection",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2707,7 +2707,7 @@
       "path": "/api/developer/settings/vault",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2732,7 +2732,7 @@
       "path": "/api/developer/settings/vault",
       "module": "developer/settings",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2793,7 +2793,7 @@
       "path": "/api/developer/account",
       "module": "developer/profile",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2827,7 +2827,7 @@
       "path": "/api/developer/profile",
       "module": "developer/profile",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2882,7 +2882,7 @@
       "path": "/api/developer/profile",
       "module": "developer/profile",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -2942,7 +2942,7 @@
       "path": "/api/developer/avatar",
       "module": "developer/profile",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -2971,7 +2971,7 @@
       "path": "/api/developer/branding/logo",
       "module": "developer/profile",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3000,7 +3000,7 @@
       "path": "/api/developer/reviewers/invite",
       "module": "developer/profile",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -3054,7 +3054,7 @@
       "path": "/api/developer/reviewers",
       "module": "developer/profile",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3078,7 +3078,7 @@
       "path": "/api/developer/reviewers/:id",
       "module": "developer/profile",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3112,7 +3112,7 @@
       "path": "/api/admin/dashboard",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3139,7 +3139,7 @@
       "path": "/api/admin/verifications",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3208,7 +3208,7 @@
       "path": "/api/admin/verification/:id",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3248,7 +3248,7 @@
       "path": "/api/admin/verification/:id/duplicates",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3292,7 +3292,7 @@
       "path": "/api/admin/verification/:id/review",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -3354,7 +3354,7 @@
       "path": "/api/admin/developers",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3405,7 +3405,7 @@
       "path": "/api/admin/analytics",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3446,7 +3446,7 @@
       "path": "/api/admin/health",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3468,7 +3468,7 @@
       "path": "/api/admin/analytics/funnel",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3511,7 +3511,7 @@
       "path": "/api/admin/analytics/rejections",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3545,7 +3545,7 @@
       "path": "/api/admin/analytics/fraud-patterns",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3579,7 +3579,7 @@
       "path": "/api/admin/analytics/risk-distribution",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3613,7 +3613,7 @@
       "path": "/api/admin/provider-metrics",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3644,7 +3644,7 @@
       "path": "/api/admin/audit/export",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3752,7 +3752,7 @@
       "path": "/api/admin/user/:userId/data",
       "module": "admin",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3777,7 +3777,7 @@
       "path": "/api/admin/thresholds",
       "module": "admin-thresholds",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3838,7 +3838,7 @@
       "path": "/api/admin/thresholds",
       "module": "admin-thresholds",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3915,7 +3915,7 @@
       "path": "/api/admin/thresholds/preview",
       "module": "admin-thresholds",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -3960,7 +3960,7 @@
       "path": "/api/admin/thresholds/reset",
       "module": "admin-thresholds",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4020,7 +4020,7 @@
       "path": "/api/auth/logout",
       "module": "auth",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4044,7 +4044,7 @@
       "path": "/api/auth/csrf-token",
       "module": "auth",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4068,7 +4068,7 @@
       "path": "/api/auth/admin/login",
       "module": "auth",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -4231,7 +4231,7 @@
       "path": "/api/auth/developer/otp/complete-registration",
       "module": "auth",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -4486,7 +4486,7 @@
       "path": "/api/auth/totp/setup",
       "module": "auth",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4510,7 +4510,7 @@
       "path": "/api/auth/totp/verify",
       "module": "auth",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4636,7 +4636,7 @@
       "path": "/api/health/api-key-diagnostic",
       "module": "health",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4684,7 +4684,7 @@
       "path": "/api/webhooks/register",
       "module": "webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -4744,7 +4744,7 @@
       "path": "/api/webhooks",
       "module": "webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4768,7 +4768,7 @@
       "path": "/api/webhooks/:webhookId",
       "module": "webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -4829,7 +4829,7 @@
       "path": "/api/webhooks/:webhookId",
       "module": "webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4853,7 +4853,7 @@
       "path": "/api/webhooks/:webhookId/deliveries",
       "module": "webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4881,7 +4881,7 @@
       "path": "/api/webhooks/:webhookId/test",
       "module": "webhooks",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4912,7 +4912,7 @@
       "path": "/api/vaas/users",
       "module": "vaas",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4957,7 +4957,7 @@
       "path": "/api/vaas/verify",
       "module": "vaas",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4994,7 +4994,7 @@
       "path": "/api/vaas/verify/:verification_id/status",
       "module": "vaas",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5037,7 +5037,7 @@
       "path": "/api/vaas/developers",
       "module": "vaas",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5079,7 +5079,7 @@
       "path": "/api/vaas/developers/:id",
       "module": "vaas",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5128,7 +5128,7 @@
       "path": "/api/vaas/developers/:id/suspend",
       "module": "vaas",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5171,7 +5171,7 @@
       "path": "/api/vaas/developers/:id/unsuspend",
       "module": "vaas",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5214,7 +5214,7 @@
       "path": "/api/vaas/health",
       "module": "vaas",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5240,7 +5240,7 @@
       "path": "/api/v2/batch/upload",
       "module": "batch",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -5312,7 +5312,7 @@
       "path": "/api/v2/batch/:id/status",
       "module": "batch",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5353,7 +5353,7 @@
       "path": "/api/v2/batch/:id/results",
       "module": "batch",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5386,7 +5386,7 @@
       "path": "/api/v2/batch/:id/cancel",
       "module": "batch",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5430,7 +5430,7 @@
       "path": "/api/v2/batch",
       "module": "batch",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5481,7 +5481,7 @@
       "path": "/api/v2/verify/:verification_id/address-document",
       "module": "addressVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -5543,7 +5543,7 @@
       "path": "/api/v2/verify/:verification_id/address-status",
       "module": "addressVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5607,7 +5607,7 @@
       "path": "/api/v2/verify/page-config",
       "module": "pageConfig",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5724,7 +5724,7 @@
       "path": "/api/v2/verify/session-info",
       "module": "pageConfig",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5795,7 +5795,7 @@
       "path": "/api/v2/monitoring/schedules",
       "module": "monitoring",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -5854,7 +5854,7 @@
       "path": "/api/v2/monitoring/schedules",
       "module": "monitoring",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5906,7 +5906,7 @@
       "path": "/api/v2/monitoring/schedules/:schedule_id",
       "module": "monitoring",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5948,7 +5948,7 @@
       "path": "/api/v2/monitoring/schedules/:schedule_id",
       "module": "monitoring",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5981,7 +5981,7 @@
       "path": "/api/v2/monitoring/expiring-documents",
       "module": "monitoring",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6170,7 +6170,7 @@
       "path": "/api/v2/verify/:id/credential",
       "module": "credentials",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6247,7 +6247,7 @@
       "path": "/api/v2/verify/:id/credential/send",
       "module": "credentials",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6310,7 +6310,7 @@
       "path": "/api/v2/verify/credentials/:jti/revoke",
       "module": "credentials",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6344,7 +6344,7 @@
       "path": "/api/v2/verify/credentials/:jti/status",
       "module": "credentials",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6506,7 +6506,7 @@
       "path": "/api/v2/credentials/:jti/revoke",
       "module": "credentials",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6540,7 +6540,7 @@
       "path": "/api/v2/credentials/:jti/status",
       "module": "credentials",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6562,7 +6562,7 @@
       "path": "/api/v2/compliance/rulesets",
       "module": "compliance",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6596,7 +6596,7 @@
       "path": "/api/v2/compliance/rulesets",
       "module": "compliance",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6621,7 +6621,7 @@
       "path": "/api/v2/compliance/rulesets/:id",
       "module": "compliance",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6668,7 +6668,7 @@
       "path": "/api/v2/compliance/rulesets/:id",
       "module": "compliance",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6738,7 +6738,7 @@
       "path": "/api/v2/compliance/rulesets/:id",
       "module": "compliance",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6781,7 +6781,7 @@
       "path": "/api/v2/compliance/rulesets/:id/rules",
       "module": "compliance",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6842,7 +6842,7 @@
       "path": "/api/v2/compliance/rules/:id",
       "module": "compliance",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6921,7 +6921,7 @@
       "path": "/api/v2/compliance/rules/:id",
       "module": "compliance",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6973,7 +6973,7 @@
       "path": "/api/v2/compliance/evaluate",
       "module": "compliance",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -7009,7 +7009,7 @@
       "path": "/api/v2/vault/store",
       "module": "vault",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -7091,7 +7091,7 @@
       "path": "/api/v2/vault/share/:shareToken",
       "module": "vault",
       "auth": "inline",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -7171,7 +7171,7 @@
       "path": "/api/v2/vault/:token",
       "module": "vault",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -7209,7 +7209,7 @@
       "path": "/api/v2/vault/:token/attributes/:attr",
       "module": "vault",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -7253,7 +7253,7 @@
       "path": "/api/v2/vault/:token",
       "module": "vault",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -7296,7 +7296,7 @@
       "path": "/api/v2/vault",
       "module": "vault",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -7329,7 +7329,7 @@
       "path": "/api/v2/vault/:token/share",
       "module": "vault",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -7439,7 +7439,7 @@
       "path": "/api/system/version",
       "module": "system",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -7457,6 +7457,6 @@
       ]
     }
   ],
-  "generatedAt": "2026-11-18T13:54:03Z",
+  "generatedAt": "2026-11-18T16:43:23Z",
   "source": "contracts/endpoints.json + responses.json + fields.json"
 }

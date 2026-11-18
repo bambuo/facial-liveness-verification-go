@@ -1,10 +1,13 @@
 package web
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 
 	"facial-liveness-verification-go/internal/audio"
+	"facial-liveness-verification-go/internal/barcode"
+	"facial-liveness-verification-go/internal/deepfake"
 	"facial-liveness-verification-go/internal/document/fields"
 	"facial-liveness-verification-go/internal/domain"
 	"facial-liveness-verification-go/internal/ocr"
@@ -32,6 +35,14 @@ func (s *Server) handleExtractBack(w http.ResponseWriter, r *http.Request) {
 		"barcode_format":   nil,
 		"raw_barcode_data": nil,
 	}
+	if decoded, barcodeErr := barcode.Decode(data); barcodeErr == nil {
+		result["barcode_format"] = barcodeFormatName(decoded.Format)
+		result["raw_barcode_data"] = decoded.Text
+		var payload map[string]any
+		if json.Unmarshal([]byte(decoded.Text), &payload) == nil {
+			result["qr_payload"] = payload
+		}
+	}
 	if mrz, ok := fields.ExtractMRZ(res.Text); ok {
 		fieldsMap := map[string]string{
 			"full_name":       mrz.Fields.FullName,
@@ -42,18 +53,22 @@ func (s *Server) handleExtractBack(w http.ResponseWriter, r *http.Request) {
 		if mrz.Fields.IssuingCountry != "" {
 			fieldsMap["issuing_country"] = mrz.Fields.IssuingCountry
 		}
-		result["qr_payload"] = map[string]any{
-			"full_name":     mrz.Fields.FullName,
-			"date_of_birth": mrz.Fields.DateOfBirth,
-			"id_number":     mrz.Fields.IDNumber,
-			"expiry_date":   mrz.Fields.ExpiryDate,
+		if result["qr_payload"] == nil {
+			result["qr_payload"] = map[string]any{
+				"full_name":     mrz.Fields.FullName,
+				"date_of_birth": mrz.Fields.DateOfBirth,
+				"id_number":     mrz.Fields.IDNumber,
+				"expiry_date":   mrz.Fields.ExpiryDate,
+			}
 		}
 		result["mrz_result"] = map[string]any{
 			"raw_lines":       mrz.RawLines,
 			"fields":          fieldsMap,
 			"checksums_valid": mrz.ChecksumsValid,
 		}
-		result["barcode_format"] = "MRZ_TD3"
+		if result["barcode_format"] == nil {
+			result["barcode_format"] = "MRZ_TD3"
+		}
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"success": true, "result": result})
 }
@@ -89,15 +104,26 @@ func (s *Server) handleExtractLive(w http.ResponseWriter, r *http.Request) {
 		livenessScore = vote.MinScore
 		livenessPassed = vote.Status == domain.LivenessReal
 	}
-	writeJSON(w, http.StatusOK, map[string]any{
-		"success": true,
-		"result": map[string]any{
-			"face_embedding":  embedding,
-			"face_confidence": faceConfidence,
-			"liveness_passed": livenessPassed,
-			"liveness_score":  livenessScore,
-		},
-	})
+	result := map[string]any{
+		"face_embedding": embedding, "face_confidence": faceConfidence,
+		"liveness_passed": livenessPassed, "liveness_score": livenessScore,
+	}
+	if s.deepfake != nil {
+		if boxes, detectErr := s.face.DetectAll(data); detectErr == nil && len(boxes) > 0 {
+			box := boxes[0]
+			for _, candidate := range boxes[1:] {
+				if (candidate.X2-candidate.X1)*(candidate.Y2-candidate.Y1) > (box.X2-box.X1)*(box.Y2-box.Y1) {
+					box = candidate
+				}
+			}
+			if crop, cropErr := deepfake.CropFace(data, box); cropErr == nil {
+				if df, dfErr := s.deepfake.Detect(crop); dfErr == nil {
+					result["deepfake_check"] = df
+				}
+			}
+		}
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"success": true, "result": result})
 }
 
 // handleVoiceEnroll 实现 POST /extract/voice-enroll：返回 CAM++ 声纹向量。
@@ -179,4 +205,20 @@ func readVoiceUpload(w http.ResponseWriter, r *http.Request) ([]float32, error) 
 		return nil, domain.New(domain.CodeDocumentInvalid, "音频解码失败")
 	}
 	return samples, nil
+}
+
+// barcodeFormatName 将解码器格式名映射到引擎契约枚举。
+func barcodeFormatName(format string) string {
+	switch format {
+	case "QR_CODE", "DATA_MATRIX", "CODE_128":
+		return format
+	case "PDF_417":
+		return "PDF417"
+	case "CODE_39", "EAN_13":
+		return "CODE_128"
+	case "AZTEC":
+		return "QR_CODE"
+	default:
+		return ""
+	}
 }

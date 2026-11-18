@@ -60,6 +60,7 @@ func TestExtractFrontContractShape(t *testing.T) {
 		"face_confidence": "number",
 		"ocr_confidence":  "number",
 		"mrz_from_front":  "null",
+		"authenticity":    "object",
 	}, "$.result")
 	ocrPayload := result["ocr"].(map[string]any)
 	assertShape(t, ocrPayload, map[string]string{

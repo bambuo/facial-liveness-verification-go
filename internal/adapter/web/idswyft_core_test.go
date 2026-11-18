@@ -27,10 +27,11 @@ type stubIdswyftStore struct {
 	selfies      map[uuid.UUID]*gormmodel.Selfie
 	handoff      *port.HandoffAuth
 	session      *port.SessionAuth
+	handoffs     map[string]*gormmodel.MobileHandoffSession
 }
 
 func newStubIdswyftStore() *stubIdswyftStore {
-	return &stubIdswyftStore{developerID: uuid.New(), documents: map[uuid.UUID]*gormmodel.Document{}, selfies: map[uuid.UUID]*gormmodel.Selfie{}}
+	return &stubIdswyftStore{developerID: uuid.New(), documents: map[uuid.UUID]*gormmodel.Document{}, selfies: map[uuid.UUID]*gormmodel.Selfie{}, handoffs: map[string]*gormmodel.MobileHandoffSession{}}
 }
 
 func (s *stubIdswyftStore) FindAPIKeyByHash(context.Context, string) (*port.APIKeyAuth, error) {
@@ -83,6 +84,65 @@ func (s *stubIdswyftStore) GetDocument(_ context.Context, id uuid.UUID) (*gormmo
 }
 func (s *stubIdswyftStore) GetBackDocument(context.Context, uuid.UUID) (*gormmodel.Document, error) {
 	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) GetDeveloperByID(context.Context, uuid.UUID) (*gormmodel.Developer, error) {
+	return &gormmodel.Developer{}, nil
+}
+func (s *stubIdswyftStore) GetDeveloperByAPIKey(context.Context, uuid.UUID) (*gormmodel.Developer, error) {
+	return &gormmodel.Developer{}, nil
+}
+func (s *stubIdswyftStore) CreateBatchJob(context.Context, *gormmodel.BatchJob, []*gormmodel.BatchItem) error {
+	return nil
+}
+func (s *stubIdswyftStore) GetBatchJob(context.Context, uuid.UUID, uuid.UUID) (*gormmodel.BatchJob, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) UpdateBatchJob(context.Context, uuid.UUID, map[string]any) error {
+	return nil
+}
+func (s *stubIdswyftStore) ListBatchJobs(context.Context, uuid.UUID, int, int) ([]gormmodel.BatchJob, int64, error) {
+	return nil, 0, nil
+}
+func (s *stubIdswyftStore) ListBatchItems(context.Context, uuid.UUID) ([]gormmodel.BatchItem, error) {
+	return nil, nil
+}
+func (s *stubIdswyftStore) UpdateBatchItem(context.Context, uuid.UUID, map[string]any) error {
+	return nil
+}
+func (s *stubIdswyftStore) CreateHandoff(_ context.Context, session *gormmodel.MobileHandoffSession) error {
+	s.handoffs[session.Token] = session
+	return nil
+}
+func (s *stubIdswyftStore) GetHandoffByToken(_ context.Context, hash string) (*gormmodel.MobileHandoffSession, error) {
+	session := s.handoffs[hash]
+	if session == nil {
+		return nil, context.Canceled
+	}
+	return session, nil
+}
+func (s *stubIdswyftStore) UpdateHandoff(_ context.Context, hash string, updates map[string]any) (int64, error) {
+	if session := s.handoffs[hash]; session != nil {
+		if status, ok := updates["status"].(string); ok {
+			session.Status = status
+		}
+	}
+	return 1, nil
+}
+func (s *stubIdswyftStore) UpdatePendingHandoff(_ context.Context, hash string, updates map[string]any) (int64, error) {
+	session := s.handoffs[hash]
+	if session == nil || session.Status != "pending" {
+		return 0, nil
+	}
+	if value, ok := updates["verification_id"].(string); ok {
+		session.VerificationID = &value
+	}
+	if value, ok := updates["status"].(string); ok {
+		session.Status = value
+	}
+	if value, ok := updates["result"].(json.RawMessage); ok {
+		session.Result = value
+	}
+	return 1, nil
 }
 func (s *stubIdswyftStore) CreateSelfie(_ context.Context, selfie *gormmodel.Selfie) error {
 	s.selfies[selfie.ID] = selfie
@@ -263,3 +323,230 @@ func TestHandoffAndSessionAuth(t *testing.T) {
 }
 
 func ptrTime(value time.Time) *time.Time { return &value }
+
+// TestHandoffFlow 覆盖 handoff 创建、读取、link、complete 与 status。
+func TestHandoffFlow(t *testing.T) {
+	store := newStubIdswyftStore()
+	cfg := testConfig()
+	cfg.Security.APIKeySecret = "test-secret"
+	srv := NewServer(Deps{Cfg: cfg, IdswyftStore: store})
+	body := []byte(`{"api_key":"ik_test","user_id":"user-1","source":"api"}`)
+	req := httptest.NewRequest(http.MethodPost, "/api/verify/handoff/create", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	srv.Handler().ServeHTTP(rec, req)
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("create status=%d body=%s", rec.Code, rec.Body.String())
+	}
+	var created map[string]any
+	if err := json.Unmarshal(rec.Body.Bytes(), &created); err != nil {
+		t.Fatal(err)
+	}
+	token, _ := created["token"].(string)
+	if token == "" {
+		t.Fatalf("missing token: %v", created)
+	}
+
+	req = httptest.NewRequest(http.MethodGet, "/api/verify/handoff/"+token+"/session", nil)
+	rec = httptest.NewRecorder()
+	srv.Handler().ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("session status=%d body=%s", rec.Code, rec.Body.String())
+	}
+
+	verificationID := uuid.New()
+	linkBody := []byte(`{"verification_id":"` + verificationID.String() + `"}`)
+	req = httptest.NewRequest(http.MethodPatch, "/api/verify/handoff/"+token+"/link", bytes.NewReader(linkBody))
+	req.Header.Set("Content-Type", "application/json")
+	rec = httptest.NewRecorder()
+	srv.Handler().ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("link status=%d body=%s", rec.Code, rec.Body.String())
+	}
+
+	completeBody := []byte(`{"status":"completed","result":{"final_result":"verified"}}`)
+	req = httptest.NewRequest(http.MethodPatch, "/api/verify/handoff/"+token+"/complete", bytes.NewReader(completeBody))
+	req.Header.Set("Content-Type", "application/json")
+	rec = httptest.NewRecorder()
+	srv.Handler().ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("complete status=%d body=%s", rec.Code, rec.Body.String())
+	}
+
+	req = httptest.NewRequest(http.MethodGet, "/api/verify/handoff/"+token+"/status", nil)
+	rec = httptest.NewRecorder()
+	srv.Handler().ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), "completed") {
+		t.Fatalf("status status=%d body=%s", rec.Code, rec.Body.String())
+	}
+}
+
+func (s *stubIdswyftStore) GetVaultByVerification(context.Context, uuid.UUID, uuid.UUID) (*gormmodel.IdentityVault, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) CreateVaultEntry(context.Context, *gormmodel.IdentityVault) error {
+	return nil
+}
+func (s *stubIdswyftStore) GetVaultByToken(context.Context, uuid.UUID, string) (*gormmodel.IdentityVault, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) ListVault(context.Context, uuid.UUID, int, int) ([]gormmodel.IdentityVault, int64, error) {
+	return nil, 0, nil
+}
+func (s *stubIdswyftStore) DeleteVault(context.Context, uuid.UUID, string) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) CreateShareLink(context.Context, *gormmodel.VaultShareLink) error {
+	return nil
+}
+func (s *stubIdswyftStore) GetShareLink(context.Context, string) (*gormmodel.VaultShareLink, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) IncrementShareAccess(context.Context, uuid.UUID) (int64, error) {
+	return 1, nil
+}
+func (s *stubIdswyftStore) GetVaultByID(context.Context, uuid.UUID) (*gormmodel.IdentityVault, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) TouchVaultAccess(context.Context, uuid.UUID) error { return nil }
+func (s *stubIdswyftStore) GetActiveCredential(context.Context, uuid.UUID, uuid.UUID) (*gormmodel.VerifiableCredential, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) CreateCredential(context.Context, *gormmodel.VerifiableCredential) error {
+	return nil
+}
+func (s *stubIdswyftStore) GetCredentialByJTI(context.Context, string) (*gormmodel.VerifiableCredential, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) RevokeCredential(context.Context, uuid.UUID, string, string) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) WebhooksByDeveloper(context.Context, uuid.UUID) ([]gormmodel.Webhook, error) {
+	return nil, nil
+}
+func (s *stubIdswyftStore) WebhookByID(context.Context, uuid.UUID, uuid.UUID) (*gormmodel.Webhook, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) WebhookByURL(context.Context, uuid.UUID, string, bool) (*gormmodel.Webhook, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) CreateWebhook(context.Context, *gormmodel.Webhook) error { return nil }
+func (s *stubIdswyftStore) UpdateWebhook(context.Context, uuid.UUID, uuid.UUID, map[string]any) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) DeleteWebhook(context.Context, uuid.UUID, uuid.UUID) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) WebhookDeliveries(context.Context, uuid.UUID, int, int) ([]gormmodel.WebhookDelivery, int64, error) {
+	return nil, 0, nil
+}
+func (s *stubIdswyftStore) CreateSchedule(context.Context, *gormmodel.ReverificationSchedule) error {
+	return nil
+}
+func (s *stubIdswyftStore) ListSchedules(context.Context, uuid.UUID, string, int, int) ([]gormmodel.ReverificationSchedule, int64, error) {
+	return nil, 0, nil
+}
+func (s *stubIdswyftStore) GetSchedule(context.Context, uuid.UUID, uuid.UUID) (*gormmodel.ReverificationSchedule, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) CancelSchedule(context.Context, uuid.UUID, uuid.UUID) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) ExpiringDocuments(context.Context, uuid.UUID, int, int, int) ([]gormmodel.ExpiryAlert, int64, error) {
+	return nil, 0, nil
+}
+func (s *stubIdswyftStore) CreateVAASUser(context.Context, *gormmodel.User) error { return nil }
+func (s *stubIdswyftStore) ListDevelopers(context.Context, string, string, int, int) ([]gormmodel.Developer, int64, error) {
+	return nil, 0, nil
+}
+func (s *stubIdswyftStore) SetDeveloperStatus(context.Context, uuid.UUID, string) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) CountAPIKeys(context.Context, uuid.UUID) (int64, error) { return 0, nil }
+func (s *stubIdswyftStore) CountVerifications(context.Context, uuid.UUID) (int64, error) {
+	return 0, nil
+}
+
+func (s *stubIdswyftStore) DeveloperAPIKeys(context.Context, uuid.UUID) ([]gormmodel.APIKey, error) {
+	return nil, nil
+}
+func (s *stubIdswyftStore) CreateDeveloperAPIKey(context.Context, *gormmodel.APIKey) error {
+	return nil
+}
+func (s *stubIdswyftStore) RevokeDeveloperAPIKey(context.Context, uuid.UUID, uuid.UUID) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) GetDeveloperAPIKey(context.Context, uuid.UUID, uuid.UUID) (*gormmodel.APIKey, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) UpdateDeveloper(context.Context, uuid.UUID, map[string]any) error {
+	return nil
+}
+func (s *stubIdswyftStore) DeleteDeveloper(context.Context, uuid.UUID) (int64, error) { return 0, nil }
+
+func (s *stubIdswyftStore) CreateRuleset(context.Context, *gormmodel.ComplianceRuleset) error {
+	return nil
+}
+func (s *stubIdswyftStore) ListRulesets(context.Context, uuid.UUID) ([]gormmodel.ComplianceRuleset, error) {
+	return nil, nil
+}
+func (s *stubIdswyftStore) GetRuleset(context.Context, uuid.UUID, uuid.UUID) (*gormmodel.ComplianceRuleset, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) UpdateRuleset(context.Context, uuid.UUID, uuid.UUID, map[string]any) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) DeleteRuleset(context.Context, uuid.UUID, uuid.UUID) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) RulesByRuleset(context.Context, uuid.UUID) ([]gormmodel.ComplianceRule, error) {
+	return nil, nil
+}
+func (s *stubIdswyftStore) CreateRule(context.Context, *gormmodel.ComplianceRule) error { return nil }
+func (s *stubIdswyftStore) GetRule(context.Context, uuid.UUID) (*gormmodel.ComplianceRule, error) {
+	return nil, context.Canceled
+}
+func (s *stubIdswyftStore) UpdateRule(context.Context, uuid.UUID, map[string]any) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) DeleteRule(context.Context, uuid.UUID) (int64, error) { return 0, nil }
+
+func (s *stubIdswyftStore) CreateDeveloper(context.Context, *gormmodel.Developer) error { return nil }
+func (s *stubIdswyftStore) CreateReviewer(context.Context, *gormmodel.VerificationReviewer) error {
+	return nil
+}
+func (s *stubIdswyftStore) Reviewers(context.Context, uuid.UUID) ([]gormmodel.VerificationReviewer, error) {
+	return nil, nil
+}
+func (s *stubIdswyftStore) DeleteReviewer(context.Context, uuid.UUID, uuid.UUID) (int64, error) {
+	return 0, nil
+}
+func (s *stubIdswyftStore) AdminVerifications(context.Context, string, *uuid.UUID, int, int) ([]gormmodel.VerificationRequest, int64, error) {
+	return nil, 0, nil
+}
+func (s *stubIdswyftStore) AdminStatusCounts(context.Context, time.Time) (map[string]int64, error) {
+	return map[string]int64{}, nil
+}
+func (s *stubIdswyftStore) AdminDeveloperCount(context.Context) (int64, error) { return 0, nil }
+func (s *stubIdswyftStore) DuplicateVerifications(context.Context, *gormmodel.VerificationRequest) ([]gormmodel.VerificationRequest, error) {
+	return nil, nil
+}
+func (s *stubIdswyftStore) ReviewVerification(context.Context, uuid.UUID, string, string, string) error {
+	return nil
+}
+func (s *stubIdswyftStore) ProviderMetricSummary(context.Context, time.Time) ([]map[string]any, error) {
+	return nil, nil
+}
+func (s *stubIdswyftStore) AuditLogs(context.Context, time.Time, time.Time, *uuid.UUID, *int32) ([]gormmodel.APIActivityLog, error) {
+	return nil, nil
+}
+func (s *stubIdswyftStore) DeleteUserData(context.Context, uuid.UUID) (int64, error) { return 0, nil }
+func (s *stubIdswyftStore) VerificationStatusCounts(context.Context, uuid.UUID, time.Time) (map[string]int64, error) {
+	return map[string]int64{}, nil
+}
+func (s *stubIdswyftStore) RecentActivity(context.Context, uuid.UUID, int) ([]gormmodel.APIActivityLog, error) {
+	return nil, nil
+}
+func (s *stubIdswyftStore) VerificationByID(_ context.Context, id uuid.UUID) (*gormmodel.VerificationRequest, error) {
+	return s.GetVerification(context.Background(), id)
+}

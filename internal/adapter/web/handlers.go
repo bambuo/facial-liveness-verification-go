@@ -9,13 +9,16 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"facial-liveness-verification-go/internal/app"
 	"facial-liveness-verification-go/internal/audio"
 	"facial-liveness-verification-go/internal/config"
+	"facial-liveness-verification-go/internal/deepfake"
 	"facial-liveness-verification-go/internal/domain"
 	"facial-liveness-verification-go/internal/port"
+	"facial-liveness-verification-go/internal/vc"
 )
 
 //go:embed static/face-test.html
@@ -41,6 +44,11 @@ type Server struct {
 	webhooks      WebhookDispatcher
 	sms           SMSSender
 	mail          Mailer
+	encryptor     DataEncryptor
+	vc            *vc.Issuer
+	thresholdMu   sync.RWMutex
+	thresholds    map[string]map[string]float64
+	deepfake      *deepfake.Engine
 	engineVersion string
 	buildVersion  string
 	buildCommit   string
@@ -71,6 +79,9 @@ type Deps struct {
 	Webhooks      WebhookDispatcher
 	SMS           SMSSender
 	Mail          Mailer
+	Encryptor     DataEncryptor
+	VC            *vc.Issuer
+	Deepfake      *deepfake.Engine
 	EngineVersion string
 	BuildVersion  string
 	BuildCommit   string
@@ -85,7 +96,7 @@ func NewServer(d Deps) *Server {
 		cfg: d.Cfg, auth: d.Auth, challenges: d.Challenges, actions: d.Actions,
 		enroll: d.Enroll, verify: d.Verify, subjects: d.Subjects, support: d.Support,
 		liveness: d.Liveness, issuer: d.Issuer, ocr: d.OCR, voice: d.Voice, face: d.Face,
-		idswyft: d.IdswyftStore, storage: d.Storage, webhooks: d.Webhooks, sms: d.SMS, mail: d.Mail, engineVersion: d.EngineVersion,
+		idswyft: d.IdswyftStore, storage: d.Storage, webhooks: d.Webhooks, sms: d.SMS, mail: d.Mail, encryptor: d.Encryptor, engineVersion: d.EngineVersion,
 		buildVersion: d.BuildVersion, buildCommit: d.BuildCommit,
 		modelHash: d.ModelHash, configHash: d.Cfg.Fingerprint(),
 		dbPing: d.DBPing, redisPing: d.RedisPing,
@@ -111,6 +122,144 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /extract/live", s.handleExtractLive)
 	mux.HandleFunc("POST /extract/voice-enroll", s.handleVoiceEnroll)
 	mux.HandleFunc("POST /extract/voice-verify", s.handleVoiceVerify)
+
+	mux.HandleFunc("POST /api/v2/compliance/rulesets", s.withAPIAuth(s.handleRulesetCreate))
+	mux.HandleFunc("GET /api/v2/compliance/rulesets", s.withAPIAuth(s.handleRulesetList))
+	mux.HandleFunc("GET /api/v2/compliance/rulesets/{id}", s.withAPIAuth(s.handleRulesetGet))
+	mux.HandleFunc("PUT /api/v2/compliance/rulesets/{id}", s.withAPIAuth(s.handleRulesetUpdate))
+	mux.HandleFunc("DELETE /api/v2/compliance/rulesets/{id}", s.withAPIAuth(s.handleRulesetDelete))
+	mux.HandleFunc("POST /api/v2/compliance/rulesets/{id}/rules", s.withAPIAuth(s.handleRuleCreate))
+	mux.HandleFunc("PUT /api/v2/compliance/rules/{id}", s.withAPIAuth(s.handleRuleUpdate))
+	mux.HandleFunc("DELETE /api/v2/compliance/rules/{id}", s.withAPIAuth(s.handleRuleDelete))
+	mux.HandleFunc("POST /api/v2/compliance/evaluate", s.withAPIAuth(s.handleComplianceEvaluate))
+
+	mux.HandleFunc("GET /api/developer/webhooks", s.withAPIAuth(s.handleWebhookList))
+	mux.HandleFunc("POST /api/developer/webhooks", s.withAPIAuth(s.handleWebhookRegister))
+	mux.HandleFunc("GET /api/developer/webhooks/{webhookId}/secret", s.withAPIAuth(s.handleDeveloperWebhookSecret))
+	mux.HandleFunc("GET /api/developer/webhooks/{webhookId}/deliveries", s.withAPIAuth(s.handleWebhookDeliveries))
+	mux.HandleFunc("POST /api/developer/webhooks/{webhookId}/test", s.withAPIAuth(s.handleWebhookTest))
+	mux.HandleFunc("POST /api/developer/webhooks/{webhookId}/deliveries/{deliveryId}/resend", s.withAPIAuth(s.handleDeveloperWebhookResend))
+	mux.HandleFunc("DELETE /api/developer/webhooks/{webhookId}", s.withAPIAuth(s.handleWebhookDelete))
+	mux.HandleFunc("GET /api/system/version", s.withAPIAuth(s.handleSystemVersion))
+
+	mux.HandleFunc("GET /api/admin/thresholds", s.withAdminAuth(s.handleThresholdsGet))
+	mux.HandleFunc("PUT /api/admin/thresholds", s.withAdminAuth(s.handleThresholdsUpdate))
+	mux.HandleFunc("POST /api/admin/thresholds/preview", s.withAdminAuth(s.handleThresholdsPreview))
+	mux.HandleFunc("POST /api/admin/thresholds/reset", s.withAdminAuth(s.handleThresholdsReset))
+
+	mux.HandleFunc("GET /api/admin/dashboard", s.withAdminAuth(s.handleAdminDashboard))
+	mux.HandleFunc("GET /api/admin/verifications", s.withAdminAuth(s.handleAdminVerifications))
+	mux.HandleFunc("GET /api/admin/verification/{id}", s.withAdminAuth(s.handleAdminVerification))
+	mux.HandleFunc("GET /api/admin/verification/{id}/duplicates", s.withAdminAuth(s.handleAdminDuplicates))
+	mux.HandleFunc("PUT /api/admin/verification/{id}/review", s.withAdminAuth(s.handleAdminReview))
+	mux.HandleFunc("GET /api/admin/developers", s.withAdminAuth(s.handleAdminDevelopers))
+	mux.HandleFunc("GET /api/admin/analytics", s.withAdminAuth(s.handleAdminAnalytics))
+	mux.HandleFunc("GET /api/admin/health", s.withAdminAuth(s.handleAdminHealth))
+	mux.HandleFunc("GET /api/admin/analytics/funnel", s.withAdminAuth(s.handleAdminFunnel))
+	mux.HandleFunc("GET /api/admin/analytics/rejections", s.withAdminAuth(s.handleAdminRejections))
+	mux.HandleFunc("GET /api/admin/analytics/fraud-patterns", s.withAdminAuth(s.handleAdminFraudPatterns))
+	mux.HandleFunc("GET /api/admin/analytics/risk-distribution", s.withAdminAuth(s.handleAdminRiskDistribution))
+	mux.HandleFunc("GET /api/admin/provider-metrics", s.withAdminAuth(s.handleAdminProviderMetrics))
+	mux.HandleFunc("GET /api/admin/audit/export", s.withAdminAuth(s.handleAdminAuditExport))
+	mux.HandleFunc("DELETE /api/admin/user/{userId}/data", s.withAdminAuth(s.handleAdminDeleteUserData))
+
+	mux.HandleFunc("POST /api/developer/reviewers/invite", s.withAPIAuth(s.handleReviewerInvite))
+	mux.HandleFunc("GET /api/developer/reviewers", s.withAPIAuth(s.handleReviewerList))
+	mux.HandleFunc("DELETE /api/developer/reviewers/{id}", s.withAPIAuth(s.handleReviewerDelete))
+
+	mux.HandleFunc("GET /api/v2/verify/page-config", s.handlePageConfig)
+	mux.HandleFunc("GET /api/v2/verify/session-info", s.handleSessionInfo)
+	mux.HandleFunc("GET /api/health/api-key-diagnostic", s.handleAPIKeyDiagnostic)
+	mux.HandleFunc("POST /api/auth/logout", s.handleLogout)
+	mux.HandleFunc("GET /api/auth/csrf-token", s.handleCSRFToken)
+
+	mux.HandleFunc("GET /api/developer/settings/llm", s.withAPIAuth(s.handleSettingsLLMGet))
+	mux.HandleFunc("PUT /api/developer/settings/llm", s.withAPIAuth(s.handleSettingsLLMPut))
+	mux.HandleFunc("GET /api/developer/settings/sms", s.withAPIAuth(s.handleSettingsSMSGet))
+	mux.HandleFunc("PUT /api/developer/settings/sms", s.withAPIAuth(s.handleSettingsSMSPut))
+	mux.HandleFunc("GET /api/developer/settings/branding", s.withAPIAuth(s.handleSettingsBrandingGet))
+	mux.HandleFunc("PUT /api/developer/settings/branding", s.withAPIAuth(s.handleSettingsBrandingPut))
+	mux.HandleFunc("GET /api/developer/settings/page-builder", s.withAPIAuth(s.handleSettingsPageBuilderGet))
+	mux.HandleFunc("PUT /api/developer/settings/page-builder", s.withAPIAuth(s.handleSettingsPageBuilderPut))
+	mux.HandleFunc("PUT /api/developer/settings/page-builder/slug", s.withAPIAuth(s.handleSettingsPageBuilderSlug))
+	mux.HandleFunc("GET /api/developer/settings/aml", s.withAPIAuth(s.handleSettingsAMLGet))
+	mux.HandleFunc("PUT /api/developer/settings/aml", s.withAPIAuth(s.handleSettingsAMLPut))
+	mux.HandleFunc("GET /api/developer/settings/voice-auth", s.withAPIAuth(s.handleSettingsVoiceGet))
+	mux.HandleFunc("PUT /api/developer/settings/voice-auth", s.withAPIAuth(s.handleSettingsVoicePut))
+	mux.HandleFunc("GET /api/developer/settings/vc", s.withAPIAuth(s.handleSettingsVCGet))
+	mux.HandleFunc("PUT /api/developer/settings/vc", s.withAPIAuth(s.handleSettingsVCPut))
+	mux.HandleFunc("GET /api/developer/settings/duplicate-detection", s.withAPIAuth(s.handleSettingsDuplicateGet))
+	mux.HandleFunc("PUT /api/developer/settings/duplicate-detection", s.withAPIAuth(s.handleSettingsDuplicatePut))
+	mux.HandleFunc("GET /api/developer/settings/vault", s.withAPIAuth(s.handleSettingsVaultGet))
+	mux.HandleFunc("PUT /api/developer/settings/vault", s.withAPIAuth(s.handleSettingsVaultPut))
+
+	mux.HandleFunc("GET /api/developer/stats", s.withAPIAuth(s.handleDeveloperStats))
+	mux.HandleFunc("GET /api/developer/activity", s.withAPIAuth(s.handleDeveloperActivity))
+	mux.HandleFunc("GET /api/developer/verifications/{verificationId}", s.withAPIAuth(s.handleDeveloperVerification))
+	mux.HandleFunc("GET /api/developer/analytics", s.withAPIAuth(s.handleDeveloperAnalytics))
+
+	mux.HandleFunc("GET /api/developer/profile", s.withAPIAuth(s.handleDeveloperProfileGet))
+	mux.HandleFunc("PUT /api/developer/profile", s.withAPIAuth(s.handleDeveloperProfileUpdate))
+	mux.HandleFunc("POST /api/developer/avatar", s.withAPIAuth(s.handleDeveloperAvatar("avatar")))
+	mux.HandleFunc("POST /api/developer/branding/logo", s.withAPIAuth(s.handleDeveloperAvatar("branding")))
+	mux.HandleFunc("DELETE /api/developer/account", s.withAPIAuth(s.handleDeveloperAccountDelete))
+
+	mux.HandleFunc("POST /api/developer/api-key", s.withAPIAuth(s.handleDeveloperKeyCreate))
+	mux.HandleFunc("GET /api/developer/api-keys", s.withAPIAuth(s.handleDeveloperKeyList))
+	mux.HandleFunc("DELETE /api/developer/api-key/{keyId}", s.withAPIAuth(s.handleDeveloperKeyRevoke))
+	mux.HandleFunc("POST /api/developer/api-key/{id}/rotate", s.withAPIAuth(s.handleDeveloperKeyRotate))
+
+	mux.HandleFunc("POST /api/vaas/users", s.handleVAASCreateUser)
+	mux.HandleFunc("POST /api/vaas/verify", s.handleVAASVerify)
+	mux.HandleFunc("GET /api/vaas/verify/{verification_id}/status", s.handleVAASStatus)
+	mux.HandleFunc("GET /api/vaas/developers", s.handleVAASDevelopers)
+	mux.HandleFunc("GET /api/vaas/developers/{id}", s.handleVAASDeveloper)
+	mux.HandleFunc("POST /api/vaas/developers/{id}/suspend", s.handleVAASDeveloperStatus("suspended"))
+	mux.HandleFunc("POST /api/vaas/developers/{id}/unsuspend", s.handleVAASDeveloperStatus("active"))
+	mux.HandleFunc("GET /api/vaas/health", s.handleVAASHealth)
+
+	mux.HandleFunc("POST /api/v2/monitoring/schedules", s.withAPIAuth(s.handleScheduleCreate))
+	mux.HandleFunc("GET /api/v2/monitoring/schedules", s.withAPIAuth(s.handleScheduleList))
+	mux.HandleFunc("GET /api/v2/monitoring/schedules/{schedule_id}", s.withAPIAuth(s.handleScheduleGet))
+	mux.HandleFunc("DELETE /api/v2/monitoring/schedules/{schedule_id}", s.withAPIAuth(s.handleScheduleCancel))
+	mux.HandleFunc("GET /api/v2/monitoring/expiring-documents", s.withAPIAuth(s.handleExpiringDocuments))
+
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/address-document", s.withAPIAuth(s.handleAddressDocument))
+	mux.HandleFunc("GET /api/v2/verify/{verification_id}/address-status", s.withAPIAuth(s.handleAddressStatus))
+
+	mux.HandleFunc("POST /api/webhooks/register", s.withAPIAuth(s.handleWebhookRegister))
+	mux.HandleFunc("GET /api/webhooks", s.withAPIAuth(s.handleWebhookList))
+	mux.HandleFunc("PUT /api/webhooks/{webhookId}", s.withAPIAuth(s.handleWebhookUpdate))
+	mux.HandleFunc("DELETE /api/webhooks/{webhookId}", s.withAPIAuth(s.handleWebhookDelete))
+	mux.HandleFunc("GET /api/webhooks/{webhookId}/deliveries", s.withAPIAuth(s.handleWebhookDeliveries))
+	mux.HandleFunc("POST /api/webhooks/{webhookId}/test", s.withAPIAuth(s.handleWebhookTest))
+
+	mux.HandleFunc("GET /api/v2/verify/{id}/credential", s.withAPIAuth(s.handleCredentialIssue))
+	mux.HandleFunc("POST /api/v2/verify/{id}/credential/send", s.withAPIAuth(s.handleCredentialSend))
+	mux.HandleFunc("POST /api/v2/verify/credentials/{jti}/revoke", s.withAPIAuth(s.handleCredentialRevoke))
+	mux.HandleFunc("GET /api/v2/verify/credentials/{jti}/status", s.handleCredentialStatus)
+	mux.HandleFunc("POST /api/v2/credentials/{jti}/revoke", s.withAPIAuth(s.handleCredentialRevoke))
+	mux.HandleFunc("GET /api/v2/credentials/{jti}/status", s.handleCredentialStatus)
+
+	mux.HandleFunc("GET /api/v2/vault/share/{shareToken}", s.handleVaultShareGet)
+	mux.HandleFunc("POST /api/v2/vault/store", s.withAPIAuth(s.handleVaultStore))
+	mux.HandleFunc("GET /api/v2/vault", s.withAPIAuth(s.handleVaultList))
+	mux.HandleFunc("GET /api/v2/vault/{token}", s.withAPIAuth(s.handleVaultGet))
+	mux.HandleFunc("GET /api/v2/vault/{token}/attributes/{attr}", s.withAPIAuth(s.handleVaultAttribute))
+	mux.HandleFunc("DELETE /api/v2/vault/{token}", s.withAPIAuth(s.handleVaultDelete))
+	mux.HandleFunc("POST /api/v2/vault/{token}/share", s.withAPIAuth(s.handleVaultShareCreate))
+
+	mux.HandleFunc("POST /api/v2/batch/upload", s.withAPIAuth(s.handleBatchUpload))
+	mux.HandleFunc("GET /api/v2/batch", s.withAPIAuth(s.handleBatchList))
+	mux.HandleFunc("GET /api/v2/batch/{id}/status", s.withAPIAuth(s.handleBatchStatus))
+	mux.HandleFunc("GET /api/v2/batch/{id}/results", s.withAPIAuth(s.handleBatchResults))
+	mux.HandleFunc("POST /api/v2/batch/{id}/cancel", s.withAPIAuth(s.handleBatchCancel))
+
+	mux.HandleFunc("POST /api/verify/handoff/create", s.handleHandoffCreate)
+	mux.HandleFunc("GET /api/verify/handoff/{token}/session", s.handleHandoffSession)
+	mux.HandleFunc("PATCH /api/verify/handoff/{token}/link", s.handleHandoffLink)
+	mux.HandleFunc("PATCH /api/verify/handoff/{token}/complete", s.handleHandoffComplete)
+	mux.HandleFunc("GET /api/verify/handoff/{token}/status", s.handleHandoffStatus)
 
 	mux.HandleFunc("POST /api/v2/verify/initialize", s.withAPIAuth(s.handleVerifyInitialize))
 	mux.HandleFunc("POST /api/v2/verify/re-verify", s.withAPIAuth(s.handleVerifyReverify))
@@ -138,6 +287,10 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /.well-known/did.json", s.handleDIDDocument)
 	mux.HandleFunc("GET /api/v2/verify/page-config/slug/{slug}", s.handlePageConfigSlug)
 	mux.HandleFunc("POST /api/developer/register", s.handleDeveloperRegister)
+	mux.HandleFunc("POST /api/auth/admin/login", s.handleAdminLogin)
+	mux.HandleFunc("POST /api/auth/developer/otp/complete-registration", s.handleOTPCompleteRegistration)
+	mux.HandleFunc("POST /api/auth/totp/setup", s.withAPIAuth(s.handleTOTPSetup))
+	mux.HandleFunc("POST /api/auth/totp/verify", s.withAPIAuth(s.handleTOTPVerify))
 	mux.HandleFunc("POST /api/auth/admin/escalate", s.handleAdminEscalate)
 	mux.HandleFunc("POST /api/auth/developer/otp/send", s.handleOTPSend)
 	mux.HandleFunc("POST /api/auth/developer/otp/verify", s.handleOTPVerify)
@@ -152,7 +305,13 @@ func (s *Server) Handler() http.Handler {
 		mux.HandleFunc("POST /dev/token", s.handleDevToken)
 		mux.HandleFunc("GET /dev/face-test.html", s.handleFaceTest)
 	}
-	return s.withMiddleware(mux)
+	base := s.withMiddleware(mux)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if s.handleCredentialV2Alias(w, r) {
+			return
+		}
+		base.ServeHTTP(w, r)
+	})
 }
 
 func (s *Server) authenticate(w http.ResponseWriter, r *http.Request) (*app.AuthContext, bool) {

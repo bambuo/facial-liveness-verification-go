@@ -33,6 +33,7 @@ type Config struct {
 	Voice     Voice
 	SMTP      SMTP
 	SMS       SMS
+	VC        VC
 }
 
 // Auth 是 JWT 与 dev 令牌配置。
@@ -60,6 +61,7 @@ type Face struct {
 	ActionsCount        int
 	ActionVerifyEnabled bool
 	LivenessCropScale   float64
+	DeepfakeModel       string
 	MaxFrameBytes       int64
 }
 
@@ -73,6 +75,13 @@ type OCR struct {
 	DictPath    string
 	WidthMode   string
 	Orientation string
+}
+
+// VC 是 W3C 可验证凭证签发配置。
+type VC struct {
+	IssuerDID  string
+	PrivateKey string
+	TTLDays    int
 }
 
 // SMTP 是标准邮件发送配置。
@@ -120,11 +129,14 @@ type Redis struct {
 
 // Security 是主密钥与 HTTP 安全配置。
 type Security struct {
-	MasterKey      string
-	APIKeySecret   string
-	ServiceToken   string
-	AllowedOrigins []string
-	MaxUploadBytes int64
+	MasterKey       string
+	APIKeySecret    string
+	ServiceToken    string
+	AdminEmail      string
+	AdminPassword   string
+	AdminSigningKey string
+	AllowedOrigins  []string
+	MaxUploadBytes  int64
 }
 
 // Retention 是 Worker 留存配置。
@@ -212,6 +224,7 @@ func load(worker bool) (*Config, error) {
 			ActionsCount:        intVal("FACE_ACTIONS_COUNT", 3),
 			ActionVerifyEnabled: boolVal("FACE_ACTION_VERIFY_ENABLED", true),
 			LivenessCropScale:   floatVal("FACE_LIVENESS_CROP_SCALE", 2.7),
+			DeepfakeModel:       getString("FACE_DEEPFAKE_MODEL", "models/deepfake-detector.onnx"),
 			MaxFrameBytes:       int64(intVal("FACE_MAX_FRAME_BYTES", 2*1024*1024)),
 		},
 		DB: DB{
@@ -227,11 +240,14 @@ func load(worker bool) (*Config, error) {
 			ChallengeTTLSeconds: intVal("REDIS_CHALLENGE_TTL_SECONDS", 300),
 		},
 		Security: Security{
-			MasterKey:      getString("SECURITY_MASTER_KEY", ""),
-			APIKeySecret:   getString("API_KEY_SECRET", ""),
-			ServiceToken:   getString("SERVICE_TOKEN", ""),
-			AllowedOrigins: splitOrigins(getString("SECURITY_ALLOWED_ORIGINS", "")),
-			MaxUploadBytes: int64(intVal("SECURITY_MAX_UPLOAD_BYTES", 20*1024*1024)),
+			MasterKey:       getString("SECURITY_MASTER_KEY", ""),
+			APIKeySecret:    getString("API_KEY_SECRET", ""),
+			ServiceToken:    getString("SERVICE_TOKEN", ""),
+			AdminEmail:      getString("ADMIN_EMAIL", ""),
+			AdminPassword:   getString("ADMIN_PASSWORD", ""),
+			AdminSigningKey: getString("ADMIN_SIGNING_KEY", ""),
+			AllowedOrigins:  splitOrigins(getString("SECURITY_ALLOWED_ORIGINS", "")),
+			MaxUploadBytes:  int64(intVal("SECURITY_MAX_UPLOAD_BYTES", 20*1024*1024)),
 		},
 		Retention: Retention{ProfileDays: intVal("RETENTION_PROFILE_DAYS", 90)},
 		RateLimit: RateLimit{PermitPerMinute: intVal("RATE_LIMIT_PERMIT_PER_MINUTE", 60)},
@@ -280,6 +296,11 @@ func load(worker bool) (*Config, error) {
 			Endpoint: getString("SMS_ENDPOINT", ""),
 			APIKey:   getString("SMS_API_KEY", ""),
 			From:     getString("SMS_FROM", ""),
+		},
+		VC: VC{
+			IssuerDID:  getString("VC_ISSUER_DID", "did:web:localhost"),
+			PrivateKey: getString("VC_ISSUER_PRIVATE_KEY", ""),
+			TTLDays:    intVal("VC_CREDENTIAL_TTL_DAYS", 730),
 		},
 	}
 
@@ -338,6 +359,9 @@ func validate(c *Config, worker bool) []error {
 	}
 	if c.SMS.Enabled && (c.SMS.Endpoint == "" || c.SMS.APIKey == "") {
 		add("SMS_ENABLED 时 SMS_ENDPOINT/SMS_API_KEY 不能为空")
+	}
+	if c.VC.PrivateKey != "" && len(c.VC.PrivateKey) != 64 {
+		add("VC_ISSUER_PRIVATE_KEY 必须是 64 位十六进制 Ed25519 seed")
 	}
 	if c.DB.URL == "" {
 		add("DATABASE_URL 不能为空")

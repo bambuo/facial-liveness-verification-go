@@ -30,6 +30,7 @@ type SessionAuth struct {
 	VerificationID uuid.UUID
 	DeveloperID    uuid.UUID
 	APIKeyID       *uuid.UUID
+	UserID         *uuid.UUID
 	ExpiresAt      *time.Time
 }
 

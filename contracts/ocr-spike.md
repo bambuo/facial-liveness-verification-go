@@ -123,8 +123,8 @@ lines=21
 | --- | --- | --- |
 | 真实证件 | 合成样例 + MIDV-500 公开模拟护照 30 张 | 真实脱敏证件 20–50 张、多版式/多国家黄金集 |
 | 字段规则 | 通用正则/标签抽取 | 按国家证件移植 idswyft 字段规则库 |
-| 条码/MRZ | 未实现 | PDF417/QR/MRZ 与交叉校验 |
-| 篡改/深伪 | 未实现 | Sharp 算法移植、deepfake ONNX |
+| 条码/MRZ | MRZ 已实现；QR/DataMatrix/PDF417/Code128 已接入 | 条码交叉校验与更多格式 |
+| 篡改/深伪 | 深伪已用真实 EfficientNet ONNX 推理；篡改未实现 | 篡改模型与阈值校准 |
 | 性能 | 英文 mobile 3–4 s；字段优先中文 mobile P50 7.9 s；4 并发 QPS 0.345 | 预编译/多进程/后端优化，目标 P95 与 QPS 门禁 |
 | 引擎端点 | 2/6 已接入 | front/back/live/ocr/voice-enroll/voice-verify 全量 |
 

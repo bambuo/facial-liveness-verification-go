@@ -8,6 +8,7 @@ import (
 	"facial-liveness-verification-go/internal/document/fields"
 	"facial-liveness-verification-go/internal/domain"
 	"facial-liveness-verification-go/internal/ocr"
+	"facial-liveness-verification-go/internal/tamper"
 )
 
 const engineUploadLimit = 10 << 20
@@ -119,16 +120,19 @@ func (s *Server) handleExtractFront(w http.ResponseWriter, r *http.Request) {
 	if fields.IssuingCountry != "" {
 		ocrPayload["issuing_country"] = fields.IssuingCountry
 	}
-	writeJSON(w, http.StatusOK, map[string]any{
-		"success": true,
-		"result": map[string]any{
-			"ocr":             ocrPayload,
-			"face_embedding":  embedding,
-			"face_confidence": faceConfidence,
-			"ocr_confidence":  res.Confidence,
-			"mrz_from_front":  nil,
-		},
-	})
+	resultPayload := map[string]any{
+		"ocr":             ocrPayload,
+		"face_embedding":  embedding,
+		"face_confidence": faceConfidence,
+		"ocr_confidence":  res.Confidence,
+		"mrz_from_front":  nil,
+	}
+	if authenticity, authErr := tamper.Analyze(data); authErr == nil {
+		resultPayload["authenticity"] = map[string]any{
+			"score": authenticity.Score, "flags": authenticity.Flags, "isAuthentic": authenticity.IsAuthentic,
+		}
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"success": true, "result": resultPayload})
 }
 
 // readEngineUpload 解析 multipart 文件与表单，限制 10MB 并校验图片类型。

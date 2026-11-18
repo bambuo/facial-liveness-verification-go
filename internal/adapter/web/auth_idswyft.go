@@ -120,7 +120,7 @@ func (s *Server) authenticateSession(w http.ResponseWriter, r *http.Request, sec
 		return nil, false
 	}
 	principal := &idswyftPrincipal{
-		DeveloperID: session.DeveloperID,
+		DeveloperID:    session.DeveloperID,
 		VerificationID: &session.VerificationID,
 	}
 	if session.APIKeyID != nil {

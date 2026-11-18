@@ -31,8 +31,10 @@ import (
 	"facial-liveness-verification-go/internal/app"
 	"facial-liveness-verification-go/internal/audio"
 	"facial-liveness-verification-go/internal/config"
+	"facial-liveness-verification-go/internal/deepfake"
 	"facial-liveness-verification-go/internal/ocr"
 	"facial-liveness-verification-go/internal/port"
+	"facial-liveness-verification-go/internal/vc"
 )
 
 var (
@@ -68,6 +70,13 @@ func run() error {
 		slog.Info("数据库迁移完成")
 	}
 	identityStore := pg.NewIdentityStore(gormDB)
+	var vcIssuer *vc.Issuer
+	if cfg.VC.PrivateKey != "" {
+		vcIssuer, err = vc.New(cfg.VC.IssuerDID, cfg.VC.PrivateKey, cfg.VC.TTLDays)
+		if err != nil {
+			return fmt.Errorf("初始化 VC 签发器: %w", err)
+		}
+	}
 
 	repo, err := pg.New(ctx, cfg.DB.URL)
 	if err != nil {
@@ -119,6 +128,18 @@ func run() error {
 		ocrSvc = ocrEngine
 		slog.Info("OCR 已启用", "det", det, "rec", rec, "dict", dict,
 			"width_mode", cfg.OCR.WidthMode, "orientation", cfg.OCR.Orientation)
+	}
+
+	var deepfakeEngine *deepfake.Engine
+	if cfg.Face.DeepfakeModel != "" {
+		if _, statErr := os.Stat(cfg.Face.DeepfakeModel); statErr == nil {
+			deepfakeEngine, err = deepfake.New(cfg.Face.DeepfakeModel)
+			if err != nil {
+				return fmt.Errorf("加载深伪模型: %w", err)
+			}
+			defer deepfakeEngine.Close()
+			slog.Info("深伪模型已启用", "model", cfg.Face.DeepfakeModel)
+		}
 	}
 
 	var voiceEngine *audio.VoiceEngine
@@ -202,11 +223,14 @@ func run() error {
 		OCR:           ocrSvc,
 		Voice:         voiceEngine,
 		Face:          engine,
+		Deepfake:      deepfakeEngine,
 		IdswyftStore:  identityStore,
 		Storage:       storage,
 		Webhooks:      webhook.New(),
 		SMS:           sms.New(cfg.SMS),
 		Mail:          smtp.New(cfg.SMTP),
+		Encryptor:     encryptor,
+		VC:            vcIssuer,
 		EngineVersion: engine.ModelVersion(),
 		BuildVersion:  buildVersion,
 		BuildCommit:   buildCommit,

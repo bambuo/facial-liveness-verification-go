@@ -100,8 +100,8 @@ func (s *Server) handleVerifyInitialize(w http.ResponseWriter, r *http.Request) 
 	writeJSON(w, http.StatusCreated, map[string]any{
 		"success": true, "verification_id": verification.ID.String(),
 		"session_token": token, "verification_url": "/verify/" + verification.ID.String(),
-		"verification_mode": "full", "status": verification.Status,
-		"current_step": "front_document", "total_steps": 5, "message": "Verification initialized",
+		"verification_mode": "full", "status": "AWAITING_FRONT",
+		"current_step": 1, "total_steps": 5, "message": "Verification initialized",
 	})
 }
 
@@ -156,7 +156,7 @@ func (s *Server) handleVerifyReverify(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, map[string]any{
 		"success": true, "verification_id": verification.ID.String(),
 		"parent_verification_id": previous.ID.String(), "verification_mode": mode,
-		"status": "pending", "current_step": "front_document", "total_steps": 5,
+		"status": "AWAITING_FRONT", "current_step": 1, "total_steps": 5,
 		"message": "Re-verification initialized",
 	})
 }
@@ -258,24 +258,49 @@ func (s *Server) loadOwnedVerification(ctx context.Context, id uuid.UUID, princi
 }
 
 func verificationPublic(v *gormmodel.VerificationRequest) map[string]any {
-	status := v.Status
-	final := map[string]string{"verified": "verified", "failed": "failed", "manual_review": "manual_review"}[status]
+	status, step, total, final := externalStatus(v)
 	return map[string]any{
 		"success": true, "verification_id": v.ID.String(), "status": status,
-		"current_step": currentStep(v), "total_steps": 5, "final_result": final,
+		"current_step": step, "total_steps": total, "final_result": final,
 		"verification_mode": stringValue(v.VerificationMode), "is_sandbox": v.IsSandbox != nil && *v.IsSandbox,
 	}
 }
 
-func currentStep(v *gormmodel.VerificationRequest) string {
-	switch {
-	case v.LiveCaptureCompleted != nil && *v.LiveCaptureCompleted:
-		return "finalize"
-	case v.DocumentID != nil:
-		return "live_capture"
-	default:
-		return "front_document"
+// externalStatus 把 DB 5 值状态映射为 shared 12 值状态机（D1）。
+func externalStatus(v *gormmodel.VerificationRequest) (string, int, int, any) {
+	total := 5
+	if v.VoiceChallenge != nil {
+		total = 6
 	}
+	switch v.Status {
+	case "verified":
+		return "COMPLETE", total, total, "verified"
+	case "failed":
+		return "HARD_REJECTED", 0, total, "failed"
+	case "manual_review":
+		return "COMPLETE", total, total, "manual_review"
+	case "processing":
+		if v.DocumentID == nil {
+			return "FRONT_PROCESSING", 1, total, nil
+		}
+		if v.BackOfIDUploaded == nil || !*v.BackOfIDUploaded {
+			return "AWAITING_BACK", 2, total, nil
+		}
+		if v.LiveCaptureCompleted == nil || !*v.LiveCaptureCompleted {
+			return "AWAITING_LIVE", 4, total, nil
+		}
+		if v.VoiceChallenge != nil && v.VoiceMatchScore == nil {
+			return "AWAITING_VOICE", 6, total, nil
+		}
+		return "FACE_MATCHING", 5, total, nil
+	default:
+		return "AWAITING_FRONT", 1, total, nil
+	}
+}
+
+func externalStatusName(v *gormmodel.VerificationRequest) string {
+	status, _, _, _ := externalStatus(v)
+	return status
 }
 
 func pathUUID(r *http.Request, name string) (uuid.UUID, error) {

@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.33.18
 	github.com/aws/aws-sdk-go-v2/credentials v1.21.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.114.10
+	github.com/ericlevine/zxinggo v0.1.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/gomlx/compute v0.1.29
 	github.com/gomlx/gomlx v0.28.35

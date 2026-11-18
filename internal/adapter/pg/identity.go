@@ -76,6 +76,7 @@ func (s *IdentityStore) FindSessionByToken(ctx context.Context, hash string) (*p
 		VerificationID: verification.ID,
 		ExpiresAt:      verification.SessionTokenExpiresAt,
 		APIKeyID:       verification.SessionAPIKeyID,
+		UserID:         verification.UserID,
 	}
 	if verification.DeveloperID != nil {
 		out.DeveloperID = *verification.DeveloperID
@@ -140,6 +141,108 @@ func (s *IdentityStore) GetDocument(ctx context.Context, id uuid.UUID) (*gormmod
 		return nil, err
 	}
 	return &document, nil
+}
+
+// CreateBatchJob 创建批量任务与条目。
+func (s *IdentityStore) CreateBatchJob(ctx context.Context, job *gormmodel.BatchJob, items []*gormmodel.BatchItem) error {
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(job).Error; err != nil {
+			return err
+		}
+		for _, item := range items {
+			item.BatchID = &job.ID
+			if err := tx.Create(item).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+// GetBatchJob 读取开发者所属批量任务。
+func (s *IdentityStore) GetBatchJob(ctx context.Context, developerID, id uuid.UUID) (*gormmodel.BatchJob, error) {
+	var job gormmodel.BatchJob
+	if err := s.db.WithContext(ctx).Where("id = ? AND developer_id = ?", id, developerID).Take(&job).Error; err != nil {
+		return nil, err
+	}
+	return &job, nil
+}
+
+// UpdateBatchJob 更新批量任务字段。
+func (s *IdentityStore) UpdateBatchJob(ctx context.Context, id uuid.UUID, updates map[string]any) error {
+	return s.db.WithContext(ctx).Model(&gormmodel.BatchJob{}).Where("id = ?", id).Updates(updates).Error
+}
+
+// ListBatchJobs 分页列出开发者批量任务。
+func (s *IdentityStore) ListBatchJobs(ctx context.Context, developerID uuid.UUID, page, limit int) ([]gormmodel.BatchJob, int64, error) {
+	var jobs []gormmodel.BatchJob
+	var total int64
+	query := s.db.WithContext(ctx).Model(&gormmodel.BatchJob{}).Where("developer_id = ?", developerID)
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	err := query.Order("created_at DESC").Offset((page - 1) * limit).Limit(limit).Find(&jobs).Error
+	return jobs, total, err
+}
+
+// ListBatchItems 列出批量任务条目。
+func (s *IdentityStore) ListBatchItems(ctx context.Context, batchID uuid.UUID) ([]gormmodel.BatchItem, error) {
+	var items []gormmodel.BatchItem
+	err := s.db.WithContext(ctx).Where("batch_id = ?", batchID).Order("created_at ASC").Find(&items).Error
+	return items, err
+}
+
+// UpdateBatchItem 更新批量条目。
+func (s *IdentityStore) UpdateBatchItem(ctx context.Context, id uuid.UUID, updates map[string]any) error {
+	return s.db.WithContext(ctx).Model(&gormmodel.BatchItem{}).Where("id = ?", id).Updates(updates).Error
+}
+
+// GetDeveloperByAPIKey 通过 API Key 查询开发者资料。
+func (s *IdentityStore) GetDeveloperByAPIKey(ctx context.Context, apiKeyID uuid.UUID) (*gormmodel.Developer, error) {
+	var key gormmodel.APIKey
+	if err := s.db.WithContext(ctx).Where("id = ?", apiKeyID).Take(&key).Error; err != nil {
+		return nil, err
+	}
+	if key.DeveloperID == nil {
+		return nil, gorm.ErrRecordNotFound
+	}
+	return s.GetDeveloperByID(ctx, *key.DeveloperID)
+}
+
+// GetDeveloperByID 读取开发者资料。
+func (s *IdentityStore) GetDeveloperByID(ctx context.Context, id uuid.UUID) (*gormmodel.Developer, error) {
+	var developer gormmodel.Developer
+	if err := s.db.WithContext(ctx).Where("id = ?", id).Take(&developer).Error; err != nil {
+		return nil, err
+	}
+	return &developer, nil
+}
+
+// CreateHandoff 插入移动交接会话。
+func (s *IdentityStore) CreateHandoff(ctx context.Context, session *gormmodel.MobileHandoffSession) error {
+	return s.db.WithContext(ctx).Create(session).Error
+}
+
+// GetHandoffByToken 按 token 哈希读取交接会话。
+func (s *IdentityStore) GetHandoffByToken(ctx context.Context, hash string) (*gormmodel.MobileHandoffSession, error) {
+	var session gormmodel.MobileHandoffSession
+	if err := s.db.WithContext(ctx).Where("token = ?", hash).Take(&session).Error; err != nil {
+		return nil, err
+	}
+	return &session, nil
+}
+
+// UpdateHandoff 按 token 哈希更新交接会话。
+func (s *IdentityStore) UpdateHandoff(ctx context.Context, hash string, updates map[string]any) (int64, error) {
+	res := s.db.WithContext(ctx).Model(&gormmodel.MobileHandoffSession{}).Where("token = ?", hash).Updates(updates)
+	return res.RowsAffected, res.Error
+}
+
+// UpdatePendingHandoff 只更新 pending 状态的交接会话。
+func (s *IdentityStore) UpdatePendingHandoff(ctx context.Context, hash string, updates map[string]any) (int64, error) {
+	res := s.db.WithContext(ctx).Model(&gormmodel.MobileHandoffSession{}).
+		Where("token = ? AND status = ?", hash, "pending").Updates(updates)
+	return res.RowsAffected, res.Error
 }
 
 // GetBackDocument 读取验证请求最近的后置证件。
@@ -273,4 +376,71 @@ func (s *IdentityStore) VerifyPhoneOTP(ctx context.Context, verificationID uuid.
 		return err
 	})
 	return result, err
+}
+
+// UpdateDeveloper 更新开发者资料字段。
+func (s *IdentityStore) UpdateDeveloper(ctx context.Context, id uuid.UUID, updates map[string]any) error {
+	return s.db.WithContext(ctx).Model(&gormmodel.Developer{}).Where("id = ?", id).Updates(updates).Error
+}
+
+// DeleteDeveloper 删除开发者并依赖外键级联清理。
+func (s *IdentityStore) DeleteDeveloper(ctx context.Context, id uuid.UUID) (int64, error) {
+	res := s.db.WithContext(ctx).Where("id = ?", id).Delete(&gormmodel.Developer{})
+	return res.RowsAffected, res.Error
+}
+
+// CreateDeveloper 创建开发者账号。
+func (s *IdentityStore) CreateDeveloper(ctx context.Context, developer *gormmodel.Developer) error {
+	return s.db.WithContext(ctx).Create(developer).Error
+}
+
+// VerificationStatusCounts 返回开发者指定时间后的状态计数。
+func (s *IdentityStore) VerificationStatusCounts(ctx context.Context, developerID uuid.UUID, since time.Time) (map[string]int64, error) {
+	type row struct {
+		Status string
+		Count  int64
+	}
+	var rows []row
+	err := s.db.WithContext(ctx).Model(&gormmodel.VerificationRequest{}).
+		Select("status, count(*) as count").
+		Where("developer_id = ? AND created_at >= ?", developerID, since).
+		Group("status").Scan(&rows).Error
+	if err != nil {
+		return nil, err
+	}
+	out := make(map[string]int64, len(rows))
+	for _, item := range rows {
+		out[item.Status] = item.Count
+	}
+	return out, nil
+}
+
+// RecentActivity 返回开发者最近 API 活动。
+func (s *IdentityStore) RecentActivity(ctx context.Context, developerID uuid.UUID, limit int) ([]gormmodel.APIActivityLog, error) {
+	var logs []gormmodel.APIActivityLog
+	err := s.db.WithContext(ctx).Where("developer_id = ?", developerID).Order("timestamp DESC").Limit(limit).Find(&logs).Error
+	return logs, err
+}
+
+// VerificationByID 按 ID 读取验证请求。
+func (s *IdentityStore) VerificationByID(ctx context.Context, id uuid.UUID) (*gormmodel.VerificationRequest, error) {
+	return s.GetVerification(ctx, id)
+}
+
+// CreateReviewer 邀请审核员。
+func (s *IdentityStore) CreateReviewer(ctx context.Context, reviewer *gormmodel.VerificationReviewer) error {
+	return s.db.WithContext(ctx).Create(reviewer).Error
+}
+
+// Reviewers 列出开发者审核员。
+func (s *IdentityStore) Reviewers(ctx context.Context, developerID uuid.UUID) ([]gormmodel.VerificationReviewer, error) {
+	var reviewers []gormmodel.VerificationReviewer
+	err := s.db.WithContext(ctx).Where("developer_id = ?", developerID).Order("invited_at DESC").Find(&reviewers).Error
+	return reviewers, err
+}
+
+// DeleteReviewer 删除开发者审核员。
+func (s *IdentityStore) DeleteReviewer(ctx context.Context, developerID, id uuid.UUID) (int64, error) {
+	res := s.db.WithContext(ctx).Where("id = ? AND developer_id = ?", id, developerID).Delete(&gormmodel.VerificationReviewer{})
+	return res.RowsAffected, res.Error
 }

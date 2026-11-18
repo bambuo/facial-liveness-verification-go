@@ -5,7 +5,7 @@
       "path": "/api/v2/verify/initialize",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -128,7 +128,7 @@
       "path": "/api/v2/verify/re-verify",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -185,7 +185,7 @@
       "path": "/api/v2/verify/:verification_id/front-document",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -283,7 +283,7 @@
       "path": "/api/v2/verify/:verification_id/back-document",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -385,7 +385,7 @@
       "path": "/api/v2/verify/:verification_id/cross-validation",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -428,7 +428,7 @@
       "path": "/api/v2/verify/:verification_id/live-capture",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [
@@ -520,7 +520,7 @@
       "path": "/api/v2/verify/:verification_id/voice-challenge",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -568,7 +568,7 @@
       "path": "/api/v2/verify/:verification_id/voice-capture",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [
@@ -668,7 +668,7 @@
       "path": "/api/v2/verify/:verification_id/finalize",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -708,7 +708,7 @@
       "path": "/api/v2/verify/:verification_id/restart",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -785,7 +785,7 @@
       "path": "/api/v2/verify/:verification_id/internal/session",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -832,7 +832,7 @@
       "path": "/api/v2/verify/:verification_id/status",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -863,7 +863,7 @@
       "path": "/api/v2/verify/:verification_id/selfie",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -925,7 +925,7 @@
       "path": "/api/v2/verify/:verification_id/phone-otp/send",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -975,7 +975,7 @@
       "path": "/api/v2/verify/:verification_id/phone-otp/verify",
       "module": "newVerification",
       "auth": "middleware",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -1270,7 +1270,7 @@
       "path": "/api/developer/register",
       "module": "developer/register",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -4127,7 +4127,7 @@
       "path": "/api/auth/admin/escalate",
       "module": "auth",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4151,7 +4151,7 @@
       "path": "/api/auth/developer/otp/send",
       "module": "auth",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4175,7 +4175,7 @@
       "path": "/api/auth/developer/otp/verify",
       "module": "auth",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -4296,7 +4296,7 @@
       "path": "/api/auth/reviewer/otp/send",
       "module": "auth",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4329,7 +4329,7 @@
       "path": "/api/auth/reviewer/otp/verify",
       "module": "auth",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -4373,7 +4373,7 @@
       "path": "/api/auth/developer/github/callback",
       "module": "auth",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -4450,7 +4450,7 @@
       "path": "/api/auth/developer/github/url",
       "module": "auth",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4534,7 +4534,7 @@
       "path": "/api/health",
       "module": "health",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4556,7 +4556,7 @@
       "path": "/api/health/detailed",
       "module": "health",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4578,7 +4578,7 @@
       "path": "/api/health/ready",
       "module": "health",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -4612,7 +4612,7 @@
       "path": "/api/health/live",
       "module": "health",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -5677,7 +5677,7 @@
       "path": "/api/v2/verify/page-config/slug/:slug",
       "module": "pageConfig",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6033,7 +6033,7 @@
       "path": "/api/status",
       "module": "status",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6059,7 +6059,7 @@
       "path": "/api/setup/status",
       "module": "setup",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -6092,7 +6092,7 @@
       "path": "/api/setup/initialize",
       "module": "setup",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [
           {
@@ -7402,7 +7402,7 @@
       "path": "/.well-known/did.json",
       "module": "well-known",
       "auth": "public-candidate",
-      "implemented": false,
+      "implemented": true,
       "request": {
         "body": [],
         "files": [],
@@ -7457,6 +7457,6 @@
       ]
     }
   ],
-  "generatedAt": "2026-11-18T11:15:05Z",
+  "generatedAt": "2026-11-18T13:54:03Z",
   "source": "contracts/endpoints.json + responses.json + fields.json"
 }

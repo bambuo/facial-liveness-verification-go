@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"facial-liveness-verification-go/internal/app"
+	"facial-liveness-verification-go/internal/audio"
 	"facial-liveness-verification-go/internal/config"
 	"facial-liveness-verification-go/internal/domain"
 	"facial-liveness-verification-go/internal/port"
@@ -33,7 +34,13 @@ type Server struct {
 	liveness      *app.LivenessService
 	issuer        port.TokenIssuer
 	ocr           OCRService
+	voice         *audio.VoiceEngine
 	face          port.FaceEngine
+	idswyft       idswyftStore
+	storage       ObjectStore
+	webhooks      WebhookDispatcher
+	sms           SMSSender
+	mail          Mailer
 	engineVersion string
 	buildVersion  string
 	buildCommit   string
@@ -57,7 +64,13 @@ type Deps struct {
 	Liveness      *app.LivenessService
 	Issuer        port.TokenIssuer
 	OCR           OCRService
+	Voice         *audio.VoiceEngine
 	Face          port.FaceEngine
+	IdswyftStore  idswyftStore
+	Storage       ObjectStore
+	Webhooks      WebhookDispatcher
+	SMS           SMSSender
+	Mail          Mailer
 	EngineVersion string
 	BuildVersion  string
 	BuildCommit   string
@@ -71,7 +84,8 @@ func NewServer(d Deps) *Server {
 	return &Server{
 		cfg: d.Cfg, auth: d.Auth, challenges: d.Challenges, actions: d.Actions,
 		enroll: d.Enroll, verify: d.Verify, subjects: d.Subjects, support: d.Support,
-		liveness: d.Liveness, issuer: d.Issuer, ocr: d.OCR, face: d.Face, engineVersion: d.EngineVersion,
+		liveness: d.Liveness, issuer: d.Issuer, ocr: d.OCR, voice: d.Voice, face: d.Face,
+		idswyft: d.IdswyftStore, storage: d.Storage, webhooks: d.Webhooks, sms: d.SMS, mail: d.Mail, engineVersion: d.EngineVersion,
 		buildVersion: d.BuildVersion, buildCommit: d.BuildCommit,
 		modelHash: d.ModelHash, configHash: d.Cfg.Fingerprint(),
 		dbPing: d.DBPing, redisPing: d.RedisPing,
@@ -93,6 +107,44 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("DELETE /v1/subjects/{subject_id}", s.handleSubjectDelete)
 	mux.HandleFunc("POST /extract/ocr", s.handleExtractOCR)
 	mux.HandleFunc("POST /extract/front", s.handleExtractFront)
+	mux.HandleFunc("POST /extract/back", s.handleExtractBack)
+	mux.HandleFunc("POST /extract/live", s.handleExtractLive)
+	mux.HandleFunc("POST /extract/voice-enroll", s.handleVoiceEnroll)
+	mux.HandleFunc("POST /extract/voice-verify", s.handleVoiceVerify)
+
+	mux.HandleFunc("POST /api/v2/verify/initialize", s.withAPIAuth(s.handleVerifyInitialize))
+	mux.HandleFunc("POST /api/v2/verify/re-verify", s.withAPIAuth(s.handleVerifyReverify))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/front-document", s.withAPIAuth(s.handleFrontDocument))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/back-document", s.withAPIAuth(s.handleBackDocument))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/cross-validation", s.withAPIAuth(s.handleCrossValidation))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/live-capture", s.withAPIAuth(s.handleLiveCapture))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/voice-challenge", s.withAPIAuth(s.handleVoiceChallenge))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/voice-capture", s.withAPIAuth(s.handleVoiceCapture))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/finalize", s.withAPIAuth(s.handleFinalize))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/restart", s.withAPIAuth(s.handleRestart))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/internal/session", s.handleInternalSession)
+	mux.HandleFunc("GET /api/v2/verify/{verification_id}/status", s.withAPIAuth(s.handleVerificationStatus))
+	mux.HandleFunc("GET /api/v2/verify/{verification_id}/selfie", s.withAPIAuth(s.handleVerificationSelfie))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/phone-otp/send", s.withAPIAuth(s.handlePhoneOTPSend))
+	mux.HandleFunc("POST /api/v2/verify/{verification_id}/phone-otp/verify", s.withAPIAuth(s.handlePhoneOTPVerify))
+
+	mux.HandleFunc("GET /api/health", s.handleAPIHealth)
+	mux.HandleFunc("GET /api/health/detailed", s.handleAPIHealthDetailed)
+	mux.HandleFunc("GET /api/health/ready", s.handleAPIHealthReady)
+	mux.HandleFunc("GET /api/health/live", s.handleAPIHealthLive)
+	mux.HandleFunc("GET /api/status", s.handleAPIStatus)
+	mux.HandleFunc("GET /api/setup/status", s.handleSetupStatus)
+	mux.HandleFunc("POST /api/setup/initialize", s.handleSetupInitialize)
+	mux.HandleFunc("GET /.well-known/did.json", s.handleDIDDocument)
+	mux.HandleFunc("GET /api/v2/verify/page-config/slug/{slug}", s.handlePageConfigSlug)
+	mux.HandleFunc("POST /api/developer/register", s.handleDeveloperRegister)
+	mux.HandleFunc("POST /api/auth/admin/escalate", s.handleAdminEscalate)
+	mux.HandleFunc("POST /api/auth/developer/otp/send", s.handleOTPSend)
+	mux.HandleFunc("POST /api/auth/developer/otp/verify", s.handleOTPVerify)
+	mux.HandleFunc("POST /api/auth/reviewer/otp/send", s.handleOTPSend)
+	mux.HandleFunc("POST /api/auth/reviewer/otp/verify", s.handleOTPVerify)
+	mux.HandleFunc("GET /api/auth/developer/github/url", s.handleGitHubURL)
+	mux.HandleFunc("POST /api/auth/developer/github/callback", s.handleGitHubCallback)
 	if s.cfg.LabMode {
 		mux.HandleFunc("POST /v1/liveness-checks", s.handleLivenessCheck)
 	}

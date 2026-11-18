@@ -1,6 +1,7 @@
 package audio
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -10,16 +11,20 @@ import (
 
 // ReadWAV 读取 RIFF/WAVE 文件，支持 PCM16 与 IEEE float32，返回单声道样本。
 func ReadWAV(path string) (int, []float32, error) {
-	f, err := os.Open(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return 0, nil, err
 	}
-	defer f.Close()
-	stat, err := f.Stat()
-	if err != nil {
-		return 0, nil, err
-	}
-	fileSize := stat.Size()
+	return ReadWAVBytes(data)
+}
+
+// ReadWAVBytes 从内存字节读取 WAV，供引擎上传接口复用。
+func ReadWAVBytes(data []byte) (int, []float32, error) {
+	return decodeWAV(bytes.NewReader(data), int64(len(data)))
+}
+
+// decodeWAV 解析 RIFF/WAVE 数据，支持 PCM16 与 IEEE float32。
+func decodeWAV(f io.ReadSeeker, fileSize int64) (int, []float32, error) {
 	header := make([]byte, 12)
 	if _, err := io.ReadFull(f, header); err != nil {
 		return 0, nil, err

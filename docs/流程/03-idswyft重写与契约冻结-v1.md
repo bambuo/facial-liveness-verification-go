@@ -4,7 +4,7 @@
 > 文档版本：v1
 > 项目：Go 版身份核验服务
 > 关联接口：154 条 idswyft 接口（见 `contracts/endpoints.json`）
-> 状态：M0 决策已冻结（2026-11-18）；余字段/鉴权收尾与 M1
+> 状态：P0/M1 完成（2026-11-18）；P1 核心 15 接口、6/6 引擎端点与集成基线完成
 > 证据基线：`contracts/`、idswyft `83dd51b`、Go `badcc5c`
 
 ## 1. 目标与角色
@@ -30,7 +30,7 @@ flowchart LR
 | 阶段 | 交付 | 退出条件 |
 | --- | --- | --- |
 | M0 | 契约包 + 冲突决策 | 154/31 签字；C1–C7 决策；字段契约完成 |
-| M1 | 契约测试骨架、squashed DDL、Auth 核心、CI | 空库重放 + 契约用例可跑 |
+| P1 | 鉴权矩阵、S3/SMTP/SMS/Webhook、9 定时任务、核心 15 接口 + 6 引擎端点 | 32/158 契约路由可跑；引擎 6/6 |
 | M2 | 15 核心接口 + 6 引擎端点 + 语音 + 交叉校验 | 端到端试点链路通过 |
 | M3 | 管理/开发者/合规/VC/vault/批量/交接/VaaS | 154/154 parity |
 | M4 | 24 路由 / 22 页 Vue3+Arco | 截图 diff + 交互脚本达标 |
@@ -101,7 +101,7 @@ stateDiagram-v2
 
 门禁清单：
 
-- [ ] 154 条接口鉴权与错误码：32 条待复核；`auth-review.md` 已给 15 条内联证据，17 条公开候选待签字
+- [x] 154 条接口鉴权分类：17 条公开候选已签字；P1 路由已接入 API Key/handoff/session/service-token
 - [x] 31 表 + 10 函数 + 6 触发器 + 53 策略决策（C1 新库独立、C5 应用层重写）
 - [x] C1–C8 决策记录（`contracts/conflicts.md`）
 - [x] 请求/响应字段契约（`fields.json` / `responses.json`）

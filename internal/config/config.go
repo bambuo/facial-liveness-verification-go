@@ -30,6 +30,9 @@ type Config struct {
 	Storage   Storage
 	Guard     Guard
 	OCR       OCR
+	Voice     Voice
+	SMTP      SMTP
+	SMS       SMS
 }
 
 // Auth 是 JWT 与 dev 令牌配置。
@@ -72,6 +75,33 @@ type OCR struct {
 	Orientation string
 }
 
+// SMTP 是标准邮件发送配置。
+type SMTP struct {
+	Enabled  bool
+	Host     string
+	Port     int
+	Username string
+	Password string
+	From     string
+}
+
+// SMS 是通用 HTTP 短信网关配置。
+type SMS struct {
+	Enabled  bool
+	Endpoint string
+	APIKey   string
+	From     string
+}
+
+// Voice 是声纹与数字转写引擎配置。
+type Voice struct {
+	Enabled      bool
+	ModelDir     string
+	SpeakerModel string
+	ASRModel     string
+	TokensPath   string
+}
+
 // DB 是 PostgreSQL 配置。
 type DB struct {
 	URL                       string
@@ -91,6 +121,8 @@ type Redis struct {
 // Security 是主密钥与 HTTP 安全配置。
 type Security struct {
 	MasterKey      string
+	APIKeySecret   string
+	ServiceToken   string
 	AllowedOrigins []string
 	MaxUploadBytes int64
 }
@@ -196,6 +228,8 @@ func load(worker bool) (*Config, error) {
 		},
 		Security: Security{
 			MasterKey:      getString("SECURITY_MASTER_KEY", ""),
+			APIKeySecret:   getString("API_KEY_SECRET", ""),
+			ServiceToken:   getString("SERVICE_TOKEN", ""),
 			AllowedOrigins: splitOrigins(getString("SECURITY_ALLOWED_ORIGINS", "")),
 			MaxUploadBytes: int64(intVal("SECURITY_MAX_UPLOAD_BYTES", 20*1024*1024)),
 		},
@@ -225,6 +259,27 @@ func load(worker bool) (*Config, error) {
 			DictPath:    getString("OCR_DICT", ""),
 			WidthMode:   getString("OCR_WIDTH_MODE", "exact"),
 			Orientation: getString("OCR_ORIENTATION", "0"),
+		},
+		Voice: Voice{
+			Enabled:      boolVal("VOICE_ENABLED", false),
+			ModelDir:     getString("VOICE_MODEL_DIR", "models/voice"),
+			SpeakerModel: getString("VOICE_SPEAKER_MODEL", ""),
+			ASRModel:     getString("VOICE_ASR_MODEL", ""),
+			TokensPath:   getString("VOICE_TOKENS", ""),
+		},
+		SMTP: SMTP{
+			Enabled:  boolVal("SMTP_ENABLED", false),
+			Host:     getString("SMTP_HOST", ""),
+			Port:     intVal("SMTP_PORT", 587),
+			Username: getString("SMTP_USERNAME", ""),
+			Password: getString("SMTP_PASSWORD", ""),
+			From:     getString("SMTP_FROM", ""),
+		},
+		SMS: SMS{
+			Enabled:  boolVal("SMS_ENABLED", false),
+			Endpoint: getString("SMS_ENDPOINT", ""),
+			APIKey:   getString("SMS_API_KEY", ""),
+			From:     getString("SMS_FROM", ""),
 		},
 	}
 
@@ -268,6 +323,21 @@ func validate(c *Config, worker bool) []error {
 		default:
 			add("OCR_ORIENTATION 必须是 0/auto/90/180/270，当前 %q", c.OCR.Orientation)
 		}
+	}
+	if c.Voice.Enabled && c.Voice.ModelDir == "" &&
+		(c.Voice.SpeakerModel == "" || c.Voice.ASRModel == "" || c.Voice.TokensPath == "") {
+		add("VOICE_ENABLED 时 VOICE_MODEL_DIR 或三个模型路径不能为空")
+	}
+	if c.SMTP.Enabled {
+		if c.SMTP.Host == "" || c.SMTP.Port <= 0 || c.SMTP.From == "" {
+			add("SMTP_ENABLED 时 SMTP_HOST/SMTP_PORT/SMTP_FROM 不能为空")
+		}
+		if c.SMTP.Username != "" && c.SMTP.Password == "" {
+			add("SMTP_USERNAME 配置时 SMTP_PASSWORD 不能为空")
+		}
+	}
+	if c.SMS.Enabled && (c.SMS.Endpoint == "" || c.SMS.APIKey == "") {
+		add("SMS_ENABLED 时 SMS_ENDPOINT/SMS_API_KEY 不能为空")
 	}
 	if c.DB.URL == "" {
 		add("DATABASE_URL 不能为空")

@@ -24,8 +24,12 @@ import (
 	"facial-liveness-verification-go/internal/adapter/s3"
 	"facial-liveness-verification-go/internal/adapter/sec"
 	"facial-liveness-verification-go/internal/adapter/seed"
+	"facial-liveness-verification-go/internal/adapter/sms"
+	"facial-liveness-verification-go/internal/adapter/smtp"
 	"facial-liveness-verification-go/internal/adapter/web"
+	"facial-liveness-verification-go/internal/adapter/webhook"
 	"facial-liveness-verification-go/internal/app"
+	"facial-liveness-verification-go/internal/audio"
 	"facial-liveness-verification-go/internal/config"
 	"facial-liveness-verification-go/internal/ocr"
 	"facial-liveness-verification-go/internal/port"
@@ -50,12 +54,12 @@ func run() error {
 	}
 	ctx := context.Background()
 
+	gormDB, err := pg.OpenGORM(cfg.DB.URL)
+	if err != nil {
+		return fmt.Errorf("打开 GORM: %w", err)
+	}
+	defer func() { _ = pg.CloseGORM(gormDB) }()
 	if cfg.DB.AutoMigrate {
-		gormDB, err := pg.OpenGORM(cfg.DB.URL)
-		if err != nil {
-			return fmt.Errorf("打开 GORM: %w", err)
-		}
-		defer func() { _ = pg.CloseGORM(gormDB) }()
 		if err := pg.AutoMigrate(ctx, gormDB,
 			time.Duration(cfg.DB.MigrationLockSeconds)*time.Second,
 			time.Duration(cfg.DB.MigrationStatementSeconds)*time.Second); err != nil {
@@ -63,6 +67,7 @@ func run() error {
 		}
 		slog.Info("数据库迁移完成")
 	}
+	identityStore := pg.NewIdentityStore(gormDB)
 
 	repo, err := pg.New(ctx, cfg.DB.URL)
 	if err != nil {
@@ -114,6 +119,26 @@ func run() error {
 		ocrSvc = ocrEngine
 		slog.Info("OCR 已启用", "det", det, "rec", rec, "dict", dict,
 			"width_mode", cfg.OCR.WidthMode, "orientation", cfg.OCR.Orientation)
+	}
+
+	var voiceEngine *audio.VoiceEngine
+	if cfg.Voice.Enabled {
+		paths := audio.VoiceModelPaths(cfg.Voice.ModelDir)
+		if cfg.Voice.SpeakerModel != "" {
+			paths.SpeakerModel = cfg.Voice.SpeakerModel
+		}
+		if cfg.Voice.ASRModel != "" {
+			paths.ASRModel = cfg.Voice.ASRModel
+		}
+		if cfg.Voice.TokensPath != "" {
+			paths.TokensPath = cfg.Voice.TokensPath
+		}
+		voiceEngine, err = audio.NewVoiceEngine(paths)
+		if err != nil {
+			return fmt.Errorf("加载语音引擎: %w", err)
+		}
+		defer voiceEngine.Close()
+		slog.Info("语音引擎已启用", "speaker", paths.SpeakerModel, "asr", paths.ASRModel)
 	}
 
 	modelHash, err := modelFingerprint(cfg.Face.ModelDir)
@@ -175,7 +200,13 @@ func run() error {
 		Liveness:      livenessSvc,
 		Issuer:        issuer,
 		OCR:           ocrSvc,
+		Voice:         voiceEngine,
 		Face:          engine,
+		IdswyftStore:  identityStore,
+		Storage:       storage,
+		Webhooks:      webhook.New(),
+		SMS:           sms.New(cfg.SMS),
+		Mail:          smtp.New(cfg.SMTP),
 		EngineVersion: engine.ModelVersion(),
 		BuildVersion:  buildVersion,
 		BuildCommit:   buildCommit,

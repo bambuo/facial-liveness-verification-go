@@ -6,14 +6,14 @@
 
 | 状态 | 内容 |
 | --- | --- |
-| 已实现已验证 | 人脸 1:1（YuNet + SFace）、活体（MiniFASNetV2）、动作校验、challenge 一次性/配额/失败锁定、档案加密、合规删除、纯 Go ONNX（PRelu/Dropout/initializer/Clip/MaxPool 等规范补丁）、纯 Go OCR（PP-OCRv5 检测/识别/行分组、中英模型、自动方向、Slice 属性补丁、MRZ/US/UK/CN 字段规则 v1）、GORM 31 模型与启动 AutoMigrate（advisory lock、schema parity、双副本并发） |
-| 已实现未验证 | 语音离线算子（Kaldi fbank、NeMo 归一化、CTC、CAM++/NeMo int8，WER 4–6%）；S3 关闭、Docker 构建、并发 P95、CI 集成测试 |
+| 已实现已验证 | 人脸 1:1（YuNet + SFace）、活体（MiniFASNetV2）、动作校验、challenge 一次性/配额/失败锁定、档案加密、合规删除、纯 Go ONNX（PRelu/Dropout/initializer/Clip/MaxPool 等规范补丁）、纯 Go OCR（PP-OCRv5 检测/识别/行分组、中英模型、自动方向、Slice 属性补丁、MRZ/US/UK/CN 字段规则 v1）、GORM 31 模型与启动 AutoMigrate（advisory lock、schema parity、双副本并发）、idswyft 核心 15 接口与 6/6 引擎端点、API Key/handoff/session 鉴权、9 个周期任务、S3/SMTP/SMS/Webhook 适配器 |
+| 已实现未验证 | 语音离线算子（Kaldi fbank、NeMo 归一化、CTC、CAM++/NeMo int8，WER 4–6%）；SMTP/SMS/Webhook 真实外部服务联调；idswyft 全量 154 接口、Docker 构建、并发 P95、CI 集成测试 |
 | 未实现 | 条码/MRZ、文档字段规则库、地址验证、批量、移动交接、VaaS、可验证凭证、保险库、合规规则、AML、风险评分、去重、审核工作台、开发者门户、22 页前端、3 套 SDK、9 个定时任务 |
 | 基线不做 | 1:N 识别、pgvector、cgo、Node sidecar、cloud `platform/*` 路由 |
 
 契约输入见 [contracts/README.md](contracts/README.md)：154 接口、31 表、schema 差异、7 个硬冲突。
 
-## 已实现范围（14 条路由）
+## 已实现范围（12 条 Go 内核路由 + 32 条 idswyft 契约路由 + 6 个引擎端点）
 
 | 方法与路径 | 功能 |
 | --- | --- |
@@ -109,7 +109,7 @@ node extract-schema.mjs --out ..      # 31 表 / 329 列 / 10 函数 / 6 触发�
 
 只列字段名，真实值通过环境变量/`deploy/.env` 注入：
 
-`APP_ENV`、`DATABASE_URL`、`DB_AUTO_MIGRATE`、`DB_MIGRATION_LOCK_SECONDS`、`DB_MIGRATION_STATEMENT_SECONDS`、`REDIS_ADDR`、`REDIS_PASSWORD`、`FACE_MODEL_DIR`、`AUTH_DEV_SIGNING_KEY`、`AUTH_RESULT_TOKEN_SIGNING_KEY`、`SECURITY_MASTER_KEY`、`LIVENESS_GUARD_ENABLED`、`LIVENESS_FAILURE_LIMIT`、`LIVENESS_WINDOW_SECONDS`、`LIVENESS_LOCK_SECONDS`、`LIVENESS_LAB_ENABLED`、`OCR_ENABLED`、`OCR_MODEL_DIR`、`OCR_DET_MODEL`、`OCR_REC_MODEL`、`OCR_DICT`、`OCR_WIDTH_MODE`、`OCR_ORIENTATION`、`S3_*`、`DATA_RETENTION_DAYS`。
+`APP_ENV`、`DATABASE_URL`、`DB_AUTO_MIGRATE`、`DB_MIGRATION_LOCK_SECONDS`、`DB_MIGRATION_STATEMENT_SECONDS`、`REDIS_ADDR`、`REDIS_PASSWORD`、`FACE_MODEL_DIR`、`AUTH_DEV_SIGNING_KEY`、`AUTH_RESULT_TOKEN_SIGNING_KEY`、`SECURITY_MASTER_KEY`、`LIVENESS_GUARD_ENABLED`、`LIVENESS_FAILURE_LIMIT`、`LIVENESS_WINDOW_SECONDS`、`LIVENESS_LOCK_SECONDS`、`LIVENESS_LAB_ENABLED`、`OCR_ENABLED`、`OCR_MODEL_DIR`、`OCR_DET_MODEL`、`OCR_REC_MODEL`、`OCR_DICT`、`OCR_WIDTH_MODE`、`OCR_ORIENTATION`、`VOICE_ENABLED`、`VOICE_MODEL_DIR`、`VOICE_SPEAKER_MODEL`、`VOICE_ASR_MODEL`、`VOICE_TOKENS`、`S3_*`、`SMTP_ENABLED`、`SMTP_HOST`、`SMTP_PORT`、`SMTP_USERNAME`、`SMTP_PASSWORD`、`SMTP_FROM`、`SMS_ENABLED`、`SMS_ENDPOINT`、`SMS_API_KEY`、`SMS_FROM`、`API_KEY_SECRET`、`SERVICE_TOKEN`、`DATA_RETENTION_DAYS`。
 
 ## 测试
 
@@ -118,7 +118,7 @@ CGO_ENABLED=0 go build ./...
 go test ./...
 ```
 
-当前 40 个顶层单元测试通过；OCR 端点单测与真实模型集成测试已加入（未设置 `OCR_TEST_MODEL_DIR` 时跳过）；无 CI 集成测试、无并发 P95 基线。模型相关测试在缺少模型时跳过。OCR 黄金集与指标见 [eval/ocr/README.md](eval/ocr/README.md)，评测见 [docs/功能/05-识别质量评测.md](docs/功能/05-识别质量评测.md)。
+全量 `go test ./...` 通过；OCR 端点单测与真实模型集成测试已加入（未设置 `OCR_TEST_MODEL_DIR` 时跳过）；语音引擎真实模型测试通过（`VOICE_MODEL_DIR`）；无 CI 集成测试、无并发 P95 基线。模型相关测试在缺少模型时跳过。OCR 黄金集与指标见 [eval/ocr/README.md](eval/ocr/README.md)，评测见 [docs/功能/05-识别质量评测.md](docs/功能/05-识别质量评测.md)。
 
 ## 部署
 

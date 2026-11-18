@@ -1,0 +1,1466 @@
+{
+  "idswyftRepo": "/Users/johana/Codes/github/idswyft-community-1.12.39",
+  "idswyftCommit": "83dd51bdfb6dec608856b41c110f54f5a8bf3efe",
+  "idswyftDate": "2026-11-17T00:25:31+07:00",
+  "goRepo": "/Users/johana/Desktop/facial-liveness-verification-go",
+  "goCommit": "badcc5c8d343d06845d8eeccfe70965fd95294e8",
+  "generatedAt": "2026-11-18T09:21:58.438Z",
+  "appliedFiles": [
+    "face_audit_logs.sql",
+    "face_consents.sql",
+    "face_documents.sql",
+    "face_operations.sql",
+    "face_profiles.sql",
+    "face_subjects.sql",
+    "face_tenant_keys.sql",
+    "face_tenants.sql",
+    "face_verification_sessions.sql"
+  ],
+  "tables": [
+    {
+      "name": "face_audit_logs",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "action",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_audit_logs.sql"
+        },
+        {
+          "name": "actor",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_audit_logs.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_audit_logs.sql"
+        },
+        {
+          "name": "detail_json",
+          "type": "JSONB",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'{}'::jsonb",
+          "check": null,
+          "addedIn": "face_audit_logs.sql"
+        },
+        {
+          "name": "id",
+          "type": "BIGSERIAL",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_audit_logs.sql"
+        },
+        {
+          "name": "request_id",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_audit_logs.sql"
+        },
+        {
+          "name": "resource",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_audit_logs.sql"
+        },
+        {
+          "name": "result",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_audit_logs.sql"
+        },
+        {
+          "name": "tenant_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_tenants",
+          "default": null,
+          "check": null,
+          "addedIn": "face_audit_logs.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": false,
+      "indexes": [
+        {
+          "name": "idx_face_audit_logs_tenant_created",
+          "unique": false,
+          "columns": [
+            "tenant_id",
+            "created_at DESC"
+          ]
+        },
+        {
+          "name": "idx_face_audit_logs_resource",
+          "unique": false,
+          "columns": [
+            "resource",
+            "created_at DESC"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "face_audit_logs.sql"
+      ],
+      "columnCount": 9,
+      "indexCount": 2,
+      "policyCount": 0,
+      "triggerCount": 0
+    },
+    {
+      "name": "face_consents",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "agreed_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_consents.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_consents.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_consents.sql"
+        },
+        {
+          "name": "ip_hash",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_consents.sql"
+        },
+        {
+          "name": "policy_version",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_consents.sql"
+        },
+        {
+          "name": "revoked_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_consents.sql"
+        },
+        {
+          "name": "subject_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_subjects",
+          "default": null,
+          "check": null,
+          "addedIn": "face_consents.sql"
+        },
+        {
+          "name": "tenant_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_tenants",
+          "default": null,
+          "check": null,
+          "addedIn": "face_consents.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": false,
+      "indexes": [
+        {
+          "name": "idx_face_consents_subject",
+          "unique": false,
+          "columns": [
+            "subject_id",
+            "agreed_at DESC"
+          ]
+        },
+        {
+          "name": "idx_face_consents_tenant",
+          "unique": false,
+          "columns": [
+            "tenant_id",
+            "agreed_at DESC"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "face_consents.sql"
+      ],
+      "columnCount": 8,
+      "indexCount": 2,
+      "policyCount": 0,
+      "triggerCount": 0
+    },
+    {
+      "name": "face_documents",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_documents.sql"
+        },
+        {
+          "name": "document_type",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_documents.sql"
+        },
+        {
+          "name": "fields_cipher",
+          "type": "BYTEA",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_documents.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_documents.sql"
+        },
+        {
+          "name": "retention_until",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_documents.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(status IN ('uploaded', 'ocr_processing', 'ocr_done', 'validated', 'matched', 'mismatched', 'rejected')",
+          "addedIn": "face_documents.sql"
+        },
+        {
+          "name": "subject_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_subjects",
+          "default": null,
+          "check": null,
+          "addedIn": "face_documents.sql"
+        },
+        {
+          "name": "tenant_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_tenants",
+          "default": null,
+          "check": null,
+          "addedIn": "face_documents.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_documents.sql"
+        },
+        {
+          "name": "validation_json",
+          "type": "JSONB",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'{}'::jsonb",
+          "check": null,
+          "addedIn": "face_documents.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": false,
+      "indexes": [
+        {
+          "name": "idx_face_documents_tenant_created",
+          "unique": false,
+          "columns": [
+            "tenant_id",
+            "created_at DESC"
+          ]
+        },
+        {
+          "name": "idx_face_documents_subject",
+          "unique": false,
+          "columns": [
+            "subject_id",
+            "created_at DESC"
+          ]
+        },
+        {
+          "name": "idx_face_documents_retention",
+          "unique": false,
+          "columns": [
+            "retention_until"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "face_documents.sql"
+      ],
+      "columnCount": 10,
+      "indexCount": 3,
+      "policyCount": 0,
+      "triggerCount": 0
+    },
+    {
+      "name": "face_operations",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "attempts",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "face_operations.sql"
+        },
+        {
+          "name": "completed_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_operations.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_operations.sql"
+        },
+        {
+          "name": "error_code",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_operations.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_operations.sql"
+        },
+        {
+          "name": "result_json",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_operations.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(status IN ('queued', 'running', 'succeeded', 'failed')",
+          "addedIn": "face_operations.sql"
+        },
+        {
+          "name": "subject_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_subjects",
+          "default": null,
+          "check": null,
+          "addedIn": "face_operations.sql"
+        },
+        {
+          "name": "tenant_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_tenants",
+          "default": null,
+          "check": null,
+          "addedIn": "face_operations.sql"
+        },
+        {
+          "name": "type",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_operations.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_operations.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": false,
+      "indexes": [
+        {
+          "name": "idx_face_operations_tenant_created",
+          "unique": false,
+          "columns": [
+            "tenant_id",
+            "created_at DESC"
+          ]
+        },
+        {
+          "name": "idx_face_operations_status",
+          "unique": false,
+          "columns": [
+            "status",
+            "created_at"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "face_operations.sql"
+      ],
+      "columnCount": 11,
+      "indexCount": 2,
+      "policyCount": 0,
+      "triggerCount": 0
+    },
+    {
+      "name": "face_profiles",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_profiles.sql"
+        },
+        {
+          "name": "embedding_cipher",
+          "type": "BYTEA",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_profiles.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_profiles.sql"
+        },
+        {
+          "name": "key_version",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "1",
+          "check": null,
+          "addedIn": "face_profiles.sql"
+        },
+        {
+          "name": "model_version",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_profiles.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'active'",
+          "check": "(status IN ('enrolling', 'active', 'deleting', 'deleted')",
+          "addedIn": "face_profiles.sql"
+        },
+        {
+          "name": "subject_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_subjects",
+          "default": null,
+          "check": null,
+          "addedIn": "face_profiles.sql"
+        },
+        {
+          "name": "tenant_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_tenants",
+          "default": null,
+          "check": null,
+          "addedIn": "face_profiles.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_profiles.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": false,
+      "indexes": [
+        {
+          "name": "uq_face_profiles_active_subject",
+          "unique": true,
+          "columns": [
+            "subject_id"
+          ]
+        },
+        {
+          "name": "idx_face_profiles_tenant_model",
+          "unique": false,
+          "columns": [
+            "tenant_id",
+            "model_version"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "face_profiles.sql"
+      ],
+      "columnCount": 9,
+      "indexCount": 2,
+      "policyCount": 0,
+      "triggerCount": 0
+    },
+    {
+      "name": "face_subjects",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_subjects.sql"
+        },
+        {
+          "name": "deleted_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_subjects.sql"
+        },
+        {
+          "name": "external_subject_id",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_subjects.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_subjects.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'active'",
+          "check": "(status IN ('active', 'deleted')",
+          "addedIn": "face_subjects.sql"
+        },
+        {
+          "name": "tenant_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_tenants",
+          "default": null,
+          "check": null,
+          "addedIn": "face_subjects.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_subjects.sql"
+        }
+      ],
+      "constraints": [
+        "UNIQUE (tenant_id, external_subject_id)"
+      ],
+      "rls": false,
+      "indexes": [
+        {
+          "name": "idx_face_subjects_tenant_status",
+          "unique": false,
+          "columns": [
+            "tenant_id",
+            "status"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "face_subjects.sql"
+      ],
+      "columnCount": 7,
+      "indexCount": 1,
+      "policyCount": 0,
+      "triggerCount": 0
+    },
+    {
+      "name": "face_tenant_keys",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_tenant_keys.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_tenant_keys.sql"
+        },
+        {
+          "name": "key_cipher",
+          "type": "BYTEA",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_tenant_keys.sql"
+        },
+        {
+          "name": "key_version",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_tenant_keys.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'active'",
+          "check": "(status IN ('active', 'retired', 'destroyed')",
+          "addedIn": "face_tenant_keys.sql"
+        },
+        {
+          "name": "tenant_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_tenants",
+          "default": null,
+          "check": null,
+          "addedIn": "face_tenant_keys.sql"
+        }
+      ],
+      "constraints": [
+        "UNIQUE (tenant_id, key_version)"
+      ],
+      "rls": false,
+      "indexes": [
+        {
+          "name": "idx_face_tenant_keys_tenant",
+          "unique": false,
+          "columns": [
+            "tenant_id",
+            "key_version DESC"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "face_tenant_keys.sql"
+      ],
+      "columnCount": 6,
+      "indexCount": 1,
+      "policyCount": 0,
+      "triggerCount": 0
+    },
+    {
+      "name": "face_tenants",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "code",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": true,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_tenants.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_tenants.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_tenants.sql"
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_tenants.sql"
+        },
+        {
+          "name": "policy_json",
+          "type": "JSONB",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'{}'::jsonb",
+          "check": null,
+          "addedIn": "face_tenants.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'active'",
+          "check": "(status IN ('active', 'disabled')",
+          "addedIn": "face_tenants.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_tenants.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": false,
+      "indexes": [
+        {
+          "name": "idx_face_tenants_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "face_tenants.sql"
+      ],
+      "columnCount": 7,
+      "indexCount": 1,
+      "policyCount": 0,
+      "triggerCount": 0
+    },
+    {
+      "name": "face_verification_sessions",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "challenge_id",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": true,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "clarity",
+          "type": "NUMERIC(6, 5)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "completed_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "now()",
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "device_id",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "liveness_status",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(liveness_status IN ('real', 'spoof', 'fuzzy', 'detecting', 'error')",
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "mode",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(mode IN ('match', 'liveness', 'enroll', 'verify', 'identify', 'document')",
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "reality",
+          "type": "NUMERIC(6, 5)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "ref",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "request_id",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "scene",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "score",
+          "type": "NUMERIC(6, 5)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(status IN ('created', 'challenging', 'collecting', 'processing', 'passed', 'failed', 'expired')",
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "subject_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_subjects",
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        },
+        {
+          "name": "tenant_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "face_tenants",
+          "default": null,
+          "check": null,
+          "addedIn": "face_verification_sessions.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": false,
+      "indexes": [
+        {
+          "name": "idx_face_sessions_tenant_created",
+          "unique": false,
+          "columns": [
+            "tenant_id",
+            "created_at DESC"
+          ]
+        },
+        {
+          "name": "idx_face_sessions_subject",
+          "unique": false,
+          "columns": [
+            "subject_id",
+            "created_at DESC"
+          ]
+        },
+        {
+          "name": "idx_face_sessions_status_expires",
+          "unique": false,
+          "columns": [
+            "status",
+            "expires_at"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "face_verification_sessions.sql"
+      ],
+      "columnCount": 17,
+      "indexCount": 3,
+      "policyCount": 0,
+      "triggerCount": 0
+    }
+  ],
+  "functions": [],
+  "triggers": [],
+  "policies": [],
+  "indexes": [
+    {
+      "name": "idx_face_audit_logs_resource",
+      "table": "face_audit_logs",
+      "unique": false,
+      "columns": [
+        "resource",
+        "created_at DESC"
+      ],
+      "where": null,
+      "file": "face_audit_logs.sql"
+    },
+    {
+      "name": "idx_face_audit_logs_tenant_created",
+      "table": "face_audit_logs",
+      "unique": false,
+      "columns": [
+        "tenant_id",
+        "created_at DESC"
+      ],
+      "where": null,
+      "file": "face_audit_logs.sql"
+    },
+    {
+      "name": "idx_face_consents_subject",
+      "table": "face_consents",
+      "unique": false,
+      "columns": [
+        "subject_id",
+        "agreed_at DESC"
+      ],
+      "where": null,
+      "file": "face_consents.sql"
+    },
+    {
+      "name": "idx_face_consents_tenant",
+      "table": "face_consents",
+      "unique": false,
+      "columns": [
+        "tenant_id",
+        "agreed_at DESC"
+      ],
+      "where": null,
+      "file": "face_consents.sql"
+    },
+    {
+      "name": "idx_face_documents_retention",
+      "table": "face_documents",
+      "unique": false,
+      "columns": [
+        "retention_until"
+      ],
+      "where": "retention_until IS NOT NULL",
+      "file": "face_documents.sql"
+    },
+    {
+      "name": "idx_face_documents_subject",
+      "table": "face_documents",
+      "unique": false,
+      "columns": [
+        "subject_id",
+        "created_at DESC"
+      ],
+      "where": null,
+      "file": "face_documents.sql"
+    },
+    {
+      "name": "idx_face_documents_tenant_created",
+      "table": "face_documents",
+      "unique": false,
+      "columns": [
+        "tenant_id",
+        "created_at DESC"
+      ],
+      "where": null,
+      "file": "face_documents.sql"
+    },
+    {
+      "name": "idx_face_operations_status",
+      "table": "face_operations",
+      "unique": false,
+      "columns": [
+        "status",
+        "created_at"
+      ],
+      "where": null,
+      "file": "face_operations.sql"
+    },
+    {
+      "name": "idx_face_operations_tenant_created",
+      "table": "face_operations",
+      "unique": false,
+      "columns": [
+        "tenant_id",
+        "created_at DESC"
+      ],
+      "where": null,
+      "file": "face_operations.sql"
+    },
+    {
+      "name": "idx_face_profiles_tenant_model",
+      "table": "face_profiles",
+      "unique": false,
+      "columns": [
+        "tenant_id",
+        "model_version"
+      ],
+      "where": null,
+      "file": "face_profiles.sql"
+    },
+    {
+      "name": "idx_face_sessions_status_expires",
+      "table": "face_verification_sessions",
+      "unique": false,
+      "columns": [
+        "status",
+        "expires_at"
+      ],
+      "where": null,
+      "file": "face_verification_sessions.sql"
+    },
+    {
+      "name": "idx_face_sessions_subject",
+      "table": "face_verification_sessions",
+      "unique": false,
+      "columns": [
+        "subject_id",
+        "created_at DESC"
+      ],
+      "where": null,
+      "file": "face_verification_sessions.sql"
+    },
+    {
+      "name": "idx_face_sessions_tenant_created",
+      "table": "face_verification_sessions",
+      "unique": false,
+      "columns": [
+        "tenant_id",
+        "created_at DESC"
+      ],
+      "where": null,
+      "file": "face_verification_sessions.sql"
+    },
+    {
+      "name": "idx_face_subjects_tenant_status",
+      "table": "face_subjects",
+      "unique": false,
+      "columns": [
+        "tenant_id",
+        "status"
+      ],
+      "where": null,
+      "file": "face_subjects.sql"
+    },
+    {
+      "name": "idx_face_tenant_keys_tenant",
+      "table": "face_tenant_keys",
+      "unique": false,
+      "columns": [
+        "tenant_id",
+        "key_version DESC"
+      ],
+      "where": null,
+      "file": "face_tenant_keys.sql"
+    },
+    {
+      "name": "idx_face_tenants_status",
+      "table": "face_tenants",
+      "unique": false,
+      "columns": [
+        "status"
+      ],
+      "where": null,
+      "file": "face_tenants.sql"
+    },
+    {
+      "name": "uq_face_profiles_active_subject",
+      "table": "face_profiles",
+      "unique": true,
+      "columns": [
+        "subject_id"
+      ],
+      "where": "status = ' '",
+      "file": "face_profiles.sql"
+    }
+  ],
+  "enums": [],
+  "extensions": [],
+  "doBlocks": [],
+  "otherStatements": [],
+  "statistics": {
+    "tables": 9,
+    "columns": 84,
+    "functions": 0,
+    "triggers": 0,
+    "policies": 0,
+    "indexes": 17,
+    "enums": 0,
+    "extensions": 0,
+    "doBlocks": 0
+  }
+}

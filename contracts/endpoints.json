@@ -1,0 +1,3837 @@
+{
+  "generatedBy": "contracts/tools/extract-endpoints.mjs",
+  "generatedAt": "2026-11-18T09:21:57.723Z",
+  "source": {
+    "repo": "/Users/johana/Codes/github/idswyft-community-1.12.39",
+    "commit": "83dd51bdfb6dec608856b41c110f54f5a8bf3efe",
+    "commitDate": "2026-11-17T00:25:31+07:00",
+    "server": "backend/src/server.ts",
+    "routesDir": "backend/src/routes",
+    "typescriptVersion": "5.9.3"
+  },
+  "statistics": {
+    "routeRegistrations": 154,
+    "expandedMethodPath": 158,
+    "uniqueMethodPath": 158,
+    "appLevelRoutes": 7,
+    "cloudOnlyMounts": 3,
+    "byModule": {
+      "newVerification": 15,
+      "handoff": 5,
+      "developer/register": 1,
+      "developer/apiKeys": 4,
+      "developer/webhooks": 7,
+      "developer/analytics": 4,
+      "developer/settings": 19,
+      "developer/profile": 8,
+      "admin": 15,
+      "admin-thresholds": 4,
+      "auth": 13,
+      "health": 5,
+      "webhooks": 6,
+      "vaas": 8,
+      "batch": 5,
+      "addressVerification": 2,
+      "pageConfig": 3,
+      "monitoring": 5,
+      "status": 1,
+      "setup": 2,
+      "credentials": 8,
+      "compliance": 9,
+      "vault": 7,
+      "well-known": 1,
+      "system": 1
+    },
+    "byAuth": {
+      "api-key|handoff-token": 16,
+      "service-token": 9,
+      "none-or-inline": 32,
+      "developer-jwt": 15,
+      "dashboard-jwt": 28,
+      "review-principal": 4,
+      "admin-jwt|reviewer-jwt": 2,
+      "jwt + admin-jwt": 7,
+      "admin-jwt|reviewer-jwt + org-admin|platform-admin": 6,
+      "jwt": 2,
+      "api-key": 28,
+      "compliance-request": 9
+    },
+    "needsReview": 32
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/initialize",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "checkSandboxMode",
+        "idempotencyMiddleware",
+        "verificationRateLimit",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": "verificationRateLimit",
+      "idempotency": true,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 818
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/re-verify",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "checkSandboxMode",
+        "verificationRateLimit",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": "verificationRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1025
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/front-document",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "idempotencyMiddleware",
+        "verificationRateLimit",
+        "upload",
+        "validate"
+      ],
+      "validators": [
+        "param",
+        "body"
+      ],
+      "rateLimit": "verificationRateLimit",
+      "idempotency": true,
+      "upload": "upload",
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1150
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/back-document",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "idempotencyMiddleware",
+        "verificationRateLimit",
+        "upload",
+        "validate"
+      ],
+      "validators": [
+        "param",
+        "body"
+      ],
+      "rateLimit": "verificationRateLimit",
+      "idempotency": true,
+      "upload": "upload",
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1475
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/cross-validation",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "verificationRateLimit",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": "verificationRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1663
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/live-capture",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "idempotencyMiddleware",
+        "verificationRateLimit",
+        "upload",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": "verificationRateLimit",
+      "idempotency": true,
+      "upload": "upload",
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1698
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/voice-challenge",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2017
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/voice-capture",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "upload",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": "upload",
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2063
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/finalize",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2279
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/restart",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "verificationRateLimit",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": "verificationRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2308
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/internal/session",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "service-token",
+      "middleware": [
+        "authenticateServiceToken",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2425
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/status",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2513
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/selfie",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2577
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/phone-otp/send",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "validate"
+      ],
+      "validators": [
+        "param",
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2658
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/phone-otp/verify",
+      "mount": "/api/v2/verify",
+      "module": "newVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "validate"
+      ],
+      "validators": [
+        "param",
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2695
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/verify/handoff/create",
+      "mount": "/api/verify/handoff",
+      "module": "handoff",
+      "auth": "none-or-inline",
+      "middleware": [
+        "basicRateLimit"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 16
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/verify/handoff/:token/session",
+      "mount": "/api/verify/handoff",
+      "module": "handoff",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 116
+      },
+      "needsReview": true
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/verify/handoff/:token/link",
+      "mount": "/api/verify/handoff",
+      "module": "handoff",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 189
+      },
+      "needsReview": true
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/verify/handoff/:token/complete",
+      "mount": "/api/verify/handoff",
+      "module": "handoff",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 227
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/verify/handoff/:token/status",
+      "mount": "/api/verify/handoff",
+      "module": "handoff",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 288
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/register",
+      "mount": "/api/developer",
+      "module": "developer/register",
+      "auth": "none-or-inline",
+      "middleware": [
+        "registrationRateLimit",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/register.ts",
+        "line": 26
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/api-key",
+      "mount": "/api/developer",
+      "module": "developer/apiKeys",
+      "auth": "developer-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDeveloperJWT",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 25
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/api-keys",
+      "mount": "/api/developer",
+      "module": "developer/apiKeys",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 173
+      },
+      "needsReview": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/api-key/:keyId",
+      "mount": "/api/developer",
+      "module": "developer/apiKeys",
+      "auth": "developer-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDeveloperJWT",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 233
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/api-key/:id/rotate",
+      "mount": "/api/developer",
+      "module": "developer/apiKeys",
+      "auth": "developer-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDeveloperJWT",
+        "validate"
+      ],
+      "validators": [
+        "param",
+        "body"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 308
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks",
+      "mount": "/api/developer",
+      "module": "developer/webhooks",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 43
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks",
+      "mount": "/api/developer",
+      "module": "developer/webhooks",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 83
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks/:webhookId/secret",
+      "mount": "/api/developer",
+      "module": "developer/webhooks",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "param",
+        "query"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 221
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks/:webhookId/deliveries",
+      "mount": "/api/developer",
+      "module": "developer/webhooks",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "param",
+        "query"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 263
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks/:webhookId/test",
+      "mount": "/api/developer",
+      "module": "developer/webhooks",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 313
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks/:webhookId/deliveries/:deliveryId/resend",
+      "mount": "/api/developer",
+      "module": "developer/webhooks",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 420
+      },
+      "needsReview": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/webhooks/:webhookId",
+      "mount": "/api/developer",
+      "module": "developer/webhooks",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 487
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/stats",
+      "mount": "/api/developer",
+      "module": "developer/analytics",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 37
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/activity",
+      "mount": "/api/developer",
+      "module": "developer/analytics",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 88
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/verifications/:verificationId",
+      "mount": "/api/developer",
+      "module": "developer/analytics",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 196
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/analytics",
+      "mount": "/api/developer",
+      "module": "developer/analytics",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 258
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/llm",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 17
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/llm",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 52
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/sms",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 116
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/sms",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 150
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/branding",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 202
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/branding",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 226
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/page-builder",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 297
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/page-builder",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 316
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/page-builder/slug",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 335
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/aml",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 370
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/aml",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 387
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/voice-auth",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 412
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/voice-auth",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 429
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/vc",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 454
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/vc",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 471
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/duplicate-detection",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 498
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/duplicate-detection",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 516
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/vault",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 545
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/vault",
+      "mount": "/api/developer",
+      "module": "developer/settings",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 563
+      },
+      "needsReview": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/account",
+      "mount": "/api/developer",
+      "module": "developer/profile",
+      "auth": "developer-jwt",
+      "middleware": [
+        "apiKeyRateLimit",
+        "authenticateDeveloperJWT",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": "apiKeyRateLimit",
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 29
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/profile",
+      "mount": "/api/developer",
+      "module": "developer/profile",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 91
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/profile",
+      "mount": "/api/developer",
+      "module": "developer/profile",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 128
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/avatar",
+      "mount": "/api/developer",
+      "module": "developer/profile",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT",
+        "avatarUpload"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 177
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/branding/logo",
+      "mount": "/api/developer",
+      "module": "developer/profile",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard",
+        "avatarUpload"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 216
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/reviewers/invite",
+      "mount": "/api/developer",
+      "module": "developer/profile",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 255
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/reviewers",
+      "mount": "/api/developer",
+      "module": "developer/profile",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 329
+      },
+      "needsReview": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/reviewers/:id",
+      "mount": "/api/developer",
+      "module": "developer/profile",
+      "auth": "dashboard-jwt",
+      "middleware": [
+        "authenticateDashboard",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 348
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/dashboard",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "review-principal",
+      "middleware": [
+        "authenticateReviewPrincipal"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 27
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verifications",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "review-principal",
+      "middleware": [
+        "authenticateReviewPrincipal",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 61
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verification/:id",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "review-principal",
+      "middleware": [
+        "authenticateReviewPrincipal",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 147
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verification/:id/duplicates",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "admin-jwt|reviewer-jwt",
+      "middleware": [
+        "authenticateAdminOrReviewer",
+        "validate"
+      ],
+      "validators": [
+        "param",
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 308
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/verification/:id/review",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "review-principal",
+      "middleware": [
+        "authenticateReviewPrincipal",
+        "validate"
+      ],
+      "validators": [
+        "param",
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 378
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/developers",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "jwt + admin-jwt",
+      "middleware": [
+        "authenticateJWT",
+        "requireAdminRole",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 516
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "admin-jwt|reviewer-jwt + org-admin|platform-admin",
+      "middleware": [
+        "authenticateAdminOrReviewer",
+        "requireOrgAdminOrPlatformAdmin",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 576
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/health",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "jwt + admin-jwt",
+      "middleware": [
+        "authenticateJWT",
+        "requireAdminRole"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 602
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/funnel",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "admin-jwt|reviewer-jwt + org-admin|platform-admin",
+      "middleware": [
+        "authenticateAdminOrReviewer",
+        "requireOrgAdminOrPlatformAdmin",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 755
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/rejections",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "admin-jwt|reviewer-jwt + org-admin|platform-admin",
+      "middleware": [
+        "authenticateAdminOrReviewer",
+        "requireOrgAdminOrPlatformAdmin",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 772
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/fraud-patterns",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "admin-jwt|reviewer-jwt + org-admin|platform-admin",
+      "middleware": [
+        "authenticateAdminOrReviewer",
+        "requireOrgAdminOrPlatformAdmin",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 787
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/risk-distribution",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "admin-jwt|reviewer-jwt + org-admin|platform-admin",
+      "middleware": [
+        "authenticateAdminOrReviewer",
+        "requireOrgAdminOrPlatformAdmin",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 802
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/provider-metrics",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "jwt + admin-jwt",
+      "middleware": [
+        "authenticateJWT",
+        "requireAdminRole"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 817
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/audit/export",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "admin-jwt|reviewer-jwt",
+      "middleware": [
+        "authenticateAdminOrReviewer",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 834
+      },
+      "needsReview": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/user/:userId/data",
+      "mount": "/api/admin",
+      "module": "admin",
+      "auth": "admin-jwt|reviewer-jwt + org-admin|platform-admin",
+      "middleware": [
+        "authenticateAdminOrReviewer",
+        "requireOrgAdminOrPlatformAdmin"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 1050
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/thresholds",
+      "mount": "/api/admin/thresholds",
+      "module": "admin-thresholds",
+      "auth": "jwt + admin-jwt",
+      "middleware": [
+        "authenticateJWT",
+        "requireAdminRole"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "inline",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 20
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/thresholds",
+      "mount": "/api/admin/thresholds",
+      "module": "admin-thresholds",
+      "auth": "jwt + admin-jwt",
+      "middleware": [
+        "authenticateJWT",
+        "requireAdminRole"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "inline",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 82
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/thresholds/preview",
+      "mount": "/api/admin/thresholds",
+      "module": "admin-thresholds",
+      "auth": "jwt + admin-jwt",
+      "middleware": [
+        "authenticateJWT",
+        "requireAdminRole"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "inline",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 194
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/thresholds/reset",
+      "mount": "/api/admin/thresholds",
+      "module": "admin-thresholds",
+      "auth": "jwt + admin-jwt",
+      "middleware": [
+        "authenticateJWT",
+        "requireAdminRole"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "inline",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 249
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "inline",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 83
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/csrf-token",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 89
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/admin/login",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [
+        "adminLoginLimiter",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 95
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/admin/escalate",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "inline",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 175
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/send",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [
+        "otpSendLimiter",
+        "emailValidation",
+        "validate"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 192
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/verify",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [
+        "otpVerifyLimiter",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 211
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/complete-registration",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 270
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reviewer/otp/send",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [
+        "otpSendLimiter",
+        "emailValidation",
+        "validate"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 365
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reviewer/otp/verify",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [
+        "otpVerifyLimiter",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 398
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/github/callback",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 490
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/developer/github/url",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 660
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp/setup",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "jwt",
+      "middleware": [
+        "authenticateJWT"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 675
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp/verify",
+      "mount": "/api/auth",
+      "module": "auth",
+      "auth": "jwt",
+      "middleware": [
+        "authenticateJWT"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 693
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "mount": "/api/health",
+      "module": "health",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 11
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/detailed",
+      "mount": "/api/health",
+      "module": "health",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 24
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/ready",
+      "mount": "/api/health",
+      "module": "health",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 89
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/live",
+      "mount": "/api/health",
+      "module": "health",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "inline",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 104
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/api-key-diagnostic",
+      "mount": "/api/health",
+      "module": "health",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 109
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/webhooks/register",
+      "mount": "/api/webhooks",
+      "module": "webhooks",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 16
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/webhooks",
+      "mount": "/api/webhooks",
+      "module": "webhooks",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 86
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/webhooks/:webhookId",
+      "mount": "/api/webhooks",
+      "module": "webhooks",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 105
+      },
+      "needsReview": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/webhooks/:webhookId",
+      "mount": "/api/webhooks",
+      "module": "webhooks",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 167
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/webhooks/:webhookId/deliveries",
+      "mount": "/api/webhooks",
+      "module": "webhooks",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 194
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/webhooks/:webhookId/test",
+      "mount": "/api/webhooks",
+      "module": "webhooks",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 231
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/users",
+      "mount": "/api/vaas",
+      "module": "vaas",
+      "auth": "service-token",
+      "middleware": [
+        "authenticateServiceToken"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 13
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/verify",
+      "mount": "/api/vaas",
+      "module": "vaas",
+      "auth": "service-token",
+      "middleware": [
+        "authenticateServiceToken"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 63
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/verify/:verification_id/status",
+      "mount": "/api/vaas",
+      "module": "vaas",
+      "auth": "service-token",
+      "middleware": [
+        "authenticateServiceToken"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 114
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/developers",
+      "mount": "/api/vaas",
+      "module": "vaas",
+      "auth": "service-token",
+      "middleware": [
+        "authenticateServiceToken"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 145
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/developers/:id",
+      "mount": "/api/vaas",
+      "module": "vaas",
+      "auth": "service-token",
+      "middleware": [
+        "authenticateServiceToken",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 213
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/developers/:id/suspend",
+      "mount": "/api/vaas",
+      "module": "vaas",
+      "auth": "service-token",
+      "middleware": [
+        "authenticateServiceToken",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 244
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/developers/:id/unsuspend",
+      "mount": "/api/vaas",
+      "module": "vaas",
+      "auth": "service-token",
+      "middleware": [
+        "authenticateServiceToken",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 264
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/health",
+      "mount": "/api/vaas",
+      "module": "vaas",
+      "auth": "service-token",
+      "middleware": [
+        "authenticateServiceToken"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "inline",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 284
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/batch/upload",
+      "mount": "/api/v2/batch",
+      "module": "batch",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "checkSandboxMode",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 206
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch/:id/status",
+      "mount": "/api/v2/batch",
+      "module": "batch",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 260
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch/:id/results",
+      "mount": "/api/v2/batch",
+      "module": "batch",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 294
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/batch/:id/cancel",
+      "mount": "/api/v2/batch",
+      "module": "batch",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 318
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch",
+      "mount": "/api/v2/batch",
+      "module": "batch",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 348
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/address-document",
+      "mount": "/api/v2/verify",
+      "module": "addressVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "verificationRateLimit",
+        "upload",
+        "validate"
+      ],
+      "validators": [
+        "param",
+        "body"
+      ],
+      "rateLimit": "verificationRateLimit",
+      "idempotency": null,
+      "upload": "upload",
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/addressVerification.ts",
+        "line": 41
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/address-status",
+      "mount": "/api/v2/verify",
+      "module": "addressVerification",
+      "auth": "api-key|handoff-token",
+      "middleware": [
+        "authenticateAPIKeyOrHandoff",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/addressVerification.ts",
+        "line": 165
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/page-config",
+      "mount": "/api/v2/verify",
+      "module": "pageConfig",
+      "auth": "none-or-inline",
+      "middleware": [
+        "basicRateLimit"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/pageConfig.ts",
+        "line": 15
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/page-config/slug/:slug",
+      "mount": "/api/v2/verify",
+      "module": "pageConfig",
+      "auth": "none-or-inline",
+      "middleware": [
+        "basicRateLimit"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/pageConfig.ts",
+        "line": 76
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/session-info",
+      "mount": "/api/v2/verify",
+      "module": "pageConfig",
+      "auth": "none-or-inline",
+      "middleware": [
+        "basicRateLimit"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/pageConfig.ts",
+        "line": 111
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/monitoring/schedules",
+      "mount": "/api/v2/monitoring",
+      "module": "monitoring",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 32
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/schedules",
+      "mount": "/api/v2/monitoring",
+      "module": "monitoring",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 78
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/schedules/:schedule_id",
+      "mount": "/api/v2/monitoring",
+      "module": "monitoring",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 116
+      },
+      "needsReview": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/monitoring/schedules/:schedule_id",
+      "mount": "/api/v2/monitoring",
+      "module": "monitoring",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "param"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 147
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/expiring-documents",
+      "mount": "/api/v2/monitoring",
+      "module": "monitoring",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "validate"
+      ],
+      "validators": [
+        "query"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 180
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/status",
+      "mount": "/api/status",
+      "module": "status",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "inline",
+      "source": {
+        "file": "backend/src/routes/status.ts",
+        "line": 23
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/setup/status",
+      "mount": "/api/setup",
+      "module": "setup",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/setup.ts",
+        "line": 31
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/setup/initialize",
+      "mount": "/api/setup",
+      "module": "setup",
+      "auth": "none-or-inline",
+      "middleware": [
+        "setupRateLimit",
+        "validate"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/setup.ts",
+        "line": 54
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:id/credential",
+      "mount": "/api/v2/verify",
+      "module": "credentials",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 18
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:id/credential/send",
+      "mount": "/api/v2/verify",
+      "module": "credentials",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 91
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/credentials/:jti/revoke",
+      "mount": "/api/v2/verify",
+      "module": "credentials",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 188
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/credentials/:jti/status",
+      "mount": "/api/v2/verify",
+      "module": "credentials",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 209
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/:id/credential",
+      "mount": "/api/v2",
+      "module": "credentials",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 18
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/:id/credential/send",
+      "mount": "/api/v2",
+      "module": "credentials",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 91
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/credentials/:jti/revoke",
+      "mount": "/api/v2",
+      "module": "credentials",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 188
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/credentials/:jti/status",
+      "mount": "/api/v2",
+      "module": "credentials",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 209
+      },
+      "needsReview": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/rulesets",
+      "mount": "/api/v2/compliance",
+      "module": "compliance",
+      "auth": "compliance-request",
+      "middleware": [
+        "authenticateComplianceRequest"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 74
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/compliance/rulesets",
+      "mount": "/api/v2/compliance",
+      "module": "compliance",
+      "auth": "compliance-request",
+      "middleware": [
+        "authenticateComplianceRequest"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 103
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "mount": "/api/v2/compliance",
+      "module": "compliance",
+      "auth": "compliance-request",
+      "middleware": [
+        "authenticateComplianceRequest"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 139
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "mount": "/api/v2/compliance",
+      "module": "compliance",
+      "auth": "compliance-request",
+      "middleware": [
+        "authenticateComplianceRequest"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 167
+      },
+      "needsReview": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "mount": "/api/v2/compliance",
+      "module": "compliance",
+      "auth": "compliance-request",
+      "middleware": [
+        "authenticateComplianceRequest"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 212
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/rulesets/:id/rules",
+      "mount": "/api/v2/compliance",
+      "module": "compliance",
+      "auth": "compliance-request",
+      "middleware": [
+        "authenticateComplianceRequest"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 237
+      },
+      "needsReview": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/compliance/rules/:id",
+      "mount": "/api/v2/compliance",
+      "module": "compliance",
+      "auth": "compliance-request",
+      "middleware": [
+        "authenticateComplianceRequest"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 280
+      },
+      "needsReview": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/compliance/rules/:id",
+      "mount": "/api/v2/compliance",
+      "module": "compliance",
+      "auth": "compliance-request",
+      "middleware": [
+        "authenticateComplianceRequest"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 339
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/evaluate",
+      "mount": "/api/v2/compliance",
+      "module": "compliance",
+      "auth": "compliance-request",
+      "middleware": [
+        "authenticateComplianceRequest"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 379
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/vault/store",
+      "mount": "/api/v2/vault",
+      "module": "vault",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "requireVaultEnabled"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 39
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/share/:shareToken",
+      "mount": "/api/v2/vault",
+      "module": "vault",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 104
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/:token",
+      "mount": "/api/v2/vault",
+      "module": "vault",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "requireVaultEnabled"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 174
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/:token/attributes/:attr",
+      "mount": "/api/v2/vault",
+      "module": "vault",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "requireVaultEnabled"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 202
+      },
+      "needsReview": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/vault/:token",
+      "mount": "/api/v2/vault",
+      "module": "vault",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "requireVaultEnabled"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 232
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault",
+      "mount": "/api/v2/vault",
+      "module": "vault",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "requireVaultEnabled"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 261
+      },
+      "needsReview": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/vault/:token/share",
+      "mount": "/api/v2/vault",
+      "module": "vault",
+      "auth": "api-key",
+      "middleware": [
+        "authenticateAPIKey",
+        "requireVaultEnabled"
+      ],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 301
+      },
+      "needsReview": false
+    },
+    {
+      "method": "GET",
+      "path": "/.well-known/did.json",
+      "mount": "/.well-known",
+      "module": "well-known",
+      "auth": "none-or-inline",
+      "middleware": [],
+      "validators": [],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": null,
+      "handler": "inline",
+      "source": {
+        "file": "backend/src/routes/well-known.ts",
+        "line": 12
+      },
+      "needsReview": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/system/version",
+      "mount": "/api/system",
+      "module": "system",
+      "auth": "developer-jwt",
+      "middleware": [
+        "authenticateDeveloperJWT"
+      ],
+      "validators": [
+        "body"
+      ],
+      "rateLimit": null,
+      "idempotency": null,
+      "upload": null,
+      "csrf": true,
+      "handler": "catchAsync",
+      "source": {
+        "file": "backend/src/routes/system.ts",
+        "line": 52
+      },
+      "needsReview": false
+    }
+  ],
+  "appLevel": [
+    {
+      "method": "GET",
+      "fullPath": "/api/public/assets/*",
+      "handler": "servePublicAsset",
+      "module": "app-level",
+      "source": {
+        "file": "backend/src/server.ts",
+        "line": 218
+      },
+      "conditional": "storage.provider=local|s3"
+    },
+    {
+      "method": "GET",
+      "fullPath": "/api/files/*",
+      "handler": "serveLocalFile",
+      "module": "app-level",
+      "source": {
+        "file": "backend/src/server.ts",
+        "line": 226
+      }
+    },
+    {
+      "method": "GET",
+      "fullPath": "/health",
+      "handler": "inline",
+      "module": "app-level",
+      "source": {
+        "file": "backend/src/server.ts",
+        "line": 238
+      }
+    },
+    {
+      "method": "GET",
+      "fullPath": "/api/health",
+      "handler": "inline",
+      "module": "app-level",
+      "source": {
+        "file": "backend/src/server.ts",
+        "line": 246
+      }
+    },
+    {
+      "method": "GET",
+      "fullPath": "/",
+      "handler": "inline",
+      "module": "app-level",
+      "source": {
+        "file": "backend/src/server.ts",
+        "line": 256
+      }
+    },
+    {
+      "method": "GET",
+      "fullPath": "/api/docs/markdown",
+      "handler": "inline",
+      "module": "app-level",
+      "source": {
+        "file": "backend/src/server.ts",
+        "line": 268
+      }
+    },
+    {
+      "method": "GET",
+      "fullPath": "/api/docs",
+      "handler": "inline",
+      "module": "app-level",
+      "source": {
+        "file": "backend/src/server.ts",
+        "line": 283
+      }
+    }
+  ],
+  "cloudOnly": [
+    {
+      "mount": "/api/platform/api-keys/service",
+      "router": "mod.default",
+      "source": {
+        "file": "backend/src/server.ts",
+        "line": 173
+      },
+      "note": "IDSWYFT_EDITION=cloud 动态挂载；社区镜像中不存在，未计入 154"
+    },
+    {
+      "mount": "/api/platform/webhooks",
+      "router": "mod.default",
+      "source": {
+        "file": "backend/src/server.ts",
+        "line": 188
+      },
+      "note": "IDSWYFT_EDITION=cloud 动态挂载；社区镜像中不存在，未计入 154"
+    },
+    {
+      "mount": "/api/auth",
+      "router": "mod.default",
+      "source": {
+        "file": "backend/src/server.ts",
+        "line": 205
+      },
+      "note": "IDSWYFT_EDITION=cloud 动态挂载；社区镜像中不存在，未计入 154"
+    }
+  ],
+  "mounts": [
+    {
+      "key": "/api/v2/verify -> backend/src/routes/newVerification.ts",
+      "count": 15
+    },
+    {
+      "key": "/api/verify/handoff -> backend/src/routes/handoff.ts",
+      "count": 5
+    },
+    {
+      "key": "/api/developer -> backend/src/routes/developer/index.ts",
+      "count": 43
+    },
+    {
+      "key": "/api/admin -> backend/src/routes/admin.ts",
+      "count": 15
+    },
+    {
+      "key": "/api/admin/thresholds -> backend/src/routes/admin-thresholds.ts",
+      "count": 4
+    },
+    {
+      "key": "/api/auth -> backend/src/routes/auth.ts",
+      "count": 13
+    },
+    {
+      "key": "/api/health -> backend/src/routes/health.ts",
+      "count": 5
+    },
+    {
+      "key": "/api/webhooks -> backend/src/routes/webhooks.ts",
+      "count": 6
+    },
+    {
+      "key": "/api/vaas -> backend/src/routes/vaas.ts",
+      "count": 8
+    },
+    {
+      "key": "/api/v2/batch -> backend/src/routes/batch.ts",
+      "count": 5
+    },
+    {
+      "key": "/api/v2/verify -> backend/src/routes/addressVerification.ts",
+      "count": 2
+    },
+    {
+      "key": "/api/v2/verify -> backend/src/routes/pageConfig.ts",
+      "count": 3
+    },
+    {
+      "key": "/api/v2/monitoring -> backend/src/routes/monitoring.ts",
+      "count": 5
+    },
+    {
+      "key": "/api/status -> backend/src/routes/status.ts",
+      "count": 1
+    },
+    {
+      "key": "/api/setup -> backend/src/routes/setup.ts",
+      "count": 2
+    },
+    {
+      "key": "/api/v2/verify -> backend/src/routes/credentials.ts",
+      "count": 4
+    },
+    {
+      "key": "/api/v2 -> backend/src/routes/credentials.ts",
+      "count": 4
+    },
+    {
+      "key": "/api/v2/compliance -> backend/src/routes/compliance.ts",
+      "count": 9
+    },
+    {
+      "key": "/api/v2/vault -> backend/src/routes/vault.ts",
+      "count": 7
+    },
+    {
+      "key": "/.well-known -> backend/src/routes/well-known.ts",
+      "count": 1
+    },
+    {
+      "key": "/api/system -> backend/src/routes/system.ts",
+      "count": 1
+    }
+  ],
+  "validation": {
+    "documentedEndpoints": 154,
+    "extractedRegistrations": 154,
+    "matches": true
+  },
+  "caveats": [
+    "静态解析；鉴权仅按中间件名推断，handler 内联鉴权标记为 none-or-inline，需要逐条人工确认",
+    "同一路由模块挂载到多个前缀时展开为多条路径（credentials: /api/v2/verify 与 /api/v2）",
+    "cloud-only 动态挂载不计入 154",
+    "请求/响应字段未在本清单展开，见 M0 后续契约 schema 抽取"
+  ]
+}

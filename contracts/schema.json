@@ -1,0 +1,6608 @@
+{
+  "idswyftRepo": "/Users/johana/Codes/github/idswyft-community-1.12.39",
+  "idswyftCommit": "83dd51bdfb6dec608856b41c110f54f5a8bf3efe",
+  "idswyftDate": "2026-11-17T00:25:31+07:00",
+  "goRepo": "/Users/johana/Desktop/facial-liveness-verification-go",
+  "goCommit": "badcc5c8d343d06845d8eeccfe70965fd95294e8",
+  "generatedAt": "2026-11-18T09:21:58.438Z",
+  "validation": {
+    "expectedTables": 31,
+    "actualTables": 31,
+    "matches": true
+  },
+  "appliedFiles": [
+    "01_initial_schema.sql",
+    "02_add_missing_document_columns.sql",
+    "03_add_missing_verification_columns.sql",
+    "04_add_api_key_revocation_columns.sql",
+    "04_add_back_of_id_support.sql",
+    "05_add_photo_consistency_validation.sql",
+    "07_add_rate_limits_table.sql",
+    "09_add_idempotency_keys.sql",
+    "11_add_provider_metrics.sql",
+    "12_add_mobile_handoff_sessions.sql",
+    "13_add_verification_contexts.sql",
+    "14_add_processing_status.sql",
+    "15_add_sandbox_columns.sql",
+    "16_add_issuing_country.sql",
+    "17_add_aml_screening.sql",
+    "18_add_risk_scores.sql",
+    "19_add_batch_verification.sql",
+    "20_add_address_verification.sql",
+    "21_add_monitoring.sql",
+    "22_source_separation.sql",
+    "23_handoff_source.sql",
+    "24_add_retry_count.sql",
+    "25_add_developer_otp_and_github.sql",
+    "26_atomic_otp_verify.sql",
+    "27_add_developer_llm_config.sql",
+    "28_formalize_api_activity_logs.sql",
+    "29_backfill_webhook_events.sql",
+    "30_add_developer_status.sql",
+    "31_community_rpc_functions.sql",
+    "32_handoff_verification_id.sql",
+    "33_verification_reviewers.sql",
+    "34_enable_rls_all_tables.sql",
+    "35_add_developer_aml_setting.sql",
+    "36_add_re_verification.sql",
+    "37_add_phone_otp.sql",
+    "38_add_age_verification.sql",
+    "39_admin_restructure.sql",
+    "40_add_page_branding.sql",
+    "41_add_document_only_identity_modes.sql",
+    "42_add_page_builder_config.sql",
+    "43_add_duplicate_detection.sql",
+    "44_add_verifiable_credentials.sql",
+    "45_add_credential_jwt_column.sql",
+    "46_add_identity_vault.sql",
+    "48_add_compliance_engine.sql",
+    "49_enable_rls_vault_compliance.sql",
+    "50_handoff_remove_raw_api_key.sql",
+    "51_enable_rls_remaining_tables.sql",
+    "52_drop_admins_view.sql",
+    "53_create_branding_bucket.sql",
+    "54_add_session_token.sql",
+    "55_add_velocity_tracking.sql",
+    "56_add_voice_auth.sql",
+    "57_add_rls_policies_all_tables.sql",
+    "58_add_service_keys.sql",
+    "59_enable_rls_migrations.sql",
+    "60_create_avatars_bucket.sql",
+    "61_add_verification_addons.sql",
+    "62_add_developer_llm_model.sql",
+    "63_add_kazivio_service_product.sql",
+    "64_add_developer_locale.sql",
+    "20260319_add_webhook_deliveries.sql",
+    "20260319_webhook_api_key_scope.sql",
+    "20260604_fix_webhook_deliveries_id_default.sql",
+    "20260629_add_api_key_id_to_verification_requests.sql",
+    "20260629_add_operator_email_to_api_keys.sql",
+    "20260701_add_review_attribution_to_verification_requests.sql"
+  ],
+  "tables": [
+    {
+      "name": "aml_screenings",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "date_of_birth",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "17_add_aml_screening.sql"
+        },
+        {
+          "name": "full_name",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "17_add_aml_screening.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "17_add_aml_screening.sql"
+        },
+        {
+          "name": "lists_checked",
+          "type": "TEXT[]",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'{}'",
+          "check": null,
+          "addedIn": "17_add_aml_screening.sql"
+        },
+        {
+          "name": "match_found",
+          "type": "BOOLEAN",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "false",
+          "check": null,
+          "addedIn": "17_add_aml_screening.sql"
+        },
+        {
+          "name": "matches",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'[]'",
+          "check": null,
+          "addedIn": "17_add_aml_screening.sql"
+        },
+        {
+          "name": "nationality",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "17_add_aml_screening.sql"
+        },
+        {
+          "name": "risk_level",
+          "type": "VARCHAR(20)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'clear'",
+          "check": null,
+          "addedIn": "17_add_aml_screening.sql"
+        },
+        {
+          "name": "screened_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "17_add_aml_screening.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "17_add_aml_screening.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_aml_screenings_verification",
+          "unique": false,
+          "columns": [
+            "verification_request_id"
+          ]
+        },
+        {
+          "name": "idx_aml_screenings_risk",
+          "unique": false,
+          "columns": [
+            "risk_level"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_aml_screenings",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_aml_screenings",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "17_add_aml_screening.sql"
+      ],
+      "columnCount": 10,
+      "indexCount": 2,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "api_activity_logs",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "api_key_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "api_keys",
+          "default": null,
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        },
+        {
+          "name": "endpoint",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        },
+        {
+          "name": "error_message",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        },
+        {
+          "name": "ip_address",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        },
+        {
+          "name": "is_service",
+          "type": "BOOLEAN",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "58_add_service_keys.sql"
+        },
+        {
+          "name": "method",
+          "type": "VARCHAR(10)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        },
+        {
+          "name": "response_time_ms",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        },
+        {
+          "name": "service_product",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "58_add_service_keys.sql"
+        },
+        {
+          "name": "status_code",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        },
+        {
+          "name": "timestamp",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        },
+        {
+          "name": "user_agent",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "28_formalize_api_activity_logs.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_api_activity_developer_ts",
+          "unique": false,
+          "columns": [
+            "developer_id",
+            "timestamp DESC"
+          ]
+        },
+        {
+          "name": "api_activity_logs_service_product_idx",
+          "unique": false,
+          "columns": [
+            "service_product",
+            "timestamp DESC"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_api_activity_logs",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_api_activity_logs",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "28_formalize_api_activity_logs.sql"
+      ],
+      "columnCount": 13,
+      "indexCount": 2,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "api_keys",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "expires_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "is_active",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "TRUE",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "is_sandbox",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "is_service",
+          "type": "BOOLEAN",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "58_add_service_keys.sql"
+        },
+        {
+          "name": "key_hash",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "key_prefix",
+          "type": "VARCHAR(20)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "last_used_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(255)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "operator_email",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20260629_add_operator_email_to_api_keys.sql"
+        },
+        {
+          "name": "revoked_at",
+          "type": "TIMESTAMP",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "04_add_api_key_revocation_columns.sql"
+        },
+        {
+          "name": "revoked_reason",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "04_add_api_key_revocation_columns.sql"
+        },
+        {
+          "name": "service_environment",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "58_add_service_keys.sql"
+        },
+        {
+          "name": "service_label",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "58_add_service_keys.sql"
+        },
+        {
+          "name": "service_product",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "58_add_service_keys.sql"
+        }
+      ],
+      "constraints": [
+        "api_keys_service_fields_consistent CHECK ( (is_service = TRUE AND service_product IS NOT NULL AND service_environment IS NOT NULL) OR (is_service = FALSE AND service_product IS NULL AND service_environment IS NULL) )",
+        "api_keys_service_environment_valid CHECK ( service_environment IS NULL OR service_environment IN (' ', ' ', ' ') )",
+        "api_keys_service_product_valid CHECK ( service_product IS NULL OR service_product IN (' ', ' ') )",
+        "api_keys_service_product_valid CHECK ( service_product IS NULL OR service_product IN (' ', ' ', ' ') )",
+        "api_keys_operator_email_service_only CHECK (operator_email IS NULL OR is_service = TRUE)"
+      ],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_api_keys_developer_id",
+          "unique": false,
+          "columns": [
+            "developer_id"
+          ]
+        },
+        {
+          "name": "api_keys_service_lookup_idx",
+          "unique": false,
+          "columns": [
+            "key_hash"
+          ]
+        },
+        {
+          "name": "api_keys_operator_email_idx",
+          "unique": false,
+          "columns": [
+            "operator_email"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_api_keys",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_api_keys",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [
+        {
+          "file": "58_add_service_keys.sql",
+          "sql": "DROP CONSTRAINT IF EXISTS api_keys_service_fields_consistent"
+        },
+        {
+          "file": "58_add_service_keys.sql",
+          "sql": "DROP CONSTRAINT IF EXISTS api_keys_service_environment_valid"
+        },
+        {
+          "file": "58_add_service_keys.sql",
+          "sql": "DROP CONSTRAINT IF EXISTS api_keys_service_product_valid"
+        },
+        {
+          "file": "63_add_kazivio_service_product.sql",
+          "sql": "DROP CONSTRAINT IF EXISTS api_keys_service_product_valid"
+        },
+        {
+          "file": "20260629_add_operator_email_to_api_keys.sql",
+          "sql": "DROP CONSTRAINT IF EXISTS api_keys_operator_email_service_only"
+        }
+      ],
+      "sources": [
+        "01_initial_schema.sql"
+      ],
+      "columnCount": 17,
+      "indexCount": 3,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "batch_items",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "batch_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "batch_jobs",
+          "default": null,
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "error",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "input_data",
+          "type": "JSONB",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(20)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'pending'",
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "user_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "verification_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_batch_items_batch",
+          "unique": false,
+          "columns": [
+            "batch_id"
+          ]
+        },
+        {
+          "name": "idx_batch_items_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_batch_items",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_batch_items",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "19_add_batch_verification.sql"
+      ],
+      "columnCount": 8,
+      "indexCount": 2,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "batch_jobs",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "completed_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "failed_items",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "processed_items",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(20)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'pending'",
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "succeeded_items",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        },
+        {
+          "name": "total_items",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "19_add_batch_verification.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_batch_jobs_dev",
+          "unique": false,
+          "columns": [
+            "developer_id"
+          ]
+        },
+        {
+          "name": "idx_batch_jobs_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_batch_jobs",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_batch_jobs",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "19_add_batch_verification.sql"
+      ],
+      "columnCount": 9,
+      "indexCount": 2,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "compliance_rules",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "action",
+          "type": "JSONB",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "condition",
+          "type": "JSONB",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "ruleset_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "compliance_rulesets",
+          "default": null,
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_compliance_rules_ruleset",
+          "unique": false,
+          "columns": [
+            "ruleset_id"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_compliance_rules",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_compliance_rules",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "48_add_compliance_engine.sql"
+      ],
+      "columnCount": 6,
+      "indexCount": 1,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "compliance_rulesets",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "is_active",
+          "type": "BOOLEAN",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "true",
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "priority",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "100",
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "48_add_compliance_engine.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_compliance_rulesets_dev",
+          "unique": false,
+          "columns": [
+            "developer_id"
+          ]
+        },
+        {
+          "name": "idx_compliance_rulesets_active",
+          "unique": false,
+          "columns": [
+            "developer_id",
+            "is_active"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_compliance_rulesets",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_compliance_rulesets",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "48_add_compliance_engine.sql"
+      ],
+      "columnCount": 8,
+      "indexCount": 2,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "dedup_fingerprints",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "43_add_duplicate_detection.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "43_add_duplicate_detection.sql"
+        },
+        {
+          "name": "fingerprint_type",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(fingerprint_type IN ('document_phash', 'face_lsh')",
+          "addedIn": "43_add_duplicate_detection.sql"
+        },
+        {
+          "name": "hash_value",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "43_add_duplicate_detection.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "43_add_duplicate_detection.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "43_add_duplicate_detection.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_dedup_lookup",
+          "unique": false,
+          "columns": [
+            "developer_id",
+            "fingerprint_type",
+            "hash_value"
+          ]
+        },
+        {
+          "name": "idx_dedup_vr_id",
+          "unique": false,
+          "columns": [
+            "verification_request_id"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_dedup_fingerprints",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_dedup_fingerprints",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "43_add_duplicate_detection.sql"
+      ],
+      "columnCount": 6,
+      "indexCount": 2,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "developer_otp_codes",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "attempts",
+          "type": "INT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "code_hash",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "email",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "used_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_developer_otp_codes_email_expires",
+          "unique": false,
+          "columns": [
+            "email",
+            "expires_at"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_developer_otp_codes",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "25_add_developer_otp_and_github.sql"
+      ],
+      "columnCount": 7,
+      "indexCount": 1,
+      "policyCount": 1,
+      "triggerCount": 0
+    },
+    {
+      "name": "developer_otp_rate_limits",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "email",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "send_count",
+          "type": "INT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "1",
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "window_start",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [],
+      "policies": [
+        {
+          "name": "service_role_all_developer_otp_rate_limits",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "25_add_developer_otp_and_github.sql"
+      ],
+      "columnCount": 4,
+      "indexCount": 0,
+      "policyCount": 1,
+      "triggerCount": 0
+    },
+    {
+      "name": "developers",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "aml_enabled",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "true",
+          "check": null,
+          "addedIn": "35_add_developer_aml_setting.sql"
+        },
+        {
+          "name": "avatar_url",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "branding_accent_color",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "40_add_page_branding.sql"
+        },
+        {
+          "name": "branding_company_name",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "40_add_page_branding.sql"
+        },
+        {
+          "name": "branding_logo_url",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "40_add_page_branding.sql"
+        },
+        {
+          "name": "company",
+          "type": "VARCHAR(255)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "duplicate_detection_action",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(duplicate_detection_action IN ('block', 'review', 'allow')",
+          "addedIn": "43_add_duplicate_detection.sql"
+        },
+        {
+          "name": "duplicate_detection_enabled",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "false",
+          "check": null,
+          "addedIn": "43_add_duplicate_detection.sql"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR(255)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": true,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "github_id",
+          "type": "BIGINT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": true,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "25_add_developer_otp_and_github.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "is_verified",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "llm_api_key_encrypted",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "27_add_developer_llm_config.sql"
+        },
+        {
+          "name": "llm_endpoint_url",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "27_add_developer_llm_config.sql"
+        },
+        {
+          "name": "llm_model",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "62_add_developer_llm_model.sql"
+        },
+        {
+          "name": "llm_provider",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(llm_provider IN ('openai', 'anthropic', 'custom')",
+          "addedIn": "27_add_developer_llm_config.sql"
+        },
+        {
+          "name": "locale",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'en'",
+          "check": null,
+          "addedIn": "64_add_developer_locale.sql"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(255)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "page_builder_config",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NULL",
+          "check": null,
+          "addedIn": "42_add_page_builder_config.sql"
+        },
+        {
+          "name": "sms_api_key_encrypted",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "sms_api_secret_encrypted",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "sms_phone_number",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "sms_provider",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(sms_provider IN ('twilio', 'vonage')",
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(status IN ('active', 'suspended')",
+          "addedIn": "30_add_developer_status.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "vault_auto_store",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "false",
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "vault_enabled",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "false",
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "vc_enabled",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "false",
+          "check": null,
+          "addedIn": "44_add_verifiable_credentials.sql"
+        },
+        {
+          "name": "verification_slug",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NULL",
+          "check": null,
+          "addedIn": "42_add_page_builder_config.sql"
+        },
+        {
+          "name": "voice_auth_enabled",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "false",
+          "check": null,
+          "addedIn": "56_add_voice_auth.sql"
+        },
+        {
+          "name": "webhook_url",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_developers_email",
+          "unique": false,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "idx_developers_github_id",
+          "unique": false,
+          "columns": [
+            "github_id"
+          ]
+        },
+        {
+          "name": "idx_developers_verification_slug",
+          "unique": true,
+          "columns": [
+            "verification_slug"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_developers",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_profile",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [
+        "update_developers_updated_at"
+      ],
+      "otherOps": [],
+      "sources": [
+        "01_initial_schema.sql"
+      ],
+      "columnCount": 32,
+      "indexCount": 3,
+      "policyCount": 2,
+      "triggerCount": 1
+    },
+    {
+      "name": "documents",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "back_of_id_document_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "documents",
+          "default": null,
+          "check": null,
+          "addedIn": "04_add_back_of_id_support.sql"
+        },
+        {
+          "name": "barcode_data",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "04_add_back_of_id_support.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "cross_validation_results",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "04_add_back_of_id_support.sql"
+        },
+        {
+          "name": "document_type",
+          "type": "VARCHAR(50)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "file_name",
+          "type": "VARCHAR(255)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "file_path",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "file_size",
+          "type": "INTEGER",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "is_back_of_id",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "04_add_back_of_id_support.sql"
+        },
+        {
+          "name": "issuing_country",
+          "type": "VARCHAR(2)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "16_add_issuing_country.sql"
+        },
+        {
+          "name": "mime_type",
+          "type": "VARCHAR(100)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "ocr_data",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "ocr_extracted",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "02_add_missing_document_columns.sql"
+        },
+        {
+          "name": "quality_analysis",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "02_add_missing_document_columns.sql"
+        },
+        {
+          "name": "quality_score",
+          "type": "DECIMAL(3,2)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_documents_verification_request_id",
+          "unique": false,
+          "columns": [
+            "verification_request_id"
+          ]
+        },
+        {
+          "name": "idx_documents_ocr_extracted",
+          "unique": false,
+          "columns": [
+            "ocr_extracted"
+          ]
+        },
+        {
+          "name": "idx_documents_is_back_of_id",
+          "unique": false,
+          "columns": [
+            "is_back_of_id"
+          ]
+        },
+        {
+          "name": "idx_documents_back_of_id_document_id",
+          "unique": false,
+          "columns": [
+            "back_of_id_document_id"
+          ]
+        },
+        {
+          "name": "idx_documents_issuing_country",
+          "unique": false,
+          "columns": [
+            "issuing_country"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [
+        "trigger_update_back_of_id_status",
+        "trigger_link_documents"
+      ],
+      "otherOps": [
+        {
+          "file": "22_source_separation.sql",
+          "sql": "ALTER COLUMN file_path DROP NOT NULL"
+        }
+      ],
+      "sources": [
+        "01_initial_schema.sql"
+      ],
+      "columnCount": 17,
+      "indexCount": 5,
+      "policyCount": 0,
+      "triggerCount": 2
+    },
+    {
+      "name": "expiry_alerts",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "alert_type",
+          "type": "VARCHAR(20)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "document_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "documents",
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "expiry_date",
+          "type": "DATE",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "user_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "users",
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "webhook_sent",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "false",
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        }
+      ],
+      "constraints": [
+        "CONSTRAINT chk_alert_type CHECK (alert_type IN ('90_day', '60_day', '30_day', 'expired'))"
+      ],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_expiry_alerts_developer",
+          "unique": false,
+          "columns": [
+            "developer_id"
+          ]
+        },
+        {
+          "name": "idx_expiry_alerts_verification",
+          "unique": false,
+          "columns": [
+            "verification_request_id"
+          ]
+        },
+        {
+          "name": "idx_expiry_alerts_unique",
+          "unique": true,
+          "columns": [
+            "verification_request_id",
+            "alert_type"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_expiry_alerts",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_expiry_alerts",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "21_add_monitoring.sql"
+      ],
+      "columnCount": 9,
+      "indexCount": 3,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "idempotency_keys",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "09_add_idempotency_keys.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "09_add_idempotency_keys.sql"
+        },
+        {
+          "name": "expires_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "(NOW() + INTERVAL '24 hours')",
+          "check": null,
+          "addedIn": "09_add_idempotency_keys.sql"
+        },
+        {
+          "name": "key",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "09_add_idempotency_keys.sql"
+        },
+        {
+          "name": "response_body",
+          "type": "JSONB",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "09_add_idempotency_keys.sql"
+        },
+        {
+          "name": "response_status",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "09_add_idempotency_keys.sql"
+        }
+      ],
+      "constraints": [
+        "PRIMARY KEY (key, developer_id)"
+      ],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_idempotency_expires",
+          "unique": false,
+          "columns": [
+            "expires_at"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_idempotency_keys",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_idempotency_keys",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "09_add_idempotency_keys.sql"
+      ],
+      "columnCount": 6,
+      "indexCount": 1,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "identity_vault",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "access_count",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "encrypted_data",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "encryption_key_id",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'v1'",
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "last_accessed_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'active'",
+          "check": "(status IN ('active', 'expired')",
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "vault_token",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": true,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "verification_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_vault_token",
+          "unique": false,
+          "columns": [
+            "vault_token"
+          ]
+        },
+        {
+          "name": "idx_vault_developer",
+          "unique": false,
+          "columns": [
+            "developer_id"
+          ]
+        },
+        {
+          "name": "idx_vault_verification",
+          "unique": false,
+          "columns": [
+            "verification_id"
+          ]
+        },
+        {
+          "name": "idx_vault_expires",
+          "unique": false,
+          "columns": [
+            "expires_at"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_identity_vault",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_identity_vault",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "46_add_identity_vault.sql"
+      ],
+      "columnCount": 11,
+      "indexCount": 4,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "mobile_handoff_sessions",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "api_key_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "api_keys",
+          "default": null,
+          "check": null,
+          "addedIn": "50_handoff_remove_raw_api_key.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "12_add_mobile_handoff_sessions.sql"
+        },
+        {
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "12_add_mobile_handoff_sessions.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "12_add_mobile_handoff_sessions.sql"
+        },
+        {
+          "name": "result",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "12_add_mobile_handoff_sessions.sql"
+        },
+        {
+          "name": "source",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'api'",
+          "check": null,
+          "addedIn": "23_handoff_source.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(status IN ('pending', 'completed', 'failed', 'expired')",
+          "addedIn": "12_add_mobile_handoff_sessions.sql"
+        },
+        {
+          "name": "token",
+          "type": "CHAR(64)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": true,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "12_add_mobile_handoff_sessions.sql"
+        },
+        {
+          "name": "user_id",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "12_add_mobile_handoff_sessions.sql"
+        },
+        {
+          "name": "verification_id",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "32_handoff_verification_id.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "mobile_handoff_sessions_token_idx",
+          "unique": false,
+          "columns": [
+            "token"
+          ]
+        },
+        {
+          "name": "mobile_handoff_sessions_expires_at_idx",
+          "unique": false,
+          "columns": [
+            "expires_at"
+          ]
+        },
+        {
+          "name": "mobile_handoff_sessions_api_key_id_idx",
+          "unique": false,
+          "columns": [
+            "api_key_id"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_mobile_handoff_sessions",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_mobile_handoff_sessions",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "12_add_mobile_handoff_sessions.sql"
+      ],
+      "columnCount": 10,
+      "indexCount": 3,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "phone_otp_codes",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "attempts",
+          "type": "INT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "code_hash",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "phone_number",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "used_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_phone_otp_codes_vr_expires",
+          "unique": false,
+          "columns": [
+            "verification_request_id",
+            "expires_at"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_phone_otp_codes",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "37_add_phone_otp.sql"
+      ],
+      "columnCount": 8,
+      "indexCount": 1,
+      "policyCount": 1,
+      "triggerCount": 0
+    },
+    {
+      "name": "phone_otp_rate_limits",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "send_count",
+          "type": "INT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "1",
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        },
+        {
+          "name": "window_start",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "37_add_phone_otp.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [],
+      "policies": [
+        {
+          "name": "service_role_all_phone_otp_rate_limits",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "37_add_phone_otp.sql"
+      ],
+      "columnCount": 4,
+      "indexCount": 0,
+      "policyCount": 1,
+      "triggerCount": 0
+    },
+    {
+      "name": "provider_metrics",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "confidence_score",
+          "type": "DECIMAL(4,3)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "11_add_provider_metrics.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "11_add_provider_metrics.sql"
+        },
+        {
+          "name": "error_type",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "11_add_provider_metrics.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "11_add_provider_metrics.sql"
+        },
+        {
+          "name": "latency_ms",
+          "type": "INTEGER",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "11_add_provider_metrics.sql"
+        },
+        {
+          "name": "provider_name",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "11_add_provider_metrics.sql"
+        },
+        {
+          "name": "provider_type",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(provider_type IN ('ocr', 'face', 'liveness')",
+          "addedIn": "11_add_provider_metrics.sql"
+        },
+        {
+          "name": "success",
+          "type": "BOOLEAN",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "11_add_provider_metrics.sql"
+        },
+        {
+          "name": "verification_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "11_add_provider_metrics.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_provider_metrics_name",
+          "unique": false,
+          "columns": [
+            "provider_name"
+          ]
+        },
+        {
+          "name": "idx_provider_metrics_created",
+          "unique": false,
+          "columns": [
+            "created_at"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_provider_metrics",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "11_add_provider_metrics.sql"
+      ],
+      "columnCount": 9,
+      "indexCount": 2,
+      "policyCount": 1,
+      "triggerCount": 0
+    },
+    {
+      "name": "rate_limits",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "blocked_until",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "07_add_rate_limits_table.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "07_add_rate_limits_table.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "07_add_rate_limits_table.sql"
+        },
+        {
+          "name": "identifier",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "07_add_rate_limits_table.sql"
+        },
+        {
+          "name": "identifier_type",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(identifier_type IN ('user', 'developer', 'ip')",
+          "addedIn": "07_add_rate_limits_table.sql"
+        },
+        {
+          "name": "request_count",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "07_add_rate_limits_table.sql"
+        },
+        {
+          "name": "window_start",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "07_add_rate_limits_table.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_rate_limits_lookup",
+          "unique": false,
+          "columns": [
+            "identifier",
+            "identifier_type"
+          ]
+        },
+        {
+          "name": "idx_rate_limits_window_start",
+          "unique": false,
+          "columns": [
+            "window_start"
+          ]
+        },
+        {
+          "name": "idx_rate_limits_blocked_until",
+          "unique": false,
+          "columns": [
+            "blocked_until"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_rate_limits",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "07_add_rate_limits_table.sql"
+      ],
+      "columnCount": 7,
+      "indexCount": 3,
+      "policyCount": 1,
+      "triggerCount": 0
+    },
+    {
+      "name": "reverification_schedules",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "interval_days",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "365",
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "last_verification_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "next_verification_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(20)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'active'",
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "user_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "users",
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "21_add_monitoring.sql"
+        }
+      ],
+      "constraints": [
+        "CONSTRAINT chk_interval_days CHECK (interval_days >= 30 AND interval_days <= 730)"
+      ],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_reverification_next",
+          "unique": false,
+          "columns": [
+            "next_verification_at"
+          ]
+        },
+        {
+          "name": "idx_reverification_developer",
+          "unique": false,
+          "columns": [
+            "developer_id"
+          ]
+        },
+        {
+          "name": "idx_reverification_user",
+          "unique": false,
+          "columns": [
+            "user_id"
+          ]
+        },
+        {
+          "name": "idx_reverification_active_unique",
+          "unique": true,
+          "columns": [
+            "developer_id",
+            "user_id"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_reverification_schedules",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_reverification_schedules",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "21_add_monitoring.sql"
+      ],
+      "columnCount": 10,
+      "indexCount": 4,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "selfies",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "enrollment_audio_path",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "56_add_voice_auth.sql"
+        },
+        {
+          "name": "face_detected",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "file_name",
+          "type": "VARCHAR(255)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "file_path",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "file_size",
+          "type": "INTEGER",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "liveness_score",
+          "type": "DECIMAL(3,2)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_selfies_verification_request_id",
+          "unique": false,
+          "columns": [
+            "verification_request_id"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [
+        {
+          "file": "22_source_separation.sql",
+          "sql": "ALTER COLUMN file_path DROP NOT NULL"
+        }
+      ],
+      "sources": [
+        "01_initial_schema.sql"
+      ],
+      "columnCount": 9,
+      "indexCount": 1,
+      "policyCount": 0,
+      "triggerCount": 0
+    },
+    {
+      "name": "users",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR(255)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "first_name",
+          "type": "VARCHAR(100)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "last_name",
+          "type": "VARCHAR(100)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "phone",
+          "type": "VARCHAR(20)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_users_email",
+          "unique": false,
+          "columns": [
+            "email"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_users",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [
+        "update_users_updated_at"
+      ],
+      "otherOps": [],
+      "sources": [
+        "01_initial_schema.sql"
+      ],
+      "columnCount": 7,
+      "indexCount": 1,
+      "policyCount": 1,
+      "triggerCount": 1
+    },
+    {
+      "name": "vault_share_links",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "access_count",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "allowed_attributes",
+          "type": "TEXT[]",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "max_accesses",
+          "type": "INTEGER",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "10",
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "recipient_label",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "share_token",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": true,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        },
+        {
+          "name": "vault_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "identity_vault",
+          "default": null,
+          "check": null,
+          "addedIn": "46_add_identity_vault.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_share_token",
+          "unique": false,
+          "columns": [
+            "share_token"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_vault_share_links",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_vault_share_links",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "46_add_identity_vault.sql"
+      ],
+      "columnCount": 10,
+      "indexCount": 1,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "verifiable_credentials",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "44_add_verifiable_credentials.sql"
+        },
+        {
+          "name": "credential_jti",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": true,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "44_add_verifiable_credentials.sql"
+        },
+        {
+          "name": "credential_jwt",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "45_add_credential_jwt_column.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "44_add_verifiable_credentials.sql"
+        },
+        {
+          "name": "expires_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "44_add_verifiable_credentials.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "44_add_verifiable_credentials.sql"
+        },
+        {
+          "name": "issued_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "44_add_verifiable_credentials.sql"
+        },
+        {
+          "name": "revocation_reason",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "44_add_verifiable_credentials.sql"
+        },
+        {
+          "name": "revoked_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "44_add_verifiable_credentials.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "44_add_verifiable_credentials.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_vc_verification",
+          "unique": false,
+          "columns": [
+            "verification_request_id"
+          ]
+        },
+        {
+          "name": "idx_vc_jti",
+          "unique": false,
+          "columns": [
+            "credential_jti"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_verifiable_credentials",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_verifiable_credentials",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "44_add_verifiable_credentials.sql"
+      ],
+      "columnCount": 10,
+      "indexCount": 2,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "verification_contexts",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "context",
+          "type": "JSONB",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'{}'",
+          "check": null,
+          "addedIn": "13_add_verification_contexts.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "13_add_verification_contexts.sql"
+        },
+        {
+          "name": "verification_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "13_add_verification_contexts.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "verification_contexts_updated_at_idx",
+          "unique": false,
+          "columns": [
+            "updated_at"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_verification_contexts",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_verification_contexts",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [
+        "trg_verification_contexts_updated_at"
+      ],
+      "otherOps": [],
+      "sources": [
+        "13_add_verification_contexts.sql"
+      ],
+      "columnCount": 3,
+      "indexCount": 1,
+      "policyCount": 2,
+      "triggerCount": 1
+    },
+    {
+      "name": "verification_requests",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "addons",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NULL",
+          "check": null,
+          "addedIn": "61_add_verification_addons.sql"
+        },
+        {
+          "name": "address_data",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20_add_address_verification.sql"
+        },
+        {
+          "name": "address_match_score",
+          "type": "DECIMAL(3,2)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20_add_address_verification.sql"
+        },
+        {
+          "name": "address_verification_status",
+          "type": "VARCHAR(20)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20_add_address_verification.sql"
+        },
+        {
+          "name": "age_threshold",
+          "type": "SMALLINT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "38_add_age_verification.sql"
+        },
+        {
+          "name": "api_key_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "api_keys",
+          "default": null,
+          "check": null,
+          "addedIn": "20260629_add_api_key_id_to_verification_requests.sql"
+        },
+        {
+          "name": "back_of_id_uploaded",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "04_add_back_of_id_support.sql"
+        },
+        {
+          "name": "client_ip",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "55_add_velocity_tracking.sql"
+        },
+        {
+          "name": "confidence_score",
+          "type": "DECIMAL(3,2)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "cross_validation_score",
+          "type": "DECIMAL(3,2)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "04_add_back_of_id_support.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "document_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "documents",
+          "default": null,
+          "check": null,
+          "addedIn": "03_add_missing_verification_columns.sql"
+        },
+        {
+          "name": "duplicate_flags",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NULL",
+          "check": null,
+          "addedIn": "43_add_duplicate_detection.sql"
+        },
+        {
+          "name": "enhanced_verification_completed",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "04_add_back_of_id_support.sql"
+        },
+        {
+          "name": "external_verification_id",
+          "type": "VARCHAR(255)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "03_add_missing_verification_columns.sql"
+        },
+        {
+          "name": "face_match_score",
+          "type": "DECIMAL(3,2)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "03_add_missing_verification_columns.sql"
+        },
+        {
+          "name": "failure_reason",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "05_add_photo_consistency_validation.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "is_sandbox",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "15_add_sandbox_columns.sql"
+        },
+        {
+          "name": "issuing_country",
+          "type": "VARCHAR(2)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "16_add_issuing_country.sql"
+        },
+        {
+          "name": "live_capture_completed",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "03_add_missing_verification_columns.sql"
+        },
+        {
+          "name": "liveness_score",
+          "type": "DECIMAL(3,2)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "03_add_missing_verification_columns.sql"
+        },
+        {
+          "name": "manual_review_reason",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "parent_verification_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "36_add_re_verification.sql"
+        },
+        {
+          "name": "photo_consistency_score",
+          "type": "DECIMAL(3,2)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "05_add_photo_consistency_validation.sql"
+        },
+        {
+          "name": "processing_completed_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "18_add_risk_scores.sql"
+        },
+        {
+          "name": "retry_count",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "24_add_retry_count.sql"
+        },
+        {
+          "name": "reviewed_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20260701_add_review_attribution_to_verification_requests.sql"
+        },
+        {
+          "name": "reviewed_by",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20260701_add_review_attribution_to_verification_requests.sql"
+        },
+        {
+          "name": "selfie_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "selfies",
+          "default": null,
+          "check": null,
+          "addedIn": "03_add_missing_verification_columns.sql"
+        },
+        {
+          "name": "session_api_key_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "api_keys",
+          "default": null,
+          "check": null,
+          "addedIn": "54_add_session_token.sql"
+        },
+        {
+          "name": "session_started_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "18_add_risk_scores.sql"
+        },
+        {
+          "name": "session_token_expires_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "54_add_session_token.sql"
+        },
+        {
+          "name": "session_token_hash",
+          "type": "CHAR(64)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": true,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "54_add_session_token.sql"
+        },
+        {
+          "name": "source",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'api'",
+          "check": null,
+          "addedIn": "22_source_separation.sql"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(20)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'pending'",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "step_timestamps",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'{}'",
+          "check": null,
+          "addedIn": "55_add_velocity_tracking.sql"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "user_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "users",
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "verification_mode",
+          "type": "VARCHAR(20)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'full'",
+          "check": null,
+          "addedIn": "36_add_re_verification.sql"
+        },
+        {
+          "name": "verification_type",
+          "type": "VARCHAR(20)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'document'",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "voice_challenge",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "56_add_voice_auth.sql"
+        },
+        {
+          "name": "voice_challenge_created_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "56_add_voice_auth.sql"
+        },
+        {
+          "name": "voice_match_score",
+          "type": "REAL",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "56_add_voice_auth.sql"
+        }
+      ],
+      "constraints": [
+        "verification_requests_status_check CHECK (status IN (' ', ' ', ' ', ' '))",
+        "verification_requests_status_check CHECK (status IN (' ', ' ', ' ', ' ', ' '))",
+        "verification_requests_verification_mode_check CHECK (verification_mode IN (' ', ' ', ' ', ' '))",
+        "verification_requests_verification_mode_check CHECK (verification_mode IN (' ', ' ', ' ', ' ', ' ', ' '))",
+        "chk_session_token_expiry CHECK (session_token_hash IS NULL OR session_token_expires_at IS NOT NULL)"
+      ],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_verification_requests_user_id",
+          "unique": false,
+          "columns": [
+            "user_id"
+          ]
+        },
+        {
+          "name": "idx_verification_requests_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "idx_verification_requests_document_id",
+          "unique": false,
+          "columns": [
+            "document_id"
+          ]
+        },
+        {
+          "name": "idx_verification_requests_selfie_id",
+          "unique": false,
+          "columns": [
+            "selfie_id"
+          ]
+        },
+        {
+          "name": "idx_verification_requests_live_capture",
+          "unique": false,
+          "columns": [
+            "live_capture_completed"
+          ]
+        },
+        {
+          "name": "idx_verification_requests_enhanced_verification",
+          "unique": false,
+          "columns": [
+            "enhanced_verification_completed"
+          ]
+        },
+        {
+          "name": "idx_verification_requests_photo_consistency",
+          "unique": false,
+          "columns": [
+            "photo_consistency_score"
+          ]
+        },
+        {
+          "name": "idx_verification_requests_liveness",
+          "unique": false,
+          "columns": [
+            "liveness_score"
+          ]
+        },
+        {
+          "name": "idx_verification_requests_source_created",
+          "unique": false,
+          "columns": [
+            "source",
+            "created_at"
+          ]
+        },
+        {
+          "name": "idx_verification_requests_parent",
+          "unique": false,
+          "columns": [
+            "parent_verification_id"
+          ]
+        },
+        {
+          "name": "idx_vr_session_token",
+          "unique": false,
+          "columns": [
+            "session_token_hash"
+          ]
+        },
+        {
+          "name": "idx_vr_client_ip",
+          "unique": false,
+          "columns": [
+            "client_ip"
+          ]
+        },
+        {
+          "name": "idx_vr_developer_created",
+          "unique": false,
+          "columns": [
+            "developer_id",
+            "created_at DESC"
+          ]
+        },
+        {
+          "name": "idx_vr_user_created",
+          "unique": false,
+          "columns": [
+            "user_id",
+            "created_at DESC"
+          ]
+        },
+        {
+          "name": "verification_requests_api_key_id_idx",
+          "unique": false,
+          "columns": [
+            "api_key_id"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [
+        "update_verification_requests_updated_at"
+      ],
+      "otherOps": [
+        {
+          "file": "05_add_photo_consistency_validation.sql",
+          "sql": "DROP CONSTRAINT IF EXISTS verification_requests_status_check"
+        },
+        {
+          "file": "14_add_processing_status.sql",
+          "sql": "DROP CONSTRAINT IF EXISTS verification_requests_status_check"
+        },
+        {
+          "file": "38_add_age_verification.sql",
+          "sql": "DROP CONSTRAINT IF EXISTS verification_requests_verification_mode_check"
+        },
+        {
+          "file": "41_add_document_only_identity_modes.sql",
+          "sql": "DROP CONSTRAINT IF EXISTS verification_requests_verification_mode_check"
+        }
+      ],
+      "sources": [
+        "01_initial_schema.sql"
+      ],
+      "columnCount": 45,
+      "indexCount": 15,
+      "policyCount": 0,
+      "triggerCount": 1
+    },
+    {
+      "name": "verification_reviewers",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "33_verification_reviewers.sql"
+        },
+        {
+          "name": "email",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": true,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "33_verification_reviewers.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "33_verification_reviewers.sql"
+        },
+        {
+          "name": "invited_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "33_verification_reviewers.sql"
+        },
+        {
+          "name": "last_login_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "33_verification_reviewers.sql"
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "33_verification_reviewers.sql"
+        },
+        {
+          "name": "role",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'reviewer'",
+          "check": null,
+          "addedIn": "39_admin_restructure.sql"
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'invited'",
+          "check": "(status IN ('invited', 'active', 'revoked')",
+          "addedIn": "33_verification_reviewers.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_verification_reviewers_email",
+          "unique": false,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "idx_verification_reviewers_developer",
+          "unique": false,
+          "columns": [
+            "developer_id"
+          ]
+        },
+        {
+          "name": "idx_verification_reviewers_role",
+          "unique": false,
+          "columns": [
+            "role"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_verification_reviewers",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_verification_reviewers",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "33_verification_reviewers.sql"
+      ],
+      "columnCount": 8,
+      "indexCount": 3,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "verification_risk_scores",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "computed_at",
+          "type": "TIMESTAMPTZ",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "18_add_risk_scores.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "18_add_risk_scores.sql"
+        },
+        {
+          "name": "overall_score",
+          "type": "INTEGER",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": "(overall_score BETWEEN 0 AND 100)",
+          "addedIn": "18_add_risk_scores.sql"
+        },
+        {
+          "name": "risk_factors",
+          "type": "JSONB",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'[]'",
+          "check": null,
+          "addedIn": "18_add_risk_scores.sql"
+        },
+        {
+          "name": "risk_level",
+          "type": "VARCHAR(20)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'low'",
+          "check": null,
+          "addedIn": "18_add_risk_scores.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": true,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "18_add_risk_scores.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_risk_scores_level",
+          "unique": false,
+          "columns": [
+            "risk_level"
+          ]
+        },
+        {
+          "name": "idx_risk_scores_verification",
+          "unique": false,
+          "columns": [
+            "verification_request_id"
+          ]
+        },
+        {
+          "name": "idx_risk_scores_computed_at",
+          "unique": false,
+          "columns": [
+            "computed_at"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_verification_risk_scores",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_risk_scores",
+          "command": "SELECT",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "18_add_risk_scores.sql"
+      ],
+      "columnCount": 6,
+      "indexCount": 3,
+      "policyCount": 2,
+      "triggerCount": 0
+    },
+    {
+      "name": "webhook_deliveries",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "attempts",
+          "type": "INTEGER",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "0",
+          "check": null,
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        },
+        {
+          "name": "delivered_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        },
+        {
+          "name": "next_retry_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        },
+        {
+          "name": "payload",
+          "type": "JSONB",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        },
+        {
+          "name": "response_body",
+          "type": "TEXT",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        },
+        {
+          "name": "response_status",
+          "type": "INTEGER",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(20)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "'pending'",
+          "check": "(status IN ('pending', 'delivered', 'failed')",
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        },
+        {
+          "name": "verification_request_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "verification_requests",
+          "default": null,
+          "check": null,
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        },
+        {
+          "name": "webhook_id",
+          "type": "UUID",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": "webhooks",
+          "default": null,
+          "check": null,
+          "addedIn": "20260319_add_webhook_deliveries.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": false,
+      "indexes": [
+        {
+          "name": "idx_webhook_deliveries_webhook",
+          "unique": false,
+          "columns": [
+            "webhook_id"
+          ]
+        },
+        {
+          "name": "idx_webhook_deliveries_verification",
+          "unique": false,
+          "columns": [
+            "verification_request_id"
+          ]
+        },
+        {
+          "name": "idx_webhook_deliveries_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        }
+      ],
+      "policies": [],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "20260319_add_webhook_deliveries.sql"
+      ],
+      "columnCount": 11,
+      "indexCount": 3,
+      "policyCount": 0,
+      "triggerCount": 0
+    },
+    {
+      "name": "webhooks",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "api_key_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "api_keys",
+          "default": null,
+          "check": null,
+          "addedIn": "20260319_webhook_api_key_scope.sql"
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITH TIME ZONE",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "NOW()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "developer_id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": "developers",
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "events",
+          "type": "TEXT[]",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "id",
+          "type": "UUID",
+          "notNull": false,
+          "primaryKey": true,
+          "unique": false,
+          "references": null,
+          "default": "gen_random_uuid()",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "is_active",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "TRUE",
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "is_sandbox",
+          "type": "BOOLEAN",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": "FALSE",
+          "check": null,
+          "addedIn": "15_add_sandbox_columns.sql"
+        },
+        {
+          "name": "secret_key",
+          "type": "VARCHAR(255)",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        },
+        {
+          "name": "url",
+          "type": "TEXT",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "references": null,
+          "default": null,
+          "check": null,
+          "addedIn": "01_initial_schema.sql"
+        }
+      ],
+      "constraints": [],
+      "rls": true,
+      "indexes": [
+        {
+          "name": "idx_webhooks_api_key_id",
+          "unique": false,
+          "columns": [
+            "api_key_id"
+          ]
+        }
+      ],
+      "policies": [
+        {
+          "name": "service_role_all_webhooks",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        },
+        {
+          "name": "developers_own_webhooks",
+          "command": "ALL",
+          "file": "57_add_rls_policies_all_tables.sql"
+        }
+      ],
+      "triggers": [],
+      "otherOps": [],
+      "sources": [
+        "01_initial_schema.sql"
+      ],
+      "columnCount": 9,
+      "indexCount": 1,
+      "policyCount": 2,
+      "triggerCount": 0
+    }
+  ],
+  "functions": [
+    {
+      "name": "check_otp_rate_limit",
+      "args": "p_email TEXT, p_max_sends INT, p_window_seconds INT",
+      "returns": "BOOLEAN",
+      "language": "plpgsql",
+      "file": "31_community_rpc_functions.sql"
+    },
+    {
+      "name": "check_phone_otp_rate_limit",
+      "args": "p_vr_id UUID, p_max_sends INT, p_window_seconds INT",
+      "returns": "BOOLEAN",
+      "language": "plpgsql",
+      "file": "37_add_phone_otp.sql"
+    },
+    {
+      "name": "cleanup_old_rate_limits",
+      "args": "",
+      "returns": "void",
+      "language": "plpgsql",
+      "file": "07_add_rate_limits_table.sql"
+    },
+    {
+      "name": "link_front_and_back_documents",
+      "args": "",
+      "returns": "TRIGGER",
+      "language": "plpgsql",
+      "file": "04_add_back_of_id_support.sql"
+    },
+    {
+      "name": "update_back_of_id_status",
+      "args": "",
+      "returns": "TRIGGER",
+      "language": "plpgsql",
+      "file": "04_add_back_of_id_support.sql"
+    },
+    {
+      "name": "update_updated_at_column",
+      "args": "",
+      "returns": "TRIGGER",
+      "language": null,
+      "file": "01_initial_schema.sql"
+    },
+    {
+      "name": "update_verification_contexts_updated_at",
+      "args": "",
+      "returns": "TRIGGER",
+      "language": "plpgsql",
+      "file": "13_add_verification_contexts.sql"
+    },
+    {
+      "name": "update_verification_with_state_check",
+      "args": "p_verification_id UUID, p_expected_states TEXT[], p_new_status TEXT, p_update_data JSONB",
+      "returns": "BOOLEAN",
+      "language": "plpgsql",
+      "file": "31_community_rpc_functions.sql"
+    },
+    {
+      "name": "verify_otp_atomic",
+      "args": "p_email TEXT, p_code_hash TEXT, p_max_attempts INT",
+      "returns": "JSONB",
+      "language": "plpgsql",
+      "file": "31_community_rpc_functions.sql"
+    },
+    {
+      "name": "verify_phone_otp_atomic",
+      "args": "p_vr_id UUID, p_code_hash TEXT, p_max_attempts INT",
+      "returns": "JSONB",
+      "language": "plpgsql",
+      "file": "37_add_phone_otp.sql"
+    }
+  ],
+  "triggers": [
+    {
+      "name": "trg_verification_contexts_updated_at",
+      "timing": "BEFORE UPDATE",
+      "table": "verification_contexts",
+      "file": "13_add_verification_contexts.sql"
+    },
+    {
+      "name": "trigger_link_documents",
+      "timing": "AFTER INSERT",
+      "table": "documents",
+      "file": "04_add_back_of_id_support.sql"
+    },
+    {
+      "name": "trigger_update_back_of_id_status",
+      "timing": "AFTER INSERT",
+      "table": "documents",
+      "file": "04_add_back_of_id_support.sql"
+    },
+    {
+      "name": "update_developers_updated_at",
+      "timing": "BEFORE UPDATE",
+      "table": "developers",
+      "file": "01_initial_schema.sql"
+    },
+    {
+      "name": "update_users_updated_at",
+      "timing": "BEFORE UPDATE",
+      "table": "users",
+      "file": "01_initial_schema.sql"
+    },
+    {
+      "name": "update_verification_requests_updated_at",
+      "timing": "BEFORE UPDATE",
+      "table": "verification_requests",
+      "file": "01_initial_schema.sql"
+    }
+  ],
+  "policies": [
+    {
+      "name": "developers_own_aml_screenings",
+      "table": "public.aml_screenings",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_api_activity_logs",
+      "table": "public.api_activity_logs",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_api_keys",
+      "table": "public.api_keys",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_batch_items",
+      "table": "public.batch_items",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_batch_jobs",
+      "table": "public.batch_jobs",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_compliance_rules",
+      "table": "public.compliance_rules",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_compliance_rulesets",
+      "table": "public.compliance_rulesets",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_dedup_fingerprints",
+      "table": "public.dedup_fingerprints",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_expiry_alerts",
+      "table": "public.expiry_alerts",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_idempotency_keys",
+      "table": "public.idempotency_keys",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_identity_vault",
+      "table": "public.identity_vault",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_mobile_handoff_sessions",
+      "table": "public.mobile_handoff_sessions",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_profile",
+      "table": "public.developers",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_reverification_schedules",
+      "table": "public.reverification_schedules",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_risk_scores",
+      "table": "public.verification_risk_scores",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_vault_share_links",
+      "table": "public.vault_share_links",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_verifiable_credentials",
+      "table": "public.verifiable_credentials",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_verification_contexts",
+      "table": "public.verification_contexts",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_verification_reviewers",
+      "table": "public.verification_reviewers",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_webhook_deliveries",
+      "table": "public.webhook_deliveries",
+      "command": "SELECT",
+      "using": true,
+      "withCheck": false,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "developers_own_webhooks",
+      "table": "public.webhooks",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_admin_users",
+      "table": "public.admin_users",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_aml_screenings",
+      "table": "public.aml_screenings",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_api_activity_logs",
+      "table": "public.api_activity_logs",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_api_keys",
+      "table": "public.api_keys",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_batch_items",
+      "table": "public.batch_items",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_batch_jobs",
+      "table": "public.batch_jobs",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_compliance_rules",
+      "table": "public.compliance_rules",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_compliance_rulesets",
+      "table": "public.compliance_rulesets",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_dedup_fingerprints",
+      "table": "public.dedup_fingerprints",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_developer_otp_codes",
+      "table": "public.developer_otp_codes",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_developer_otp_rate_limits",
+      "table": "public.developer_otp_rate_limits",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_developers",
+      "table": "public.developers",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_expiry_alerts",
+      "table": "public.expiry_alerts",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_idempotency_keys",
+      "table": "public.idempotency_keys",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_identity_vault",
+      "table": "public.identity_vault",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_migrations",
+      "table": "public._migrations",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "59_enable_rls_migrations.sql"
+    },
+    {
+      "name": "service_role_all_mobile_handoff_sessions",
+      "table": "public.mobile_handoff_sessions",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_org_threshold_settings",
+      "table": "public.organization_threshold_settings",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_organizations",
+      "table": "public.organizations",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_phone_otp_codes",
+      "table": "public.phone_otp_codes",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_phone_otp_rate_limits",
+      "table": "public.phone_otp_rate_limits",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_provider_metrics",
+      "table": "public.provider_metrics",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_rate_limits",
+      "table": "public.rate_limits",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_reverification_schedules",
+      "table": "public.reverification_schedules",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_users",
+      "table": "public.users",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_vault_share_links",
+      "table": "public.vault_share_links",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_verifiable_credentials",
+      "table": "public.verifiable_credentials",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_verification_contexts",
+      "table": "public.verification_contexts",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_verification_reviewers",
+      "table": "public.verification_reviewers",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_verification_risk_scores",
+      "table": "public.verification_risk_scores",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_webhook_deliveries",
+      "table": "public.webhook_deliveries",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "name": "service_role_all_webhooks",
+      "table": "public.webhooks",
+      "command": "ALL",
+      "using": true,
+      "withCheck": true,
+      "file": "57_add_rls_policies_all_tables.sql"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "api_activity_logs_service_product_idx",
+      "table": "api_activity_logs",
+      "unique": false,
+      "columns": [
+        "service_product",
+        "timestamp DESC"
+      ],
+      "where": "is_service = TRUE",
+      "file": "58_add_service_keys.sql"
+    },
+    {
+      "name": "api_keys_operator_email_idx",
+      "table": "api_keys",
+      "unique": false,
+      "columns": [
+        "operator_email"
+      ],
+      "where": "operator_email IS NOT NULL",
+      "file": "20260629_add_operator_email_to_api_keys.sql"
+    },
+    {
+      "name": "api_keys_service_lookup_idx",
+      "table": "api_keys",
+      "unique": false,
+      "columns": [
+        "key_hash"
+      ],
+      "where": "is_service = TRUE AND is_active = TRUE",
+      "file": "58_add_service_keys.sql"
+    },
+    {
+      "name": "idx_aml_screenings_risk",
+      "table": "aml_screenings",
+      "unique": false,
+      "columns": [
+        "risk_level"
+      ],
+      "where": null,
+      "file": "17_add_aml_screening.sql"
+    },
+    {
+      "name": "idx_aml_screenings_verification",
+      "table": "aml_screenings",
+      "unique": false,
+      "columns": [
+        "verification_request_id"
+      ],
+      "where": null,
+      "file": "17_add_aml_screening.sql"
+    },
+    {
+      "name": "idx_api_activity_developer_ts",
+      "table": "api_activity_logs",
+      "unique": false,
+      "columns": [
+        "developer_id",
+        "timestamp DESC"
+      ],
+      "where": null,
+      "file": "28_formalize_api_activity_logs.sql"
+    },
+    {
+      "name": "idx_api_keys_developer_id",
+      "table": "api_keys",
+      "unique": false,
+      "columns": [
+        "developer_id"
+      ],
+      "where": null,
+      "file": "01_initial_schema.sql"
+    },
+    {
+      "name": "idx_batch_items_batch",
+      "table": "batch_items",
+      "unique": false,
+      "columns": [
+        "batch_id"
+      ],
+      "where": null,
+      "file": "19_add_batch_verification.sql"
+    },
+    {
+      "name": "idx_batch_items_status",
+      "table": "batch_items",
+      "unique": false,
+      "columns": [
+        "status"
+      ],
+      "where": null,
+      "file": "19_add_batch_verification.sql"
+    },
+    {
+      "name": "idx_batch_jobs_dev",
+      "table": "batch_jobs",
+      "unique": false,
+      "columns": [
+        "developer_id"
+      ],
+      "where": null,
+      "file": "19_add_batch_verification.sql"
+    },
+    {
+      "name": "idx_batch_jobs_status",
+      "table": "batch_jobs",
+      "unique": false,
+      "columns": [
+        "status"
+      ],
+      "where": null,
+      "file": "19_add_batch_verification.sql"
+    },
+    {
+      "name": "idx_compliance_rules_ruleset",
+      "table": "compliance_rules",
+      "unique": false,
+      "columns": [
+        "ruleset_id"
+      ],
+      "where": null,
+      "file": "48_add_compliance_engine.sql"
+    },
+    {
+      "name": "idx_compliance_rulesets_active",
+      "table": "compliance_rulesets",
+      "unique": false,
+      "columns": [
+        "developer_id",
+        "is_active"
+      ],
+      "where": "is_active = true",
+      "file": "48_add_compliance_engine.sql"
+    },
+    {
+      "name": "idx_compliance_rulesets_dev",
+      "table": "compliance_rulesets",
+      "unique": false,
+      "columns": [
+        "developer_id"
+      ],
+      "where": null,
+      "file": "48_add_compliance_engine.sql"
+    },
+    {
+      "name": "idx_dedup_lookup",
+      "table": "dedup_fingerprints",
+      "unique": false,
+      "columns": [
+        "developer_id",
+        "fingerprint_type",
+        "hash_value"
+      ],
+      "where": null,
+      "file": "43_add_duplicate_detection.sql"
+    },
+    {
+      "name": "idx_dedup_vr_id",
+      "table": "dedup_fingerprints",
+      "unique": false,
+      "columns": [
+        "verification_request_id"
+      ],
+      "where": null,
+      "file": "43_add_duplicate_detection.sql"
+    },
+    {
+      "name": "idx_developer_otp_codes_email_expires",
+      "table": "developer_otp_codes",
+      "unique": false,
+      "columns": [
+        "email",
+        "expires_at"
+      ],
+      "where": null,
+      "file": "25_add_developer_otp_and_github.sql"
+    },
+    {
+      "name": "idx_developers_email",
+      "table": "developers",
+      "unique": false,
+      "columns": [
+        "email"
+      ],
+      "where": null,
+      "file": "01_initial_schema.sql"
+    },
+    {
+      "name": "idx_developers_github_id",
+      "table": "developers",
+      "unique": false,
+      "columns": [
+        "github_id"
+      ],
+      "where": "github_id IS NOT NULL",
+      "file": "25_add_developer_otp_and_github.sql"
+    },
+    {
+      "name": "idx_developers_verification_slug",
+      "table": "developers",
+      "unique": true,
+      "columns": [
+        "verification_slug"
+      ],
+      "where": "verification_slug IS NOT NULL",
+      "file": "42_add_page_builder_config.sql"
+    },
+    {
+      "name": "idx_documents_back_of_id_document_id",
+      "table": "documents",
+      "unique": false,
+      "columns": [
+        "back_of_id_document_id"
+      ],
+      "where": null,
+      "file": "04_add_back_of_id_support.sql"
+    },
+    {
+      "name": "idx_documents_is_back_of_id",
+      "table": "documents",
+      "unique": false,
+      "columns": [
+        "is_back_of_id"
+      ],
+      "where": null,
+      "file": "04_add_back_of_id_support.sql"
+    },
+    {
+      "name": "idx_documents_issuing_country",
+      "table": "documents",
+      "unique": false,
+      "columns": [
+        "issuing_country"
+      ],
+      "where": null,
+      "file": "16_add_issuing_country.sql"
+    },
+    {
+      "name": "idx_documents_ocr_extracted",
+      "table": "documents",
+      "unique": false,
+      "columns": [
+        "ocr_extracted"
+      ],
+      "where": null,
+      "file": "02_add_missing_document_columns.sql"
+    },
+    {
+      "name": "idx_documents_verification_request_id",
+      "table": "documents",
+      "unique": false,
+      "columns": [
+        "verification_request_id"
+      ],
+      "where": null,
+      "file": "01_initial_schema.sql"
+    },
+    {
+      "name": "idx_expiry_alerts_developer",
+      "table": "expiry_alerts",
+      "unique": false,
+      "columns": [
+        "developer_id"
+      ],
+      "where": null,
+      "file": "21_add_monitoring.sql"
+    },
+    {
+      "name": "idx_expiry_alerts_unique",
+      "table": "expiry_alerts",
+      "unique": true,
+      "columns": [
+        "verification_request_id",
+        "alert_type"
+      ],
+      "where": null,
+      "file": "21_add_monitoring.sql"
+    },
+    {
+      "name": "idx_expiry_alerts_verification",
+      "table": "expiry_alerts",
+      "unique": false,
+      "columns": [
+        "verification_request_id"
+      ],
+      "where": null,
+      "file": "21_add_monitoring.sql"
+    },
+    {
+      "name": "idx_idempotency_expires",
+      "table": "idempotency_keys",
+      "unique": false,
+      "columns": [
+        "expires_at"
+      ],
+      "where": null,
+      "file": "09_add_idempotency_keys.sql"
+    },
+    {
+      "name": "idx_phone_otp_codes_vr_expires",
+      "table": "phone_otp_codes",
+      "unique": false,
+      "columns": [
+        "verification_request_id",
+        "expires_at"
+      ],
+      "where": null,
+      "file": "37_add_phone_otp.sql"
+    },
+    {
+      "name": "idx_provider_metrics_created",
+      "table": "provider_metrics",
+      "unique": false,
+      "columns": [
+        "created_at"
+      ],
+      "where": null,
+      "file": "11_add_provider_metrics.sql"
+    },
+    {
+      "name": "idx_provider_metrics_name",
+      "table": "provider_metrics",
+      "unique": false,
+      "columns": [
+        "provider_name"
+      ],
+      "where": null,
+      "file": "11_add_provider_metrics.sql"
+    },
+    {
+      "name": "idx_rate_limits_blocked_until",
+      "table": "rate_limits",
+      "unique": false,
+      "columns": [
+        "blocked_until"
+      ],
+      "where": "blocked_until IS NOT NULL",
+      "file": "07_add_rate_limits_table.sql"
+    },
+    {
+      "name": "idx_rate_limits_lookup",
+      "table": "rate_limits",
+      "unique": false,
+      "columns": [
+        "identifier",
+        "identifier_type"
+      ],
+      "where": null,
+      "file": "07_add_rate_limits_table.sql"
+    },
+    {
+      "name": "idx_rate_limits_window_start",
+      "table": "rate_limits",
+      "unique": false,
+      "columns": [
+        "window_start"
+      ],
+      "where": null,
+      "file": "07_add_rate_limits_table.sql"
+    },
+    {
+      "name": "idx_reverification_active_unique",
+      "table": "reverification_schedules",
+      "unique": true,
+      "columns": [
+        "developer_id",
+        "user_id"
+      ],
+      "where": "status = ' '",
+      "file": "21_add_monitoring.sql"
+    },
+    {
+      "name": "idx_reverification_developer",
+      "table": "reverification_schedules",
+      "unique": false,
+      "columns": [
+        "developer_id"
+      ],
+      "where": null,
+      "file": "21_add_monitoring.sql"
+    },
+    {
+      "name": "idx_reverification_next",
+      "table": "reverification_schedules",
+      "unique": false,
+      "columns": [
+        "next_verification_at"
+      ],
+      "where": "status = ' '",
+      "file": "21_add_monitoring.sql"
+    },
+    {
+      "name": "idx_reverification_user",
+      "table": "reverification_schedules",
+      "unique": false,
+      "columns": [
+        "user_id"
+      ],
+      "where": null,
+      "file": "21_add_monitoring.sql"
+    },
+    {
+      "name": "idx_risk_scores_computed_at",
+      "table": "verification_risk_scores",
+      "unique": false,
+      "columns": [
+        "computed_at"
+      ],
+      "where": null,
+      "file": "18_add_risk_scores.sql"
+    },
+    {
+      "name": "idx_risk_scores_level",
+      "table": "verification_risk_scores",
+      "unique": false,
+      "columns": [
+        "risk_level"
+      ],
+      "where": null,
+      "file": "18_add_risk_scores.sql"
+    },
+    {
+      "name": "idx_risk_scores_verification",
+      "table": "verification_risk_scores",
+      "unique": false,
+      "columns": [
+        "verification_request_id"
+      ],
+      "where": null,
+      "file": "18_add_risk_scores.sql"
+    },
+    {
+      "name": "idx_selfies_verification_request_id",
+      "table": "selfies",
+      "unique": false,
+      "columns": [
+        "verification_request_id"
+      ],
+      "where": null,
+      "file": "01_initial_schema.sql"
+    },
+    {
+      "name": "idx_share_token",
+      "table": "vault_share_links",
+      "unique": false,
+      "columns": [
+        "share_token"
+      ],
+      "where": null,
+      "file": "46_add_identity_vault.sql"
+    },
+    {
+      "name": "idx_users_email",
+      "table": "users",
+      "unique": false,
+      "columns": [
+        "email"
+      ],
+      "where": null,
+      "file": "01_initial_schema.sql"
+    },
+    {
+      "name": "idx_vault_developer",
+      "table": "identity_vault",
+      "unique": false,
+      "columns": [
+        "developer_id"
+      ],
+      "where": null,
+      "file": "46_add_identity_vault.sql"
+    },
+    {
+      "name": "idx_vault_expires",
+      "table": "identity_vault",
+      "unique": false,
+      "columns": [
+        "expires_at"
+      ],
+      "where": "status = ' '",
+      "file": "46_add_identity_vault.sql"
+    },
+    {
+      "name": "idx_vault_token",
+      "table": "identity_vault",
+      "unique": false,
+      "columns": [
+        "vault_token"
+      ],
+      "where": null,
+      "file": "46_add_identity_vault.sql"
+    },
+    {
+      "name": "idx_vault_verification",
+      "table": "identity_vault",
+      "unique": false,
+      "columns": [
+        "verification_id"
+      ],
+      "where": null,
+      "file": "46_add_identity_vault.sql"
+    },
+    {
+      "name": "idx_vc_jti",
+      "table": "verifiable_credentials",
+      "unique": false,
+      "columns": [
+        "credential_jti"
+      ],
+      "where": null,
+      "file": "44_add_verifiable_credentials.sql"
+    },
+    {
+      "name": "idx_vc_verification",
+      "table": "verifiable_credentials",
+      "unique": false,
+      "columns": [
+        "verification_request_id"
+      ],
+      "where": null,
+      "file": "44_add_verifiable_credentials.sql"
+    },
+    {
+      "name": "idx_verification_requests_document_id",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "document_id"
+      ],
+      "where": null,
+      "file": "03_add_missing_verification_columns.sql"
+    },
+    {
+      "name": "idx_verification_requests_enhanced_verification",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "enhanced_verification_completed"
+      ],
+      "where": null,
+      "file": "04_add_back_of_id_support.sql"
+    },
+    {
+      "name": "idx_verification_requests_live_capture",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "live_capture_completed"
+      ],
+      "where": null,
+      "file": "03_add_missing_verification_columns.sql"
+    },
+    {
+      "name": "idx_verification_requests_liveness",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "liveness_score"
+      ],
+      "where": null,
+      "file": "05_add_photo_consistency_validation.sql"
+    },
+    {
+      "name": "idx_verification_requests_parent",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "parent_verification_id"
+      ],
+      "where": "parent_verification_id IS NOT NULL",
+      "file": "36_add_re_verification.sql"
+    },
+    {
+      "name": "idx_verification_requests_photo_consistency",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "photo_consistency_score"
+      ],
+      "where": null,
+      "file": "05_add_photo_consistency_validation.sql"
+    },
+    {
+      "name": "idx_verification_requests_selfie_id",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "selfie_id"
+      ],
+      "where": null,
+      "file": "03_add_missing_verification_columns.sql"
+    },
+    {
+      "name": "idx_verification_requests_source_created",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "source",
+        "created_at"
+      ],
+      "where": "source = ' '",
+      "file": "22_source_separation.sql"
+    },
+    {
+      "name": "idx_verification_requests_status",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "status"
+      ],
+      "where": null,
+      "file": "01_initial_schema.sql"
+    },
+    {
+      "name": "idx_verification_requests_user_id",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "user_id"
+      ],
+      "where": null,
+      "file": "01_initial_schema.sql"
+    },
+    {
+      "name": "idx_verification_reviewers_developer",
+      "table": "verification_reviewers",
+      "unique": false,
+      "columns": [
+        "developer_id"
+      ],
+      "where": null,
+      "file": "33_verification_reviewers.sql"
+    },
+    {
+      "name": "idx_verification_reviewers_email",
+      "table": "verification_reviewers",
+      "unique": false,
+      "columns": [
+        "email"
+      ],
+      "where": null,
+      "file": "33_verification_reviewers.sql"
+    },
+    {
+      "name": "idx_verification_reviewers_role",
+      "table": "verification_reviewers",
+      "unique": false,
+      "columns": [
+        "role"
+      ],
+      "where": null,
+      "file": "39_admin_restructure.sql"
+    },
+    {
+      "name": "idx_vr_client_ip",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "client_ip"
+      ],
+      "where": "client_ip IS NOT NULL",
+      "file": "55_add_velocity_tracking.sql"
+    },
+    {
+      "name": "idx_vr_developer_created",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "developer_id",
+        "created_at DESC"
+      ],
+      "where": null,
+      "file": "55_add_velocity_tracking.sql"
+    },
+    {
+      "name": "idx_vr_session_token",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "session_token_hash"
+      ],
+      "where": "session_token_hash IS NOT NULL",
+      "file": "54_add_session_token.sql"
+    },
+    {
+      "name": "idx_vr_user_created",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "user_id",
+        "created_at DESC"
+      ],
+      "where": null,
+      "file": "55_add_velocity_tracking.sql"
+    },
+    {
+      "name": "idx_webhook_deliveries_status",
+      "table": "webhook_deliveries",
+      "unique": false,
+      "columns": [
+        "status"
+      ],
+      "where": null,
+      "file": "20260319_add_webhook_deliveries.sql"
+    },
+    {
+      "name": "idx_webhook_deliveries_verification",
+      "table": "webhook_deliveries",
+      "unique": false,
+      "columns": [
+        "verification_request_id"
+      ],
+      "where": null,
+      "file": "20260319_add_webhook_deliveries.sql"
+    },
+    {
+      "name": "idx_webhook_deliveries_webhook",
+      "table": "webhook_deliveries",
+      "unique": false,
+      "columns": [
+        "webhook_id"
+      ],
+      "where": null,
+      "file": "20260319_add_webhook_deliveries.sql"
+    },
+    {
+      "name": "idx_webhooks_api_key_id",
+      "table": "webhooks",
+      "unique": false,
+      "columns": [
+        "api_key_id"
+      ],
+      "where": null,
+      "file": "20260319_webhook_api_key_scope.sql"
+    },
+    {
+      "name": "mobile_handoff_sessions_api_key_id_idx",
+      "table": "mobile_handoff_sessions",
+      "unique": false,
+      "columns": [
+        "api_key_id"
+      ],
+      "where": null,
+      "file": "50_handoff_remove_raw_api_key.sql"
+    },
+    {
+      "name": "mobile_handoff_sessions_expires_at_idx",
+      "table": "mobile_handoff_sessions",
+      "unique": false,
+      "columns": [
+        "expires_at"
+      ],
+      "where": null,
+      "file": "12_add_mobile_handoff_sessions.sql"
+    },
+    {
+      "name": "mobile_handoff_sessions_token_idx",
+      "table": "mobile_handoff_sessions",
+      "unique": false,
+      "columns": [
+        "token"
+      ],
+      "where": null,
+      "file": "12_add_mobile_handoff_sessions.sql"
+    },
+    {
+      "name": "verification_contexts_updated_at_idx",
+      "table": "verification_contexts",
+      "unique": false,
+      "columns": [
+        "updated_at"
+      ],
+      "where": null,
+      "file": "13_add_verification_contexts.sql"
+    },
+    {
+      "name": "verification_requests_api_key_id_idx",
+      "table": "verification_requests",
+      "unique": false,
+      "columns": [
+        "api_key_id"
+      ],
+      "where": "api_key_id IS NOT NULL",
+      "file": "20260629_add_api_key_id_to_verification_requests.sql"
+    }
+  ],
+  "enums": [],
+  "extensions": [],
+  "doBlocks": [
+    {
+      "file": "34_enable_rls_all_tables.sql"
+    },
+    {
+      "file": "39_admin_restructure.sql"
+    },
+    {
+      "file": "40_add_page_branding.sql"
+    },
+    {
+      "file": "42_add_page_builder_config.sql"
+    },
+    {
+      "file": "51_enable_rls_remaining_tables.sql"
+    },
+    {
+      "file": "53_create_branding_bucket.sql"
+    },
+    {
+      "file": "53_create_branding_bucket.sql"
+    },
+    {
+      "file": "53_create_branding_bucket.sql"
+    },
+    {
+      "file": "53_create_branding_bucket.sql"
+    },
+    {
+      "file": "57_add_rls_policies_all_tables.sql"
+    },
+    {
+      "file": "59_enable_rls_migrations.sql"
+    },
+    {
+      "file": "60_create_avatars_bucket.sql"
+    },
+    {
+      "file": "60_create_avatars_bucket.sql"
+    },
+    {
+      "file": "60_create_avatars_bucket.sql"
+    },
+    {
+      "file": "60_create_avatars_bucket.sql"
+    },
+    {
+      "file": "60_create_avatars_bucket.sql"
+    }
+  ],
+  "otherStatements": [
+    {
+      "file": "34_enable_rls_all_tables.sql",
+      "kind": "alter-missing-table",
+      "sql": "webhook_deliveries"
+    },
+    {
+      "file": "59_enable_rls_migrations.sql",
+      "kind": "alter-missing-table",
+      "sql": "_migrations"
+    }
+  ],
+  "statistics": {
+    "tables": 31,
+    "columns": 329,
+    "functions": 10,
+    "triggers": 6,
+    "policies": 53,
+    "indexes": 77,
+    "enums": 0,
+    "extensions": 0,
+    "doBlocks": 16
+  }
+}

@@ -1,0 +1,4271 @@
+{
+  "generatedAt": "2026-11-18T09:21:57.940Z",
+  "source": {
+    "repo": "/Users/johana/Codes/github/idswyft-community-1.12.39",
+    "commit": "83dd51bdfb6dec608856b41c110f54f5a8bf3efe",
+    "commitDate": "2026-11-17T00:25:31+07:00"
+  },
+  "statistics": {
+    "endpoints": 158,
+    "endpointsWithFields": 73,
+    "requestFields": 158,
+    "zodSchemas": 16,
+    "zodFields": 86,
+    "vocabularies": 5
+  },
+  "zodSchemas": [
+    {
+      "name": "AnalysisFrameSchema",
+      "file": "shared/src/verification/models/headTurnLivenessSchema.ts",
+      "line": 5,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "frame_base64",
+          "type": "z.string().max(200_000)",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "timestamp",
+          "type": "z.number()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "phase",
+          "type": "z.enum([ 'turn1_start', 'turn1_peak', 'turn1_return', 'turn_start', 'turn_peak', 'turn_return', ])",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "color_rgb",
+          "type": "z.tuple([z.number(), z.number(), z.number()]).optional()",
+          "optional": true,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "HeadTurnLivenessMetadataSchema",
+      "file": "shared/src/verification/models/headTurnLivenessSchema.ts",
+      "line": 23,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "challenge_type",
+          "type": "z.literal('head_turn')",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "challenge_direction",
+          "type": "z.enum(['left', 'right'])",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "frames",
+          "type": "z.array(AnalysisFrameSchema).min(5).max(12)",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "color_sequence",
+          "type": "z.array(z.tuple([z.number(), z.number(), z.number()])).optional().default([])",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "start_timestamp",
+          "type": "z.number()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "end_timestamp",
+          "type": "z.number()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "screen_width",
+          "type": "z.number().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "screen_height",
+          "type": "z.number().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "virtual_camera_check",
+          "type": "z.object({ label: z.string(), suspected_virtual: z.boolean(), }).optional()",
+          "optional": true,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "IDCardOCRSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 66,
+      "passthrough": true,
+      "fields": [
+        {
+          "name": "full_name",
+          "type": "z.string().min(1)",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "date_of_birth",
+          "type": "z.string().min(1)",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "id_number",
+          "type": "z.string().min(1)",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "expiry_date",
+          "type": "z.string().min(1)",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "nationality",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "issuing_country",
+          "type": "z.string().length(2).optional()",
+          "optional": true,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "DocumentAuthenticitySchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 76,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "score",
+          "type": "z.number().min(0).max(1)",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "flags",
+          "type": "z.array(z.string())",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "isAuthentic",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "ganScore",
+          "type": "z.number().min(0).max(1).optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "zoneScore",
+          "type": "z.number().min(0).max(1).optional()",
+          "optional": true,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "FrontExtractionResultSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 85,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "ocr",
+          "type": "IDCardOCRSchema",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "face_embedding",
+          "type": "z.array(z.number()).nullable()",
+          "optional": false,
+          "nullable": true
+        },
+        {
+          "name": "face_confidence",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "ocr_confidence",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "mrz_from_front",
+          "type": "z.array(z.string()).nullable()",
+          "optional": false,
+          "nullable": true
+        },
+        {
+          "name": "authenticity",
+          "type": "DocumentAuthenticitySchema",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "face_age",
+          "type": "z.number().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "face_gender",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "QRPayloadSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 99,
+      "passthrough": true,
+      "fields": [
+        {
+          "name": "first_name",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "last_name",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "full_name",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "date_of_birth",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "id_number",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "expiry_date",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "nationality",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "MRZResultSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 110,
+      "passthrough": true,
+      "fields": [
+        {
+          "name": "raw_lines",
+          "type": "z.array(z.string())",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "fields",
+          "type": "z.record(z.string()).optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "checksums_valid",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "BackExtractionResultSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 117,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "qr_payload",
+          "type": "QRPayloadSchema.nullable()",
+          "optional": false,
+          "nullable": true
+        },
+        {
+          "name": "mrz_result",
+          "type": "MRZResultSchema.nullable()",
+          "optional": false,
+          "nullable": true
+        },
+        {
+          "name": "barcode_format",
+          "type": "z.enum(['PDF417', 'QR_CODE', 'DATA_MATRIX', 'CODE_128', 'MRZ_TD1', 'MRZ_TD2', 'MRZ_TD3']).nullable()",
+          "optional": false,
+          "nullable": true
+        },
+        {
+          "name": "raw_barcode_data",
+          "type": "z.string().nullable()",
+          "optional": false,
+          "nullable": true
+        }
+      ]
+    },
+    {
+      "name": "FieldScoreSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 127,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "score",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "passed",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "weight",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "DlFormatValidationSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 134,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "valid",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "verdict",
+          "type": "z.enum(['PASS', 'FAIL', 'REVIEW', 'SKIP'])",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "matched_pattern",
+          "type": "z.string().nullable()",
+          "optional": false,
+          "nullable": true
+        },
+        {
+          "name": "issuing_state",
+          "type": "z.string().nullable()",
+          "optional": false,
+          "nullable": true
+        },
+        {
+          "name": "detail",
+          "type": "z.string()",
+          "optional": false,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "AddressValidationSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 143,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "score",
+          "type": "z.number().min(0).max(1)",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "verdict",
+          "type": "z.enum(['PASS', 'REVIEW', 'FAIL'])",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "front_address",
+          "type": "z.string()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "back_address",
+          "type": "z.string()",
+          "optional": false,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "CrossValidationResultSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 151,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "overall_score",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "field_scores",
+          "type": "z.record(FieldScoreSchema)",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "has_critical_failure",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "document_expired",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "verdict",
+          "type": "z.enum(['PASS', 'REVIEW', 'REJECT'])",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "dl_format_validation",
+          "type": "DlFormatValidationSchema.optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "address_validation",
+          "type": "AddressValidationSchema.optional()",
+          "optional": true,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "LiveCaptureResultSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 164,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "face_embedding",
+          "type": "z.array(z.number()).nullable()",
+          "optional": false,
+          "nullable": true
+        },
+        {
+          "name": "face_confidence",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "liveness_passed",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "liveness_score",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "deepfake_check",
+          "type": "z.object({ isReal: z.boolean(), realProbability: z.number().min(0).max(1), fakeProbability: z.number().min(0).max(1), }).optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "face_age",
+          "type": "z.number().optional()",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "face_gender",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "FaceMatchResultSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 181,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "similarity_score",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "passed",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "threshold_used",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "skipped_reason",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "VoiceMatchResultSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 192,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "similarity_score",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "passed",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "threshold_used",
+          "type": "confidence",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "challenge_verified",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "challenge_digits",
+          "type": "z.string()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "skipped_reason",
+          "type": "z.string().optional()",
+          "optional": true,
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "GateResultSchema",
+      "file": "shared/src/verification/models/schemas.ts",
+      "line": 205,
+      "passthrough": false,
+      "fields": [
+        {
+          "name": "passed",
+          "type": "z.boolean()",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "rejection_reason",
+          "type": "RejectionReasonEnum.nullable()",
+          "optional": false,
+          "nullable": true
+        },
+        {
+          "name": "rejection_detail",
+          "type": "z.string().nullable()",
+          "optional": false,
+          "nullable": true
+        },
+        {
+          "name": "user_message",
+          "type": "z.string().nullable()",
+          "optional": false,
+          "nullable": true
+        }
+      ]
+    }
+  ],
+  "vocabularies": [
+    {
+      "name": "RejectionReason",
+      "file": "shared/src/verification/models/schemas.ts",
+      "values": [
+        "FRONT_OCR_FAILED",
+        "FRONT_LOW_CONFIDENCE",
+        "BACK_BARCODE_NOT_FOUND",
+        "BACK_MRZ_CHECKSUM_FAILED",
+        "BACK_MRZ_BARCODE_MISMATCH",
+        "CROSS_VALIDATION_FAILED",
+        "DOCUMENT_EXPIRED",
+        "LIVENESS_FAILED",
+        "FACE_NOT_DETECTED",
+        "FACE_MATCH_FAILED",
+        "AML_MATCH_FOUND",
+        "AML_POTENTIAL_MATCH",
+        "DOCUMENT_TAMPERED",
+        "DEEPFAKE_DETECTED",
+        "VOICE_MATCH_FAILED",
+        "VOICE_CHALLENGE_FAILED"
+      ]
+    },
+    {
+      "name": "VerificationStatus",
+      "file": "shared/src/verification/models/schemas.ts",
+      "values": [
+        "AWAITING_FRONT",
+        "FRONT_PROCESSING",
+        "AWAITING_BACK",
+        "BACK_PROCESSING",
+        "CROSS_VALIDATING",
+        "AWAITING_LIVE",
+        "LIVE_PROCESSING",
+        "FACE_MATCHING",
+        "AWAITING_VOICE",
+        "VOICE_MATCHING",
+        "COMPLETE",
+        "HARD_REJECTED"
+      ]
+    },
+    {
+      "name": "VerificationState",
+      "file": "backend/src/services/verificationStateMachine.ts",
+      "line": 3,
+      "values": [
+        "pending",
+        "document_uploaded",
+        "ocr_processing",
+        "ocr_completed",
+        "back_id_processing",
+        "cross_validation_completed",
+        "live_capture_processing",
+        "face_matching",
+        "liveness_checking",
+        "verified",
+        "failed",
+        "manual_review"
+      ]
+    },
+    {
+      "name": "VerificationEvent",
+      "file": "backend/src/services/verificationStateMachine.ts",
+      "line": 17,
+      "values": [
+        "document_upload",
+        "ocr_success",
+        "ocr_failure",
+        "back_id_upload",
+        "cross_validation_success",
+        "cross_validation_failure",
+        "live_capture_upload",
+        "face_match_success",
+        "face_match_failure",
+        "liveness_success",
+        "liveness_failure",
+        "manual_review_required"
+      ]
+    },
+    {
+      "name": "VerificationStatus",
+      "file": "backend/src/types/index.ts",
+      "line": 44,
+      "values": [
+        "pending",
+        "processing",
+        "verified",
+        "failed",
+        "manual_review"
+      ]
+    }
+  ],
+  "vocabularyConflicts": [
+    "VerificationStatus 有 2 套不同取值：shared/src/verification/models/schemas.ts(12)；backend/src/types/index.ts(5)",
+    "对外 VerificationStatus 与内部 VerificationState 是两套状态；API 响应 status 使用前者，内部状态机使用后者"
+  ],
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/initialize",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 818
+      },
+      "body": [
+        {
+          "name": "user_id",
+          "validators": [
+            "body",
+            "isUUID",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "document_type",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "issuing_country",
+          "validators": [
+            "body",
+            "optional",
+            "isLength",
+            "isAlpha",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "sandbox",
+          "validators": [
+            "body",
+            "optional",
+            "isBoolean",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "source",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "addons",
+          "validators": [
+            "body",
+            "optional",
+            "isObject",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "addons.aml_screening",
+          "validators": [
+            "body",
+            "optional",
+            "isBoolean",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "addons.address_verification",
+          "validators": [
+            "body",
+            "optional",
+            "isBoolean",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "verification_mode",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "age_threshold",
+          "validators": [
+            "body",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/re-verify",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1025
+      },
+      "body": [
+        {
+          "name": "user_id",
+          "validators": [
+            "body",
+            "isUUID",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "previous_verification_id",
+          "validators": [
+            "body",
+            "isUUID",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "source",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/front-document",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1150
+      },
+      "body": [
+        {
+          "name": "document_type",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "issuing_country",
+          "validators": [
+            "body",
+            "optional",
+            "isLength",
+            "isAlpha",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "document",
+          "validators": [
+            "upload.single"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/back-document",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1475
+      },
+      "body": [
+        {
+          "name": "document_type",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "issuing_country",
+          "validators": [
+            "body",
+            "optional",
+            "isLength",
+            "isAlpha",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "document",
+          "validators": [
+            "upload.single"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/cross-validation",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1663
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/live-capture",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1698
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "selfie",
+          "validators": [
+            "upload.single"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/voice-challenge",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2017
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/voice-capture",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2063
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "file",
+          "validators": [
+            "upload.single"
+          ]
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/finalize",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2279
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/restart",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2308
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/internal/session",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2425
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/status",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2513
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/selfie",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2577
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/phone-otp/send",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2658
+      },
+      "body": [
+        {
+          "name": "phone_number",
+          "validators": [
+            "body",
+            "matches",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/phone-otp/verify",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2695
+      },
+      "body": [
+        {
+          "name": "code",
+          "validators": [
+            "body",
+            "matches",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/verify/handoff/create",
+      "module": "handoff",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 16
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/verify/handoff/:token/session",
+      "module": "handoff",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 116
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/verify/handoff/:token/link",
+      "module": "handoff",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 189
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/verify/handoff/:token/complete",
+      "module": "handoff",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 227
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/verify/handoff/:token/status",
+      "module": "handoff",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 288
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/register",
+      "module": "developer/register",
+      "source": {
+        "file": "backend/src/routes/developer/register.ts",
+        "line": 26
+      },
+      "body": [
+        {
+          "name": "email",
+          "validators": [
+            "body",
+            "isEmail",
+            "normalizeEmail",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "name",
+          "validators": [
+            "body",
+            "trim",
+            "escape",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "company",
+          "validators": [
+            "body",
+            "optional",
+            "trim",
+            "escape",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "webhook_url",
+          "validators": [
+            "body",
+            "optional",
+            "isURL",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/api-key",
+      "module": "developer/apiKeys",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 25
+      },
+      "body": [
+        {
+          "name": "name",
+          "validators": [
+            "body",
+            "trim",
+            "escape",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "is_sandbox",
+          "validators": [
+            "body",
+            "optional",
+            "isBoolean",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "expires_in_days",
+          "validators": [
+            "body",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/api-keys",
+      "module": "developer/apiKeys",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 173
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/api-key/:keyId",
+      "module": "developer/apiKeys",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 233
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "keyId",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/api-key/:id/rotate",
+      "module": "developer/apiKeys",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 308
+      },
+      "body": [
+        {
+          "name": "gracePeriodHours",
+          "validators": [
+            "body",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 43
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 83
+      },
+      "body": [
+        {
+          "name": "url",
+          "validators": [
+            "body",
+            "isURL",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "is_sandbox",
+          "validators": [
+            "body",
+            "optional",
+            "isBoolean",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "events",
+          "validators": [
+            "body",
+            "optional",
+            "isArray",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "secret",
+          "validators": [
+            "body",
+            "optional",
+            "isString",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "api_key_id",
+          "validators": [
+            "body",
+            "optional",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks/:webhookId/secret",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 221
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "webhookId",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks/:webhookId/deliveries",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 263
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "webhookId",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks/:webhookId/test",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 313
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "webhookId",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks/:webhookId/deliveries/:deliveryId/resend",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 420
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "webhookId",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "deliveryId",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/webhooks/:webhookId",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 487
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "webhookId",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/stats",
+      "module": "developer/analytics",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 37
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/activity",
+      "module": "developer/analytics",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 88
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/verifications/:verificationId",
+      "module": "developer/analytics",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 196
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verificationId",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/analytics",
+      "module": "developer/analytics",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 258
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/llm",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 17
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/llm",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 52
+      },
+      "body": [
+        {
+          "name": "provider",
+          "validators": [
+            "body",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "api_key",
+          "validators": [
+            "body",
+            "optional",
+            "isString",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "endpoint_url",
+          "validators": [
+            "body",
+            "optional",
+            "isURL",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "model",
+          "validators": [
+            "body",
+            "optional",
+            "isString",
+            "isLength",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/sms",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 116
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/sms",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 150
+      },
+      "body": [
+        {
+          "name": "provider",
+          "validators": [
+            "body",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "api_key",
+          "validators": [
+            "body",
+            "optional",
+            "isString",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "api_secret",
+          "validators": [
+            "body",
+            "optional",
+            "isString",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "phone_number",
+          "validators": [
+            "body",
+            "optional",
+            "matches",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/branding",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 202
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/branding",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 226
+      },
+      "body": [
+        {
+          "name": "logo_url",
+          "validators": [
+            "body",
+            "optional",
+            "isURL",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "accent_color",
+          "validators": [
+            "body",
+            "optional",
+            "matches",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "company_name",
+          "validators": [
+            "body",
+            "optional",
+            "isString",
+            "trim",
+            "isLength",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/page-builder",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 297
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/page-builder",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 316
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/page-builder/slug",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 335
+      },
+      "body": [
+        {
+          "name": "slug",
+          "validators": [
+            "body",
+            "optional",
+            "isString",
+            "matches",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/aml",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 370
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/aml",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 387
+      },
+      "body": [
+        {
+          "name": "enabled",
+          "validators": [
+            "body",
+            "isBoolean",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/voice-auth",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 412
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/voice-auth",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 429
+      },
+      "body": [
+        {
+          "name": "enabled",
+          "validators": [
+            "body",
+            "isBoolean",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/vc",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 454
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/vc",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 471
+      },
+      "body": [
+        {
+          "name": "enabled",
+          "validators": [
+            "body",
+            "isBoolean",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/duplicate-detection",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 498
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/duplicate-detection",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 516
+      },
+      "body": [
+        {
+          "name": "enabled",
+          "validators": [
+            "body",
+            "isBoolean",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "action",
+          "validators": [
+            "body",
+            "isIn",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/vault",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 545
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/vault",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 563
+      },
+      "body": [
+        {
+          "name": "enabled",
+          "validators": [
+            "body",
+            "optional",
+            "isBoolean",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "auto_store",
+          "validators": [
+            "body",
+            "optional",
+            "isBoolean",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/account",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 29
+      },
+      "body": [
+        {
+          "name": "confirm_email",
+          "validators": [
+            "body",
+            "isEmail",
+            "normalizeEmail",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/profile",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 91
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/profile",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 128
+      },
+      "body": [
+        {
+          "name": "name",
+          "validators": [
+            "body",
+            "trim",
+            "escape",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "company",
+          "validators": [
+            "body",
+            "optional",
+            "trim",
+            "escape",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "locale",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/avatar",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 177
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/branding/logo",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 216
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/reviewers/invite",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 255
+      },
+      "body": [
+        {
+          "name": "email",
+          "validators": [
+            "body",
+            "isEmail",
+            "normalizeEmail",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "name",
+          "validators": [
+            "body",
+            "optional",
+            "trim",
+            "escape",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "role",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/reviewers",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 329
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/reviewers/:id",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 348
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/dashboard",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 27
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verifications",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 61
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "status",
+          "validators": [
+            "query",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "developer_id",
+          "validators": [
+            "query",
+            "optional",
+            "isUUID",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "page",
+          "validators": [
+            "query",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "limit",
+          "validators": [
+            "query",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verification/:id",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 147
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verification/:id/duplicates",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 308
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/verification/:id/review",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 378
+      },
+      "body": [
+        {
+          "name": "decision",
+          "validators": [
+            "body",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "reason",
+          "validators": [
+            "body",
+            "optional",
+            "trim",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "new_status",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/developers",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 516
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "page",
+          "validators": [
+            "query",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "limit",
+          "validators": [
+            "query",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 576
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "period",
+          "validators": [
+            "query",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "developer_id",
+          "validators": [
+            "query",
+            "optional",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/health",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 602
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/funnel",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 755
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "period",
+          "validators": [
+            "query",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "developer_id",
+          "validators": [
+            "query",
+            "optional",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/rejections",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 772
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "period",
+          "validators": [
+            "query",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/fraud-patterns",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 787
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "period",
+          "validators": [
+            "query",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/risk-distribution",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 802
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "period",
+          "validators": [
+            "query",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/provider-metrics",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 817
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/audit/export",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 834
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "from",
+          "validators": [
+            "query",
+            "optional",
+            "isISO8601",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "to",
+          "validators": [
+            "query",
+            "optional",
+            "isISO8601",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "status",
+          "validators": [
+            "query",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "developer_id",
+          "validators": [
+            "query",
+            "optional",
+            "isUUID",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "format",
+          "validators": [
+            "query",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "limit",
+          "validators": [
+            "query",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "offset",
+          "validators": [
+            "query",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "include_sandbox",
+          "validators": [
+            "query",
+            "optional",
+            "isBoolean",
+            "withMessage"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/user/:userId/data",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 1050
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/thresholds",
+      "module": "admin-thresholds",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 20
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/thresholds",
+      "module": "admin-thresholds",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 82
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/thresholds/preview",
+      "module": "admin-thresholds",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 194
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/thresholds/reset",
+      "module": "admin-thresholds",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 249
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 83
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/csrf-token",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 89
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/admin/login",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 95
+      },
+      "body": [
+        {
+          "name": "email",
+          "validators": [
+            "body",
+            "isEmail",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "password",
+          "validators": [
+            "body",
+            "notEmpty",
+            "withMessage",
+            "isLength",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/admin/escalate",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 175
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/send",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 192
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/verify",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 211
+      },
+      "body": [
+        {
+          "name": "code",
+          "validators": [
+            "body",
+            "isString",
+            "isLength",
+            "isNumeric",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/complete-registration",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 270
+      },
+      "body": [
+        {
+          "name": "registration_token",
+          "validators": [
+            "body",
+            "isString",
+            "notEmpty",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "name",
+          "validators": [
+            "body",
+            "isString",
+            "trim",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "company",
+          "validators": [
+            "body",
+            "optional",
+            "isString",
+            "trim"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reviewer/otp/send",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 365
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reviewer/otp/verify",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 398
+      },
+      "body": [
+        {
+          "name": "code",
+          "validators": [
+            "body",
+            "isString",
+            "isLength",
+            "isNumeric",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/github/callback",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 490
+      },
+      "body": [
+        {
+          "name": "code",
+          "validators": [
+            "body",
+            "isString",
+            "matches",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "state",
+          "validators": [
+            "body",
+            "isString",
+            "notEmpty",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/developer/github/url",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 660
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp/setup",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 675
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp/verify",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 693
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "module": "health",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 11
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/detailed",
+      "module": "health",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 24
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/ready",
+      "module": "health",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 89
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/live",
+      "module": "health",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 104
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/api-key-diagnostic",
+      "module": "health",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 109
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/webhooks/register",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 16
+      },
+      "body": [
+        {
+          "name": "url",
+          "validators": [
+            "body",
+            "isURL",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "is_sandbox",
+          "validators": [
+            "body",
+            "optional",
+            "isBoolean",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "secret_token",
+          "validators": [
+            "body",
+            "optional",
+            "isLength",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/webhooks",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 86
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/webhooks/:webhookId",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 105
+      },
+      "body": [
+        {
+          "name": "url",
+          "validators": [
+            "body",
+            "optional",
+            "isURL",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "is_active",
+          "validators": [
+            "body",
+            "optional",
+            "isBoolean",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "secret_token",
+          "validators": [
+            "body",
+            "optional",
+            "isLength",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/webhooks/:webhookId",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 167
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/webhooks/:webhookId/deliveries",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 194
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/webhooks/:webhookId/test",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 231
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/users",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 13
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/verify",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 63
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/verify/:verification_id/status",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 114
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/developers",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 145
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/developers/:id",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 213
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/developers/:id/suspend",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 244
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/developers/:id/unsuspend",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 264
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/health",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 284
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/batch/upload",
+      "module": "batch",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 206
+      },
+      "body": [
+        {
+          "name": "items",
+          "validators": [
+            "body",
+            "isArray",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "items.*.user_id",
+          "validators": [
+            "body",
+            "isUUID",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "items.*.document_type",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "items.*.front_document_url",
+          "validators": [
+            "body",
+            "optional",
+            "isURL",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "items.*.back_document_url",
+          "validators": [
+            "body",
+            "optional",
+            "isURL",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch/:id/status",
+      "module": "batch",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 260
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch/:id/results",
+      "module": "batch",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 294
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/batch/:id/cancel",
+      "module": "batch",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 318
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "id",
+          "validators": [
+            "param",
+            "isUUID",
+            "withMessage"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch",
+      "module": "batch",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 348
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "page",
+          "validators": [
+            "query",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "limit",
+          "validators": [
+            "query",
+            "optional",
+            "isInt",
+            "withMessage"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/address-document",
+      "module": "addressVerification",
+      "source": {
+        "file": "backend/src/routes/addressVerification.ts",
+        "line": 41
+      },
+      "body": [
+        {
+          "name": "document_type",
+          "validators": [
+            "body",
+            "isIn",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/address-status",
+      "module": "addressVerification",
+      "source": {
+        "file": "backend/src/routes/addressVerification.ts",
+        "line": 165
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "verification_id",
+          "validators": [
+            "param",
+            "isUUID"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/page-config",
+      "module": "pageConfig",
+      "source": {
+        "file": "backend/src/routes/pageConfig.ts",
+        "line": 15
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/page-config/slug/:slug",
+      "module": "pageConfig",
+      "source": {
+        "file": "backend/src/routes/pageConfig.ts",
+        "line": 76
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/session-info",
+      "module": "pageConfig",
+      "source": {
+        "file": "backend/src/routes/pageConfig.ts",
+        "line": 111
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/monitoring/schedules",
+      "module": "monitoring",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 32
+      },
+      "body": [
+        {
+          "name": "user_id",
+          "validators": [
+            "body",
+            "isUUID",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "interval_days",
+          "validators": [
+            "body",
+            "isInt",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "verification_request_id",
+          "validators": [
+            "body",
+            "optional",
+            "isUUID"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/schedules",
+      "module": "monitoring",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 78
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "status",
+          "validators": [
+            "query",
+            "optional",
+            "isIn"
+          ]
+        },
+        {
+          "name": "page",
+          "validators": [
+            "query",
+            "optional",
+            "isInt"
+          ]
+        },
+        {
+          "name": "limit",
+          "validators": [
+            "query",
+            "optional",
+            "isInt"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/schedules/:schedule_id",
+      "module": "monitoring",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 116
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "schedule_id",
+          "validators": [
+            "param",
+            "isUUID"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/monitoring/schedules/:schedule_id",
+      "module": "monitoring",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 147
+      },
+      "body": [],
+      "query": [],
+      "param": [
+        {
+          "name": "schedule_id",
+          "validators": [
+            "param",
+            "isUUID"
+          ]
+        }
+      ],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/expiring-documents",
+      "module": "monitoring",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 180
+      },
+      "body": [],
+      "query": [
+        {
+          "name": "days_ahead",
+          "validators": [
+            "query",
+            "optional",
+            "isInt"
+          ]
+        },
+        {
+          "name": "page",
+          "validators": [
+            "query",
+            "optional",
+            "isInt"
+          ]
+        },
+        {
+          "name": "limit",
+          "validators": [
+            "query",
+            "optional",
+            "isInt"
+          ]
+        }
+      ],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/status",
+      "module": "status",
+      "source": {
+        "file": "backend/src/routes/status.ts",
+        "line": 23
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/setup/status",
+      "module": "setup",
+      "source": {
+        "file": "backend/src/routes/setup.ts",
+        "line": 31
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/setup/initialize",
+      "module": "setup",
+      "source": {
+        "file": "backend/src/routes/setup.ts",
+        "line": 54
+      },
+      "body": [
+        {
+          "name": "name",
+          "validators": [
+            "body",
+            "isString",
+            "trim",
+            "escape",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "email",
+          "validators": [
+            "body",
+            "isEmail",
+            "normalizeEmail",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "company",
+          "validators": [
+            "body",
+            "optional",
+            "isString",
+            "trim",
+            "escape",
+            "isLength",
+            "withMessage"
+          ]
+        },
+        {
+          "name": "locale",
+          "validators": [
+            "body",
+            "optional",
+            "isIn",
+            "withMessage"
+          ]
+        }
+      ],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:id/credential",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 18
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:id/credential/send",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 91
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/credentials/:jti/revoke",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 188
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/credentials/:jti/status",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 209
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/:id/credential",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 18
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/:id/credential/send",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 91
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/credentials/:jti/revoke",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 188
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/credentials/:jti/status",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 209
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/rulesets",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 74
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/compliance/rulesets",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 103
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 139
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 167
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 212
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/rulesets/:id/rules",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 237
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/compliance/rules/:id",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 280
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/compliance/rules/:id",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 339
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/evaluate",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 379
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/vault/store",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 39
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/share/:shareToken",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 104
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/:token",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 174
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/:token/attributes/:attr",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 202
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/vault/:token",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 232
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 261
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/vault/:token/share",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 301
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/.well-known/did.json",
+      "module": "well-known",
+      "source": {
+        "file": "backend/src/routes/well-known.ts",
+        "line": 12
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/system/version",
+      "module": "system",
+      "source": {
+        "file": "backend/src/routes/system.ts",
+        "line": 52
+      },
+      "body": [],
+      "query": [],
+      "param": [],
+      "files": []
+    }
+  ],
+  "caveats": [
+    "请求字段来自 express-validator 链与 multer；handler 内直接读 req.body 的分支未覆盖",
+    "响应字段未逐接口展开，需从类型与 res.json 结构继续抽取",
+    "状态词表多套口径，C8 决策后统一"
+  ]
+}

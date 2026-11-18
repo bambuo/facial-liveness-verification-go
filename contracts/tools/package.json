@@ -1,0 +1,13 @@
+{
+  "name": "idswyft-contract-tools",
+  "private": true,
+  "type": "module",
+  "description": "M0 契约抽取工具：基于 TypeScript AST 静态解析 idswyft 路由与挂载",
+  "scripts": {
+    "extract:endpoints": "node extract-endpoints.mjs",
+    "extract:schema": "node extract-schema.mjs"
+  },
+  "dependencies": {
+    "typescript": "^5.9.3"
+  }
+}

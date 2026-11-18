@@ -1,0 +1,5424 @@
+{
+  "generatedAt": "2026-11-18T09:21:58.141Z",
+  "source": {
+    "repo": "/Users/johana/Codes/github/idswyft-community-1.12.39",
+    "commit": "83dd51bdfb6dec608856b41c110f54f5a8bf3efe",
+    "commitDate": "2026-11-17T00:25:31+07:00"
+  },
+  "statistics": {
+    "endpoints": 158,
+    "endpointsWithResponses": 158,
+    "responses": 317,
+    "statusCodes": 12
+  },
+  "builder": {
+    "name": "buildVerificationResponse",
+    "file": "backend/src/verification/statusReader.ts",
+    "line": 169,
+    "keys": [
+      "success",
+      "verification_id",
+      "verification_mode",
+      "is_sandbox",
+      "status",
+      "current_step",
+      "total_steps",
+      "front_document_uploaded",
+      "back_document_uploaded",
+      "live_capture_uploaded",
+      "ocr_data",
+      "document_authenticity",
+      "barcode_data",
+      "cross_validation_results",
+      "face_match_results",
+      "liveness_results",
+      "deepfake_check",
+      "aml_screening",
+      "age_estimation",
+      "velocity_analysis",
+      "geo_analysis",
+      "voice_match_results",
+      "risk_score",
+      "compliance_flags",
+      "duplicate_flags",
+      "barcode_extraction_failed",
+      "documents_match",
+      "face_match_passed",
+      "liveness_passed",
+      "final_result",
+      "rejection_reason",
+      "rejection_detail",
+      "failure_reason",
+      "user_message",
+      "manual_review_reason_code",
+      "manual_review_reason",
+      "created_at",
+      "updated_at"
+    ],
+    "spreads": [
+      "((state as any).age_verification && { age_verification: (state as any).age_verification })",
+      "(mapped.final_result === 'failed' && { retry_available: (verification.retry_count ?? 0) < 3, retry_count: verification.retry_count ?? 0, })"
+    ]
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/initialize",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 818
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "verification_id",
+            "session_token",
+            "verification_url",
+            "verification_mode",
+            "status",
+            "current_step",
+            "total_steps",
+            "message"
+          ],
+          "spreads": [
+            "(isAgeOnly && { age_threshold: resolvedAgeThreshold })",
+            "(complianceApplied.length > 0 && { compliance_applied: complianceApplied, ...((resolvedAddons as any).compliance_require"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 993
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/re-verify",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1025
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "verification_id",
+            "parent_verification_id",
+            "verification_mode",
+            "status",
+            "current_step",
+            "total_steps",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 1128
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/front-document",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1150
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "idempotent_retry"
+          ],
+          "spreads": [
+            "cached"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 1223
+        },
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "final_result",
+            "rejection_reason",
+            "rejection_detail",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 1303
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "verification_mode",
+            "status",
+            "current_step",
+            "total_steps",
+            "document_id",
+            "ocr_data",
+            "detected_document_type",
+            "classification_confidence",
+            "rejection_reason",
+            "rejection_detail",
+            "requires_back",
+            "message"
+          ],
+          "spreads": [
+            "(ageVerification && { age_verification: ageVerification })",
+            "(mapped.final_result && { final_result: mapped.final_result })",
+            "(dedupBlocked && { final_result: 'failed' })",
+            "(dedupFlags.length > 0 && { duplicate_flags: dedupFlags })"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 1421
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/back-document",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1475
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "verification_id",
+            "verification_mode",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 1525
+        },
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "final_result",
+            "rejection_reason",
+            "rejection_detail",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 1565
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "verification_mode",
+            "status",
+            "current_step",
+            "total_steps",
+            "document_id",
+            "barcode_data",
+            "barcode_extraction_failed",
+            "documents_match",
+            "cross_validation_results",
+            "rejection_reason",
+            "rejection_detail",
+            "failure_reason",
+            "message"
+          ],
+          "spreads": [
+            "(mapped.final_result && { final_result: mapped.final_result })"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 1619
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/cross-validation",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1663
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "documents_match",
+            "cross_validation_results",
+            "rejection_reason",
+            "rejection_detail",
+            "failure_reason",
+            "manual_review_reason",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 1680
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/live-capture",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 1698
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "verification_id",
+            "verification_mode",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 1735
+        },
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "final_result",
+            "rejection_reason",
+            "rejection_detail",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 1800
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "verification_mode",
+            "status",
+            "current_step",
+            "total_steps",
+            "selfie_id",
+            "face_match_results",
+            "liveness_results",
+            "deepfake_check",
+            "age_estimation",
+            "velocity_analysis",
+            "geo_analysis",
+            "final_result",
+            "rejection_reason",
+            "rejection_detail",
+            "failure_reason",
+            "manual_review_reason",
+            "message"
+          ],
+          "spreads": [
+            "(liveDedupBlocked && { final_result: 'failed' })",
+            "(liveDedupFlags.length > 0 && { duplicate_flags: liveDedupFlags })"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 1957
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/voice-challenge",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2017
+      },
+      "responses": [
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "error",
+            "current_step"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2030
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "challenge_digits",
+            "expires_in_seconds",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2052
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/voice-capture",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2063
+      },
+      "responses": [
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "error",
+            "current_step"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2081
+        },
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2096
+        },
+        {
+          "status": "410",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2104
+        },
+        {
+          "status": "503",
+          "keys": [
+            "success",
+            "error",
+            "retryable",
+            "current_step"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2122
+        },
+        {
+          "status": "503",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2131
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "total_steps",
+            "voice_match_results",
+            "final_result",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2248
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/finalize",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2279
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "final_result",
+            "rejection_reason",
+            "rejection_detail",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2294
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/restart",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2308
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2326
+        },
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "message",
+            "retry_count"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2335
+        },
+        {
+          "status": "503",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2348
+        },
+        {
+          "status": "409",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2374
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "retry_count",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2406
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/internal/session",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2425
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2472
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "session_token",
+            "session_token_expires_at",
+            "verification_url"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2497
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/status",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2513
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "spreads": [],
+          "ref": "response",
+          "kind": "identifier",
+          "line": 2564
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/selfie",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2577
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2588
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2604
+        },
+        {
+          "status": "404",
+          "keys": [
+            "selfie_url"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2613
+        },
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "selfie_url",
+            "expires_in"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2618
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/phone-otp/send",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2658
+      },
+      "responses": [
+        {
+          "status": "429",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2675
+        },
+        {
+          "status": "200",
+          "keys": [],
+          "spreads": [],
+          "ref": "response",
+          "kind": "identifier",
+          "line": 2691
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/phone-otp/verify",
+      "module": "newVerification",
+      "source": {
+        "file": "backend/src/routes/newVerification.ts",
+        "line": 2695
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2711
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message",
+            "phone_verified"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 2717
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/verify/handoff/create",
+      "module": "handoff",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 16
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "token",
+            "expires_at"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 112
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/verify/handoff/:token/session",
+      "module": "handoff",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 116
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 120
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 133
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 144
+        },
+        {
+          "status": "409",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 148
+        },
+        {
+          "status": "200",
+          "keys": [
+            "user_id",
+            "source",
+            "branding",
+            "page_builder_config"
+          ],
+          "spreads": [
+            "(data.verification_id && { verification_id: data.verification_id })"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 179
+        }
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/verify/handoff/:token/link",
+      "module": "handoff",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 189
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 194
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 220
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 223
+        }
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/verify/handoff/:token/complete",
+      "module": "handoff",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 227
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 231
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 260
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 264
+        },
+        {
+          "status": "409",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 281
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 284
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/verify/handoff/:token/status",
+      "module": "handoff",
+      "source": {
+        "file": "backend/src/routes/handoff.ts",
+        "line": 288
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 292
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 304
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 315
+        },
+        {
+          "status": "200",
+          "keys": [
+            "status"
+          ],
+          "spreads": [
+            "(data.verification_id && { verification_id: data.verification_id })",
+            "(data.status !== 'pending' && { result: data.result })"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 318
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/register",
+      "module": "developer/register",
+      "source": {
+        "file": "backend/src/routes/developer/register.ts",
+        "line": 26
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "developer",
+            "message"
+          ],
+          "spreads": [
+            "(result.code && { code: result.code })"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 98
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/api-key",
+      "module": "developer/apiKeys",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 25
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "api_key",
+            "key_id",
+            "name",
+            "is_sandbox",
+            "created_at",
+            "expires_at",
+            "key_prefix",
+            "security_info",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 154
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/api-keys",
+      "module": "developer/apiKeys",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 173
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "api_keys",
+            "total_keys",
+            "active_keys",
+            "security_recommendations"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 197
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/api-key/:keyId",
+      "module": "developer/apiKeys",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 233
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message",
+            "revoked_key",
+            "security_info"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 283
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/api-key/:id/rotate",
+      "module": "developer/apiKeys",
+      "source": {
+        "file": "backend/src/routes/developer/apiKeys.ts",
+        "line": 308
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "new_key",
+            "new_key_id",
+            "old_key_expires_at",
+            "grace_period_hours",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 462
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 43
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "webhooks"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 78
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 83
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "webhook",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 210
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks/:webhookId/secret",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 221
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "secret_key"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 258
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/webhooks/:webhookId/deliveries",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 263
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "deliveries",
+            "total"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 295
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks/:webhookId/test",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 313
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "status_code",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 373
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "status_code"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 397
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "status_code",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 408
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/webhooks/:webhookId/deliveries/:deliveryId/resend",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 420
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "delivery"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 475
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/webhooks/:webhookId",
+      "module": "developer/webhooks",
+      "source": {
+        "file": "backend/src/routes/developer/webhooks.ts",
+        "line": 487
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 535
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/stats",
+      "module": "developer/analytics",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 37
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "period",
+            "period_start",
+            "total_requests",
+            "successful_requests",
+            "failed_requests",
+            "pending_requests",
+            "manual_review_requests",
+            "success_rate",
+            "monthly_limit",
+            "monthly_usage",
+            "remaining_quota",
+            "quota_reset_date"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 70
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/activity",
+      "module": "developer/analytics",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 88
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "statistics",
+            "recent_activities",
+            "total_activities",
+            "session_outcomes"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 186
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/verifications/:verificationId",
+      "module": "developer/analytics",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 196
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "current_step",
+            "total_steps",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 232
+        },
+        {
+          "status": "200",
+          "keys": [],
+          "spreads": [],
+          "ref": "response",
+          "kind": "identifier",
+          "line": 252
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/analytics",
+      "module": "developer/analytics",
+      "source": {
+        "file": "backend/src/routes/developer/analytics.ts",
+        "line": 258
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "daily_volume",
+            "rejection_breakdown",
+            "daily_latency",
+            "quota",
+            "funnel",
+            "daily_webhooks"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 291
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/llm",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 17
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "provider",
+            "api_key_preview",
+            "endpoint_url",
+            "model"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 29
+        },
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "provider",
+            "api_key_preview",
+            "endpoint_url",
+            "model"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 42
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/llm",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 52
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 72
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message",
+            "provider",
+            "api_key_preview",
+            "endpoint_url",
+            "model"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 101
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/sms",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 116
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "provider",
+            "api_key_preview",
+            "phone_number"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 128
+        },
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "provider",
+            "api_key_preview",
+            "phone_number"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 141
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/sms",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 150
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 170
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message",
+            "provider",
+            "api_key_preview",
+            "phone_number"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 190
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/branding",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 202
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "logo_url",
+            "accent_color",
+            "company_name"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 215
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/branding",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 226
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 248
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "logo_url",
+            "accent_color",
+            "company_name"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 251
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/page-builder",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 297
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "configured",
+            "config",
+            "slug",
+            "logo_url"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 307
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/page-builder",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 316
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 323
+        },
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 330
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 331
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/page-builder/slug",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 335
+      },
+      "responses": [
+        {
+          "status": "409",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 355
+        },
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 363
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "slug"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 364
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/aml",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 370
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "enabled"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 381
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/aml",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 387
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 403
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "enabled"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 406
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/voice-auth",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 412
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "enabled"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 423
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/voice-auth",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 429
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 445
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "enabled"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 448
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/vc",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 454
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "enabled"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 465
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/vc",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 471
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 487
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "enabled"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 490
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/duplicate-detection",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 498
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "enabled",
+            "action"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 509
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/duplicate-detection",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 516
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 536
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "enabled",
+            "action"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 539
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/settings/vault",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 545
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "enabled",
+            "auto_store"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 556
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/settings/vault",
+      "module": "developer/settings",
+      "source": {
+        "file": "backend/src/routes/developer/settings.ts",
+        "line": 563
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 578
+        },
+        {
+          "status": "500",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 587
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success"
+          ],
+          "spreads": [
+            "updates"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 590
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/account",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 29
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 72
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/profile",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 91
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "scope",
+            "operator"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 96
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 112
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/developer/profile",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 128
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 166
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/avatar",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 177
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 209
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/branding/logo",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 216
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 248
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/developer/reviewers/invite",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 255
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "reviewer"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 324
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/developer/reviewers",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 329
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "reviewers"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 343
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/developer/reviewers/:id",
+      "module": "developer/profile",
+      "source": {
+        "file": "backend/src/routes/developer/profile.ts",
+        "line": 348
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message",
+            "reviewer"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 368
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/dashboard",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 27
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "stats",
+            "recent_verifications",
+            "developer_count",
+            "system_health"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 51
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verifications",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 61
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "verifications",
+            "pagination"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 134
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verification/:id",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 147
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "verification"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 295
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/verification/:id/duplicates",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 308
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "linked_verifications"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 334
+        },
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "linked_verifications"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 356
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/verification/:id/review",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 378
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "verification",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 464
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/developers",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 516
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "developers",
+            "pagination"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 563
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 576
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "spreads": [],
+          "ref": "analytics",
+          "kind": "identifier",
+          "line": 597
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/health",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 602
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "spreads": [],
+          "ref": "health",
+          "kind": "identifier",
+          "line": 607
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/funnel",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 755
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "funnel"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 767
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/rejections",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 772
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "rejections"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 782
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/fraud-patterns",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 787
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "patterns"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 797
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/analytics/risk-distribution",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 802
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "distribution"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 812
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/provider-metrics",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 817
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 823
+        },
+        {
+          "status": "200",
+          "keys": [],
+          "spreads": [],
+          "ref": "summary",
+          "kind": "identifier",
+          "line": 827
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/audit/export",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 834
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "export_date",
+            "record_count",
+            "filters",
+            "records"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 1034
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/user/:userId/data",
+      "module": "admin",
+      "source": {
+        "file": "backend/src/routes/admin.ts",
+        "line": 1050
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 1072
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/thresholds",
+      "module": "admin-thresholds",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 20
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 24
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 36
+        },
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 71
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/thresholds",
+      "module": "admin-thresholds",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 82
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 88
+        },
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 106
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 151
+        },
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 180
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/thresholds/preview",
+      "module": "admin-thresholds",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 194
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 213
+        },
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 238
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/thresholds/reset",
+      "module": "admin-thresholds",
+      "source": {
+        "file": "backend/src/routes/admin-thresholds.ts",
+        "line": 249
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 255
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 300
+        },
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 309
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 83
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 85
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/csrf-token",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 89
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "csrfToken"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 91
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/admin/login",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 95
+      },
+      "responses": [
+        {
+          "status": "401",
+          "keys": [
+            "requires_totp"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 145
+        },
+        {
+          "status": "200",
+          "keys": [
+            "token",
+            "user"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 163
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/admin/escalate",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 175
+      },
+      "responses": [
+        {
+          "status": "410",
+          "keys": [
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 176
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/send",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 192
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "spreads": [
+            "(result.code && { code: result.code, self_hosted: true })"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 203
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/verify",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 211
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "token",
+            "developer",
+            "is_new"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 244
+        },
+        {
+          "status": "200",
+          "keys": [
+            "registration_token",
+            "is_new"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 262
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/otp/complete-registration",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 270
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "token",
+            "developer",
+            "api_key",
+            "is_new"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 340
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reviewer/otp/send",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 365
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 383
+        },
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "spreads": [
+            "(result.code && { code: result.code, self_hosted: true })"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 390
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reviewer/otp/verify",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 398
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "token",
+            "reviewer"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 446
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/developer/github/callback",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 490
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "token",
+            "developer",
+            "api_key",
+            "is_new"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 617
+        },
+        {
+          "status": "200",
+          "keys": [
+            "token",
+            "developer",
+            "is_new"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 643
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/developer/github/url",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 660
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "url",
+            "configured"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 663
+        },
+        {
+          "status": "200",
+          "keys": [
+            "url",
+            "state",
+            "configured"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 670
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp/setup",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 675
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "qrCode"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 688
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp/verify",
+      "module": "auth",
+      "source": {
+        "file": "backend/src/routes/auth.ts",
+        "line": 693
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 717
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "module": "health",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 11
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "spreads": [],
+          "ref": "healthcheck",
+          "kind": "identifier",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/detailed",
+      "module": "health",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 24
+      },
+      "responses": [
+        {
+          "status": "statusCode",
+          "keys": [],
+          "spreads": [],
+          "ref": "healthcheck",
+          "kind": "identifier",
+          "line": 85
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/ready",
+      "module": "health",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 89
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "status"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 97
+        },
+        {
+          "status": "503",
+          "keys": [
+            "status",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 99
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/live",
+      "module": "health",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 104
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "status"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 105
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/health/api-key-diagnostic",
+      "module": "health",
+      "source": {
+        "file": "backend/src/routes/health.ts",
+        "line": 109
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 113
+        },
+        {
+          "status": "statusCode",
+          "keys": [],
+          "spreads": [],
+          "ref": "diagnostics",
+          "kind": "identifier",
+          "line": 164
+        },
+        {
+          "status": "500",
+          "keys": [
+            "timestamp",
+            "error",
+            "details",
+            "environment"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 167
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/webhooks/register",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 16
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "webhook",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 72
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/webhooks",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 86
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "webhooks"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 92
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/webhooks/:webhookId",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 105
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "webhook",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 153
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/webhooks/:webhookId",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 167
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 187
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/webhooks/:webhookId/deliveries",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 194
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "webhook_id",
+            "page",
+            "limit",
+            "total",
+            "deliveries"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 211
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/webhooks/:webhookId/test",
+      "module": "webhooks",
+      "source": {
+        "file": "backend/src/routes/webhooks.ts",
+        "line": 231
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "message",
+            "result",
+            "payload"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 269
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/users",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 13
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 37
+        },
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 48
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/verify",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 63
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 93
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "status",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 105
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/verify/:verification_id/status",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 114
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 124
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 130
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/developers",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 145
+      },
+      "responses": [
+        {
+          "status": "500",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 172
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data",
+            "meta"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 201
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/developers/:id",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 213
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 223
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 232
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/developers/:id/suspend",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 244
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 256
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 260
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/vaas/developers/:id/unsuspend",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 264
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "success",
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 276
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "data"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 280
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/vaas/health",
+      "module": "vaas",
+      "source": {
+        "file": "backend/src/routes/vaas.ts",
+        "line": 284
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message",
+            "timestamp"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 285
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/batch/upload",
+      "module": "batch",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 206
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "batch_id",
+            "status",
+            "total_items",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 246
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch/:id/status",
+      "module": "batch",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 260
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "batch_id",
+            "status",
+            "total_items",
+            "processed_items",
+            "succeeded_items",
+            "failed_items",
+            "progress_percentage",
+            "created_at",
+            "completed_at"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 274
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch/:id/results",
+      "module": "batch",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 294
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "results"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 310
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/batch/:id/cancel",
+      "module": "batch",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 318
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 331
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 337
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/batch",
+      "module": "batch",
+      "source": {
+        "file": "backend/src/routes/batch.ts",
+        "line": 348
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "jobs",
+            "pagination"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 362
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:verification_id/address-document",
+      "module": "addressVerification",
+      "source": {
+        "file": "backend/src/routes/addressVerification.ts",
+        "line": 41
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 77
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "verification_id",
+            "address_verification"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 146
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:verification_id/address-status",
+      "module": "addressVerification",
+      "source": {
+        "file": "backend/src/routes/addressVerification.ts",
+        "line": 165
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 181
+        },
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "address_verification",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 188
+        },
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "address_verification"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 197
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/page-config",
+      "module": "pageConfig",
+      "source": {
+        "file": "backend/src/routes/pageConfig.ts",
+        "line": 15
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 21
+        },
+        {
+          "status": "200",
+          "keys": [
+            "branding"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 40
+        },
+        {
+          "status": "200",
+          "keys": [
+            "branding"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 54
+        },
+        {
+          "status": "200",
+          "keys": [
+            "branding",
+            "page_builder_config"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 63
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/page-config/slug/:slug",
+      "module": "pageConfig",
+      "source": {
+        "file": "backend/src/routes/pageConfig.ts",
+        "line": 76
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "branding",
+            "page_builder_config"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 90
+        },
+        {
+          "status": "200",
+          "keys": [
+            "branding",
+            "page_builder_config"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 97
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/session-info",
+      "module": "pageConfig",
+      "source": {
+        "file": "backend/src/routes/pageConfig.ts",
+        "line": 111
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 117
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 122
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 135
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 140
+        },
+        {
+          "status": "200",
+          "keys": [
+            "verification_id",
+            "user_id",
+            "status",
+            "verification_mode",
+            "branding",
+            "page_builder_config"
+          ],
+          "spreads": [
+            "(verification.age_threshold != null && { age_threshold: verification.age_threshold })"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 153
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/monitoring/schedules",
+      "module": "monitoring",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 32
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "schedule"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 60
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/schedules",
+      "module": "monitoring",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 78
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "schedules",
+            "total",
+            "page",
+            "limit"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 95
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/schedules/:schedule_id",
+      "module": "monitoring",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 116
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "schedule"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 129
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/monitoring/schedules/:schedule_id",
+      "module": "monitoring",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 147
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 167
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/monitoring/expiring-documents",
+      "module": "monitoring",
+      "source": {
+        "file": "backend/src/routes/monitoring.ts",
+        "line": 180
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "alerts",
+            "total",
+            "page",
+            "limit"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 197
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/status",
+      "module": "status",
+      "source": {
+        "file": "backend/src/routes/status.ts",
+        "line": 23
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "overall",
+            "services",
+            "checked_at"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 62
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/setup/status",
+      "module": "setup",
+      "source": {
+        "file": "backend/src/routes/setup.ts",
+        "line": 31
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "needs_setup"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 34
+        },
+        {
+          "status": "200",
+          "keys": [
+            "needs_setup"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 50
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/setup/initialize",
+      "module": "setup",
+      "source": {
+        "file": "backend/src/routes/setup.ts",
+        "line": 54
+      },
+      "responses": [
+        {
+          "status": "201",
+          "keys": [
+            "token",
+            "developer",
+            "api_key"
+          ],
+          "spreads": [
+            "(keyError ? { warning: 'API key creation failed. You can create one from the Developer Portal.' } : {})"
+          ],
+          "ref": null,
+          "kind": "object",
+          "line": 133
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/:id/credential",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 18
+      },
+      "responses": [
+        {
+          "status": "503",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 25
+        },
+        {
+          "status": "403",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 36
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 48
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "credential",
+            "jti",
+            "expires_at"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 53
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "already_issued",
+            "jti",
+            "issued_at",
+            "expires_at",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 71
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 81
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/:id/credential/send",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 91
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 100
+        },
+        {
+          "status": "503",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 104
+        },
+        {
+          "status": "403",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 115
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 127
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "jti",
+            "expires_at",
+            "email_sent"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 175
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/verify/credentials/:jti/revoke",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 188
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 197
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 199
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/verify/credentials/:jti/status",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 209
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "spreads": [],
+          "ref": "status",
+          "kind": "identifier",
+          "line": 213
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/:id/credential",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 18
+      },
+      "responses": [
+        {
+          "status": "503",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 25
+        },
+        {
+          "status": "403",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 36
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 48
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "credential",
+            "jti",
+            "expires_at"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 53
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "already_issued",
+            "jti",
+            "issued_at",
+            "expires_at",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 71
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 81
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/:id/credential/send",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 91
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 100
+        },
+        {
+          "status": "503",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 104
+        },
+        {
+          "status": "403",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 115
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 127
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "jti",
+            "expires_at",
+            "email_sent"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 175
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/credentials/:jti/revoke",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 188
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 197
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 199
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/credentials/:jti/status",
+      "module": "credentials",
+      "source": {
+        "file": "backend/src/routes/credentials.ts",
+        "line": 209
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "spreads": [],
+          "ref": "status",
+          "kind": "identifier",
+          "line": 213
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/rulesets",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 74
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 81
+        },
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "ruleset"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 98
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/compliance/rulesets",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 103
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "rulesets"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 139
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 145
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 154
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "ruleset"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 162
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 167
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 174
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 179
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 186
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 192
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 205
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "ruleset"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 207
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/compliance/rulesets/:id",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 212
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 218
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 228
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 230
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/rulesets/:id/rules",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 237
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 244
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 254
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 257
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 260
+        },
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "rule"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 275
+        }
+      ]
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v2/compliance/rules/:id",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 280
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 287
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 296
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 305
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 311
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 316
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 322
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "rule"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 334
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/compliance/rules/:id",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 339
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 345
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 354
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 363
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 372
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/compliance/evaluate",
+      "module": "compliance",
+      "source": {
+        "file": "backend/src/routes/compliance.ts",
+        "line": 379
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 386
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "matched_rules",
+            "matches",
+            "resolved_action"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 402
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/vault/store",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 39
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 47
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 58
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 60
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "already_stored",
+            "vault_token",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 73
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 83
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 87
+        },
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "vault_token"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 92
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/share/:shareToken",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 104
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 114
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 117
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 121
+        },
+        {
+          "status": "410",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 134
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 145
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 150
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "attributes",
+            "expires_at"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 162
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/:token",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 174
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 182
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "vault_token",
+            "status",
+            "data",
+            "created_at",
+            "expires_at"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 187
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault/:token/attributes/:attr",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 202
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 210
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 217
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "attribute",
+            "value"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 220
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v2/vault/:token",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 232
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 240
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 248
+        },
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "message"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 253
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v2/vault",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 261
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [
+            "success",
+            "entries",
+            "pagination"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 284
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v2/vault/:token/share",
+      "module": "vault",
+      "source": {
+        "file": "backend/src/routes/vault.ts",
+        "line": 301
+      },
+      "responses": [
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 310
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 314
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 319
+        },
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 330
+        },
+        {
+          "status": "400",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 331
+        },
+        {
+          "status": "201",
+          "keys": [
+            "success",
+            "share_url",
+            "share_token",
+            "expires_at",
+            "allowed_attributes"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 351
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/.well-known/did.json",
+      "module": "well-known",
+      "source": {
+        "file": "backend/src/routes/well-known.ts",
+        "line": 12
+      },
+      "responses": [
+        {
+          "status": "404",
+          "keys": [
+            "error"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 14
+        },
+        {
+          "status": "200",
+          "keys": [
+            "@context",
+            "id",
+            "verificationMethod",
+            "authentication",
+            "assertionMethod"
+          ],
+          "spreads": [],
+          "ref": null,
+          "kind": "object",
+          "line": 23
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/system/version",
+      "module": "system",
+      "source": {
+        "file": "backend/src/routes/system.ts",
+        "line": 52
+      },
+      "responses": [
+        {
+          "status": "200",
+          "keys": [],
+          "spreads": [],
+          "ref": "response",
+          "kind": "identifier",
+          "line": 97
+        }
+      ]
+    }
+  ],
+  "unattributed": [
+    {
+      "file": "backend/src/routes/vault.ts",
+      "line": 28,
+      "status": "403",
+      "keys": [
+        "error"
+      ],
+      "ref": null
+    },
+    {
+      "file": "backend/src/routes/system.ts",
+      "line": 36,
+      "status": "200",
+      "keys": [],
+      "ref": null
+    }
+  ],
+  "caveats": [
+    "按源码位置就近归属；helper 函数内产生的 res.json 可能归属到相邻路由，需人工复核",
+    "对象字面量只取顶层字段；嵌套结构与类型约束需结合 TypeScript 类型继续展开",
+    "buildVerificationResponse 的展开表达式（条件对象）未逐字段展开",
+    "C8 已决定 status 与 final_result 统一 12 值；本文件反映 idswyft 当前实现，落地时按 C8 改造"
+  ]
+}

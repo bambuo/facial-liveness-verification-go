@@ -10,3 +10,6 @@ deploy/.env
 *.out
 *.log
 .DS_Store
+
+# 契约抽取工具的本地依赖
+contracts/tools/node_modules/

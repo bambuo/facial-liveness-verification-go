@@ -2,10 +2,13 @@
 
 ## 结论
 
+**P0 关闭（带两项已接受的暂缓项）**。
+
 - **软件可实现项已完成**：鉴权签字、契约 fixtures、DDL/重放、10 个原子函数、嵌套响应、错误码/i18n、字段规则 v1、进程级基准。
-- **两项非软件项**：
-  1. `.github` 工作流按用户要求禁用（`ci.yml.disabled`），CI 门禁未启用。
-  2. P0 第 6 项已补公开 MIDV-500 模拟护照 30 张（中文 mobile rec 字段 75.8%、姓名 53.3%）；真实证件 20–50 张仍**等待脱敏数据**，真实场景精度门禁未完成。
+- **公开模拟证件已完成**：MIDV-500 巴西护照 30 张，中文 mobile rec 字段 75.8%、姓名 53.3%。
+- **两项按用户决定先过**（2026-11-18）：
+  1. 真实脱敏证件 20–50 张与真实精度门禁：暂缓，不作为 P0 阻塞项。
+  2. CI 门禁：继续禁用（`ci.yml.disabled`），不作为 P0 阻塞项。
 
 ## 逐项状态
 
@@ -14,12 +17,12 @@
 | 1 | 17 条公开候选鉴权签字 | 完成 | `contracts/auth-decisions.md`；`auth.json` 17 条 |
 | 2 | 契约测试骨架 | 完成骨架 | `contracts/fixtures.json` 158 条（含嵌套 44）；2 个引擎端点 shape 测试；后端实现 0/158 |
 | 3 | 31 表 DDL + 空库重放 | 完成 | `contracts/ddl/001_baseline.sql`；31/329；GORM parity 通过 |
-| 3b | CI 门禁 | 已禁用（用户要求） | `.github/workflows/ci.yml.disabled` |
+| 3b | CI 门禁 | 暂缓（用户决定先过） | `.github/workflows/ci.yml.disabled` |
 | 4 | 10 个 SQL 函数 Go 等价 | 完成 | `internal/store` GORM 事务；真实 PG 测试通过 |
 | 5 | 嵌套响应 + 错误码/i18n | 完成 | `responses.md` 嵌套字段；`contracts/errors-i18n.md` 142/142 |
 | 6 | 字段规则 v1 | 完成 | `internal/document/fields`：MRZ/US/UK/CN/BR + 单测 |
 | 6b | 公开模拟证件 20–50 张 | 完成 | MIDV-500 巴西护照 30 张；中文 mobile 校正后字段 75.8%、姓名 53.3%，见 `eval/ocr/midv-bra-zh.md` |
-| 6c | 真实证件 20–50 张 + 精度门禁 | **阻塞** | 需要脱敏真实样本目录 |
+| 6c | 真实证件 20–50 张 + 精度门禁 | 暂缓（用户决定先过） | 后续提供脱敏样本再补，不作为 P0 阻塞项 |
 | 7 | OCR 性能基线 + 进程级 | 完成 | `eval/ocr/bench.md`：1/2/4 进程 QPS 0.239/0.235/0.228 |
 
 ## 验证命令与结果
@@ -40,9 +43,9 @@ go run ./cmd/docxeval -rec .../zh_rec.onnx -dict .../zh_dict.txt \
   -max-side 2000 -width-mode bucket -bucket 64     # 字段 75.8%
 ```
 
-## 剩余
+## 后续非阻塞项
 
-1. 提供 20–50 张脱敏证件样本后，运行 `cmd/docxeval`，产出字段级准确率与 P95 门禁；若有人工全文标注再补 CER/WER。
+1. 提供 20–50 张脱敏真实证件后，运行 `cmd/docxeval`，产出字段级准确率与 P95 门禁；若有人工全文标注再补 CER/WER。
 2. 若需要 CI，另行指定非 GitHub Actions 的运行方式或重新启用工作流。
 
 ## 样本目录核对（2026-11-18）
@@ -57,4 +60,4 @@ go run ./cmd/docxeval -rec .../zh_rec.onnx -dict .../zh_dict.txt \
 
 - `midv500/bra_ts/06_bra_passport/`：MIDV-500 巴西护照 30 张 TS 帧；原始帧字段 51.7%，GT 四边形透视校正 + 中文 mobile rec 后 75.8%。
 - 数据来源与许可见 `eval/ocr/README.md`；压缩包与图片不入库。
-- MIDV-500 是模拟证件，不能替代真实脱敏样本；P0 第 6c 项仍阻塞。
+- MIDV-500 是模拟证件，不能替代真实脱敏样本；真实样本门禁按用户决定暂缓，不作为 P0 阻塞项。

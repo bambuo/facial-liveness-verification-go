@@ -124,7 +124,7 @@ go run ./cmd/docxeval -model /tmp/paddle-ocr-models \
 
 单测：`go test ./internal/document/fields`。
 
-公开模拟样本已完成 30 张巴西护照评测；**仍缺真实脱敏证件 20–50 张**，因此真实场景的精度门禁尚未完成。
+公开模拟样本已完成 30 张巴西护照评测；真实脱敏证件 20–50 张及真实精度门禁按用户决定暂缓，不作为 P0 阻塞项。
 
 ## 进程级并发基准
 

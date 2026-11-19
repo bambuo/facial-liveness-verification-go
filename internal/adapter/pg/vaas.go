@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm/clause"
 
 	"facial-liveness-verification-go/internal/adapter/pg/gormmodel"
 )
@@ -12,6 +13,12 @@ import (
 // CreateVAASUser 插入用户。
 func (s *IdentityStore) CreateVAASUser(ctx context.Context, user *gormmodel.User) error {
 	return s.db.WithContext(ctx).Create(user).Error
+}
+
+// EnsureUser 仅在用户不存在时创建用户行。
+func (s *IdentityStore) EnsureUser(ctx context.Context, id uuid.UUID) error {
+	user := &gormmodel.User{ID: id}
+	return s.db.WithContext(ctx).Clauses(clause.OnConflict{DoNothing: true}).Create(user).Error
 }
 
 // ListDevelopers 搜索并分页开发者。

@@ -67,6 +67,7 @@ type idswyftStore interface {
 	CancelSchedule(ctx context.Context, developerID, id uuid.UUID) (int64, error)
 	ExpiringDocuments(ctx context.Context, developerID uuid.UUID, days, page, limit int) ([]gormmodel.ExpiryAlert, int64, error)
 	CreateVAASUser(ctx context.Context, user *gormmodel.User) error
+	EnsureUser(ctx context.Context, id uuid.UUID) error
 	ListDevelopers(ctx context.Context, search, status string, page, limit int) ([]gormmodel.Developer, int64, error)
 	SetDeveloperStatus(ctx context.Context, id uuid.UUID, status string) (int64, error)
 	CountAPIKeys(ctx context.Context, developerID uuid.UUID) (int64, error)

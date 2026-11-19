@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -21,13 +22,15 @@ import (
 
 // stubIdswyftStore 是核心接口测试的内存仓储。
 type stubIdswyftStore struct {
-	developerID  uuid.UUID
-	verification *gormmodel.VerificationRequest
-	documents    map[uuid.UUID]*gormmodel.Document
-	selfies      map[uuid.UUID]*gormmodel.Selfie
-	handoff      *port.HandoffAuth
-	session      *port.SessionAuth
-	handoffs     map[string]*gormmodel.MobileHandoffSession
+	developerID   uuid.UUID
+	verification  *gormmodel.VerificationRequest
+	ensuredUser   uuid.UUID
+	ensureUserErr error
+	documents     map[uuid.UUID]*gormmodel.Document
+	selfies       map[uuid.UUID]*gormmodel.Selfie
+	handoff       *port.HandoffAuth
+	session       *port.SessionAuth
+	handoffs      map[string]*gormmodel.MobileHandoffSession
 }
 
 func newStubIdswyftStore() *stubIdswyftStore {
@@ -50,6 +53,10 @@ func (s *stubIdswyftStore) FindSessionByToken(context.Context, string) (*port.Se
 	return s.session, nil
 }
 func (s *stubIdswyftStore) TouchAPIKey(context.Context, uuid.UUID) error { return nil }
+func (s *stubIdswyftStore) EnsureUser(_ context.Context, id uuid.UUID) error {
+	s.ensuredUser = id
+	return s.ensureUserErr
+}
 func (s *stubIdswyftStore) CreateVerification(_ context.Context, v *gormmodel.VerificationRequest) error {
 	s.verification = v
 	return nil
@@ -206,6 +213,9 @@ func TestVerifyInitializeAndStatus(t *testing.T) {
 	if err := json.Unmarshal(rec.Body.Bytes(), &out); err != nil {
 		t.Fatal(err)
 	}
+	if store.ensuredUser != userID {
+		t.Fatalf("initialize did not ensure user %s; got %s", userID, store.ensuredUser)
+	}
 	if out["verification_id"] == nil || out["session_token"] == nil {
 		t.Fatalf("initialize response=%v", out)
 	}
@@ -217,6 +227,27 @@ func TestVerifyInitializeAndStatus(t *testing.T) {
 	srv.Handler().ServeHTTP(rec, req)
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status=%d body=%s", rec.Code, rec.Body.String())
+	}
+}
+
+// TestVerifyInitializeStopsWhenUserEnsureFails 不创建缺少父用户行的验证请求。
+func TestVerifyInitializeStopsWhenUserEnsureFails(t *testing.T) {
+	store := newStubIdswyftStore()
+	store.ensureUserErr = errors.New("ensure user failed")
+	cfg := testConfig()
+	cfg.Security.APIKeySecret = "test-secret"
+	srv := NewServer(Deps{Cfg: cfg, IdswyftStore: store})
+	body := []byte(`{"user_id":"` + uuid.New().String() + `"}`)
+	req := httptest.NewRequest(http.MethodPost, "/api/v2/verify/initialize", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-API-Key", "test-key")
+	rec := httptest.NewRecorder()
+	srv.Handler().ServeHTTP(rec, req)
+	if rec.Code != http.StatusServiceUnavailable {
+		t.Fatalf("status=%d body=%s", rec.Code, rec.Body.String())
+	}
+	if store.verification != nil {
+		t.Fatal("verification was created after ensuring user failed")
 	}
 }
 
@@ -253,6 +284,59 @@ func TestFrontDocumentShape(t *testing.T) {
 		"success": "bool", "verification_id": "string", "status": "string",
 		"document_id": "string", "ocr_data": "object", "requires_back": "bool",
 	}, "$")
+}
+
+// TestVerificationStatusIncludesOCRData 覆盖正面证件上传后 status 返回 ocr_data，
+// 防止演示页轮询卡在「正在提取证件文字」。
+func TestVerificationStatusIncludesOCRData(t *testing.T) {
+	store := newStubIdswyftStore()
+	cfg := testConfig()
+	cfg.Security.APIKeySecret = "test-secret"
+	srv := NewServer(Deps{Cfg: cfg, IdswyftStore: store, OCR: stubOCR{res: ocr.Result{
+		Text: "NAME: JOHN DOE\nDOB: 1990-01-01\nID NO: AB1234567\nEXP: 2030-01-01\n", Confidence: 0.95,
+	}}})
+	verificationID := uuid.New()
+	store.verification = &gormmodel.VerificationRequest{ID: verificationID, DeveloperID: &store.developerID, Status: "pending"}
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	part, err := writer.CreateFormFile("document", "front.png")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _ = part.Write(testPNG(t))
+	_ = writer.WriteField("document_type", "passport")
+	_ = writer.Close()
+	req := httptest.NewRequest(http.MethodPost, "/api/v2/verify/"+verificationID.String()+"/front-document", &body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("X-API-Key", "test-key")
+	rec := httptest.NewRecorder()
+	srv.Handler().ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("front upload status=%d body=%s", rec.Code, rec.Body.String())
+	}
+
+	statusReq := httptest.NewRequest(http.MethodGet, "/api/v2/verify/"+verificationID.String()+"/status", nil)
+	statusReq.Header.Set("X-API-Key", "test-key")
+	statusRec := httptest.NewRecorder()
+	srv.Handler().ServeHTTP(statusRec, statusReq)
+	if statusRec.Code != http.StatusOK {
+		t.Fatalf("status=%d body=%s", statusRec.Code, statusRec.Body.String())
+	}
+	out := decodeObject(t, statusRec)
+	assertShape(t, out, map[string]string{
+		"front_document_uploaded": "bool", "back_document_uploaded": "bool",
+		"live_capture_uploaded": "bool", "ocr_data": "object",
+	}, "$")
+	ocrData, ok := out["ocr_data"].(map[string]any)
+	if !ok || len(ocrData) == 0 {
+		t.Fatalf("ocr_data 应为非空对象，得到 %v", out["ocr_data"])
+	}
+	if text, _ := ocrData["raw_text"].(string); !strings.Contains(text, "JOHN DOE") {
+		t.Fatalf("ocr_data.raw_text 应包含识别文本，得到 %q", text)
+	}
+	if uploaded, _ := out["front_document_uploaded"].(bool); !uploaded {
+		t.Fatal("front_document_uploaded 应为 true")
+	}
 }
 
 // TestVerifyRequiresCredential 验证核心接口缺少凭证时返回 401。

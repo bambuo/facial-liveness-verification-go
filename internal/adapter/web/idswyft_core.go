@@ -66,6 +66,10 @@ func (s *Server) handleVerifyInitialize(w http.ResponseWriter, r *http.Request) 
 		writeError(w, r, domain.New(domain.CodeDocumentInvalid, "user_id 必须是 UUID"))
 		return
 	}
+	if err := s.idswyft.EnsureUser(r.Context(), userID); err != nil {
+		writeError(w, r, err)
+		return
+	}
 	sandbox := principal.Sandbox
 	if req.Sandbox != nil {
 		sandbox = *req.Sandbox
@@ -168,7 +172,19 @@ func (s *Server) handleVerificationStatus(w http.ResponseWriter, r *http.Request
 		writeError(w, r, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, verificationPublic(verification))
+	payload := verificationPublic(verification)
+	// 契约（statusReader.buildVerificationResponse）：前端以 ocr_data 非空判断正面证件处理完成。
+	payload["front_document_uploaded"] = verification.DocumentID != nil
+	payload["back_document_uploaded"] = verification.BackOfIDUploaded != nil && *verification.BackOfIDUploaded
+	payload["live_capture_uploaded"] = verification.LiveCaptureCompleted != nil && *verification.LiveCaptureCompleted
+	if verification.DocumentID != nil && s.idswyft != nil {
+		if doc, docErr := s.idswyft.GetDocument(r.Context(), *verification.DocumentID); docErr == nil && doc != nil {
+			ocrData := map[string]any{}
+			_ = json.Unmarshal(doc.OCRData, &ocrData)
+			payload["ocr_data"] = ocrData
+		}
+	}
+	writeJSON(w, http.StatusOK, payload)
 }
 
 // handleVerificationSelfie 实现 GET /api/v2/verify/:id/selfie。

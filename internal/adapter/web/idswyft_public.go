@@ -63,12 +63,80 @@ func (s *Server) handleAPIStatus(w http.ResponseWriter, r *http.Request) {
 
 // handleSetupStatus 返回是否已完成首跑初始化。
 func (s *Server) handleSetupStatus(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, map[string]any{"success": true, "initialized": false})
+	initialized := false
+	if s.idswyft != nil {
+		if count, err := s.idswyft.AdminDeveloperCount(r.Context()); err == nil && count > 0 {
+			initialized = true
+		}
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"success": true, "initialized": initialized, "needs_setup": !initialized})
 }
 
-// handleSetupInitialize 是首跑保护入口；P1 先返回明确的未实现信号。
+// handleSetupInitialize 创建首个开发者与 API Key，并返回开发者会话。
 func (s *Server) handleSetupInitialize(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusNotImplemented, map[string]any{"success": false, "message": "setup initialize 尚未实现"})
+	if s.idswyft == nil {
+		writeError(w, r, domain.New(domain.CodeServiceUnavailable, "setup storage unavailable"))
+		return
+	}
+	var req struct {
+		Name    string  `json:"name"`
+		Email   string  `json:"email"`
+		Company *string `json:"company"`
+		Locale  string  `json:"locale"`
+	}
+	if err := decodeJSONBody(w, r, &req); err != nil {
+		writeError(w, r, err)
+		return
+	}
+	req.Name = strings.TrimSpace(req.Name)
+	req.Email = strings.TrimSpace(req.Email)
+	if _, err := mail.ParseAddress(req.Email); err != nil || len(req.Name) < 2 {
+		writeError(w, r, domain.New(domain.CodeDocumentInvalid, "name 或 email 无效"))
+		return
+	}
+	if count, err := s.idswyft.AdminDeveloperCount(r.Context()); err != nil {
+		writeError(w, r, err)
+		return
+	} else if count > 0 {
+		writeJSON(w, http.StatusConflict, map[string]any{"success": false, "message": "Setup already completed"})
+		return
+	}
+	now := time.Now().UTC()
+	verified := true
+	developer := &gormmodel.Developer{
+		ID: uuid.New(), Email: req.Email, Name: req.Name, Company: req.Company,
+		IsVerified: &verified, Status: "active", Locale: firstNonEmpty(req.Locale, "en"),
+		CreatedAt: &now, UpdatedAt: &now,
+	}
+	if err := s.idswyft.CreateDeveloper(r.Context(), developer); err != nil {
+		writeError(w, r, err)
+		return
+	}
+	raw, _, err := newSessionToken(s.apiKeySecret())
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
+	keyValue := "ik_" + raw
+	key := &gormmodel.APIKey{
+		ID: uuid.New(), DeveloperID: &developer.ID, Name: "Default key",
+		KeyHash: hashToken(s.apiKeySecret(), keyValue), KeyPrefix: keyValue[:8],
+		IsActive: boolPtr(true), IsSandbox: boolPtr(false), CreatedAt: &now,
+	}
+	if err := s.idswyft.CreateDeveloperAPIKey(r.Context(), key); err != nil {
+		writeError(w, r, err)
+		return
+	}
+	token, err := s.signDeveloperToken(developer.ID, developer.Email)
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusCreated, map[string]any{
+		"success": true, "token": token,
+		"developer": map[string]any{"id": developer.ID, "email": developer.Email, "name": developer.Name, "company": developer.Company},
+		"api_key":   map[string]any{"key": keyValue, "id": key.ID, "name": key.Name, "is_sandbox": false, "created_at": now},
+	})
 }
 
 // handleDIDDocument 返回最小 did:web 文档。
@@ -218,8 +286,18 @@ func (s *Server) handleOTPVerify(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{"success": true, "verified": true})
 		return
 	}
+	var token string
+	if strings.Contains(r.URL.Path, "/reviewer/") {
+		token, err = s.signAdminToken(developer.Email)
+	} else {
+		token, err = s.signDeveloperToken(developer.ID, developer.Email)
+	}
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
 	writeJSON(w, http.StatusOK, map[string]any{
-		"success": true, "verified": true,
+		"success": true, "verified": true, "token": token,
 		"developer": map[string]any{"id": developer.ID.String(), "email": developer.Email, "name": developer.Name, "company": developer.Company},
 	})
 }

@@ -39,7 +39,12 @@ func (s *Server) handleOTPCompleteRegistration(w http.ResponseWriter, r *http.Re
 		writeJSON(w, http.StatusOK, map[string]any{"success": true, "verified": true})
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"success": true, "verified": true, "developer": map[string]any{
+	token, err := s.signDeveloperToken(developer.ID, developer.Email)
+	if err != nil {
+		writeError(w, r, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"success": true, "verified": true, "token": token, "developer": map[string]any{
 		"id": developer.ID, "email": developer.Email, "name": developer.Name,
 	}})
 }

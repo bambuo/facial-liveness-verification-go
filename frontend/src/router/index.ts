@@ -3,15 +3,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    {
-      path: '/',
-      component: () => import('../layouts/DeveloperLayout.vue'),
-      children: [
-        { path: '', name: 'home', component: () => import('../views/DeveloperPage.vue'), meta: { title: 'Developer' } },
-        { path: 'developer', name: 'developer', component: () => import('../views/DeveloperPage.vue'), meta: { title: 'Developer' } },
-        { path: 'developer/page-builder', name: 'page-builder', component: () => import('../views/PageBuilderPage.vue'), meta: { title: 'Page Builder' } },
-      ],
-    },
+    { path: '/', name: 'home', component: () => import('../views/DeveloperPage.vue'), meta: { title: 'Developer' } },
+    { path: '/developer', name: 'developer', component: () => import('../views/DeveloperPage.vue'), meta: { title: 'Developer' } },
+    { path: '/developer/page-builder', name: 'page-builder', component: () => import('../views/PageBuilderPage.vue'), meta: { title: 'Page Builder' } },
     {
       path: '/',
       component: () => import('../layouts/PublicLayout.vue'),

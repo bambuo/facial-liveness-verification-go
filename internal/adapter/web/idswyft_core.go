@@ -259,11 +259,23 @@ func (s *Server) loadOwnedVerification(ctx context.Context, id uuid.UUID, princi
 
 func verificationPublic(v *gormmodel.VerificationRequest) map[string]any {
 	status, step, total, final := externalStatus(v)
-	return map[string]any{
+	payload := map[string]any{
 		"success": true, "verification_id": v.ID.String(), "status": status,
 		"current_step": step, "total_steps": total, "final_result": final,
 		"verification_mode": stringValue(v.VerificationMode), "is_sandbox": v.IsSandbox != nil && *v.IsSandbox,
+		"created_at": v.CreatedAt, "updated_at": v.UpdatedAt,
+		"verification_type": stringValue(v.VerificationType), "source": v.Source,
 	}
+	if v.UserID != nil {
+		payload["user_id"] = v.UserID.String()
+	}
+	if v.DocumentID != nil {
+		payload["document_id"] = v.DocumentID.String()
+	}
+	if v.SelfieID != nil {
+		payload["selfie_id"] = v.SelfieID.String()
+	}
+	return payload
 }
 
 // externalStatus 把 DB 5 值状态映射为 shared 12 值状态机（D1）。

@@ -37,7 +37,7 @@ go run ./cmd/contractcheck
 
 ## 非阻塞后续
 
-1. 篡改检测未实现（未使用启发式）；深伪已用真实 EfficientNet ONNX 推理（模型加载时关闭 fusion，避免动态 contracting axis 限制）。
+1. 篡改检测已按参考 Sharp/FFT 算法移植；深伪已用真实 EfficientNet ONNX 推理；SMTP/SMS/Webhook 仍需真实商户凭证联调。
 2. D1 状态词表：后端已映射 12 值；前端/SDK 消费方同步归入 P3/P4。
 3. admin 鉴权支持 service token + Bearer；真实 admin 用户表/角色属后续运维模型。
 4. admin 阈值当前进程内保存，重启回到默认值；持久化需新增设置表。

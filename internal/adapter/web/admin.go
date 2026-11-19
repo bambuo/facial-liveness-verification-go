@@ -132,7 +132,31 @@ func (s *Server) handleAdminVerification(w http.ResponseWriter, r *http.Request)
 	if !ok {
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"verification": verificationPublic(verification)})
+	payload := verificationPublic(verification)
+	documents := make([]map[string]any, 0)
+	if verification.DocumentID != nil {
+		if document, err := s.idswyft.GetDocument(r.Context(), *verification.DocumentID); err == nil {
+			documents = append(documents, map[string]any{
+				"id": document.ID, "document_type": document.DocumentType, "file_name": document.FileName,
+				"is_back_of_id": document.IsBackOfID, "ocr_data": document.OCRData,
+			})
+		}
+	}
+	if back, err := s.idswyft.GetBackDocument(r.Context(), verification.ID); err == nil {
+		documents = append(documents, map[string]any{
+			"id": back.ID, "document_type": back.DocumentType, "file_name": back.FileName,
+			"is_back_of_id": back.IsBackOfID, "ocr_data": back.OCRData,
+		})
+	}
+	payload["documents"] = documents
+	if verification.SelfieID != nil && s.storage != nil && s.cfg.Storage.Enabled {
+		if selfie, err := s.idswyft.GetSelfie(r.Context(), *verification.SelfieID); err == nil {
+			if url, err := s.storage.PresignGet(r.Context(), selfie.FilePath, 5*time.Minute); err == nil {
+				payload["selfie_url"] = url
+			}
+		}
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"verification": payload})
 }
 
 // handleAdminDuplicates 实现 GET /api/admin/verification/:id/duplicates。

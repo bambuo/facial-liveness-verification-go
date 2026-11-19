@@ -17,7 +17,13 @@ import (
 // withAdminAuth 保护 admin 路由：service token 或 admin Bearer token。
 func (s *Server) withAdminAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if s.authenticateServiceToken(r) || s.validateAdminToken(r.Header.Get("Authorization")) {
+		authorization := r.Header.Get("Authorization")
+		if !strings.HasPrefix(authorization, "Bearer ") {
+			if cookie, err := r.Cookie(adminSessionCookie); err == nil && cookie.Value != "" {
+				authorization = "Bearer " + cookie.Value
+			}
+		}
+		if s.authenticateServiceToken(r) || s.validateAdminToken(authorization) {
 			next(w, r)
 			return
 		}
@@ -48,6 +54,7 @@ func (s *Server) handleAdminLogin(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, err)
 		return
 	}
+	setAuthCookie(w, r, adminSessionCookie, token, 8*60*60)
 	writeJSON(w, http.StatusOK, map[string]any{"success": true, "token": token, "admin": map[string]any{"email": req.Email, "role": "admin"}})
 }
 
@@ -97,10 +104,29 @@ func (s *Server) handleAdminDashboard(w http.ResponseWriter, r *http.Request) {
 	developers, _ := s.idswyft.AdminDeveloperCount(r.Context())
 	recent, _, _ := s.idswyft.AdminVerifications(r.Context(), "", nil, 1, 10)
 	writeJSON(w, http.StatusOK, map[string]any{
-		"stats": counts, "recent_verifications": adminVerificationList(recent),
+		"stats": normalizedAdminStats(counts), "recent_verifications": adminVerificationList(recent),
 		"developer_count": developers,
 		"system_health":   map[string]any{"status": "ok", "timestamp": now},
 	})
+}
+
+// normalizedAdminStats 把状态计数映射为前端概览使用的 total/pending/verified/failed/manual_review。
+func normalizedAdminStats(counts map[string]int64) map[string]int64 {
+	out := map[string]int64{"total": 0, "pending": 0, "verified": 0, "failed": 0, "manual_review": 0}
+	for status, count := range counts {
+		out["total"] += count
+		switch strings.ToLower(status) {
+		case "complete", "verified":
+			out["verified"] += count
+		case "hard_rejected", "failed", "rejected":
+			out["failed"] += count
+		case "manual_review":
+			out["manual_review"] += count
+		default:
+			out["pending"] += count
+		}
+	}
+	return out
 }
 
 // handleAdminVerifications 实现 GET /api/admin/verifications。
@@ -132,7 +158,7 @@ func (s *Server) handleAdminVerification(w http.ResponseWriter, r *http.Request)
 	if !ok {
 		return
 	}
-	payload := verificationPublic(verification)
+	payload := adminVerificationView(verification)
 	documents := make([]map[string]any, 0)
 	if verification.DocumentID != nil {
 		if document, err := s.idswyft.GetDocument(r.Context(), *verification.DocumentID); err == nil {
@@ -215,9 +241,14 @@ func (s *Server) handleAdminDevelopers(w http.ResponseWriter, r *http.Request) {
 	}
 	out := make([]map[string]any, 0, len(developers))
 	for _, developer := range developers {
+		verified := developer.IsVerified != nil && *developer.IsVerified
 		out = append(out, map[string]any{
 			"id": developer.ID, "email": developer.Email, "name": developer.Name,
-			"company": developer.Company, "status": developer.Status, "created_at": developer.CreatedAt,
+			"full_name": developer.Name, "company": developer.Company, "company_name": developer.Company,
+			"is_verified": verified, "status": developer.Status, "created_at": developer.CreatedAt,
+			"webhook_url": nil,
+			"verification_stats": map[string]any{"total": 0, "verified": 0, "failed": 0, "pending": 0, "manual_review": 0},
+			"webhook_stats":      map[string]any{"total_webhooks": 0, "active_webhooks": 0, "total_deliveries": 0, "successful_deliveries": 0, "failed_deliveries": 0, "pending_deliveries": 0},
 		})
 	}
 	writeJSON(w, http.StatusOK, map[string]any{
@@ -354,10 +385,34 @@ func (s *Server) adminVerification(w http.ResponseWriter, r *http.Request) (*gor
 	return verification, true
 }
 
+func adminVerificationView(v *gormmodel.VerificationRequest) map[string]any {
+	payload := verificationPublic(v)
+	payload["id"] = v.ID.String()
+	if raw, ok := payload["status"].(string); ok {
+		payload["verification_status"] = raw
+		payload["status"] = adminStatusCategory(raw)
+	}
+	return payload
+}
+
+// adminStatusCategory 把 12 值对外状态折叠为审核台使用的 5 类。
+func adminStatusCategory(status string) string {
+	switch strings.ToLower(status) {
+	case "complete", "verified":
+		return "verified"
+	case "hard_rejected", "failed", "rejected":
+		return "failed"
+	case "manual_review":
+		return "manual_review"
+	default:
+		return "pending"
+	}
+}
+
 func adminVerificationList(rows []gormmodel.VerificationRequest) []map[string]any {
 	out := make([]map[string]any, 0, len(rows))
 	for i := range rows {
-		out = append(out, verificationPublic(&rows[i]))
+		out = append(out, adminVerificationView(&rows[i]))
 	}
 	return out
 }

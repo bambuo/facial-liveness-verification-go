@@ -125,7 +125,9 @@ func (s *Server) handleAPIKeyDiagnostic(w http.ResponseWriter, r *http.Request) 
 
 // handleLogout 清除浏览器认证 Cookie。
 func (s *Server) handleLogout(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{Name: "idswyft_token", Value: "", Path: "/", MaxAge: -1, HttpOnly: true})
+	clearAuthCookie(w, adminSessionCookie)
+	clearAuthCookie(w, developerSessionCookie)
+	clearAuthCookie(w, csrfCookie)
 	writeJSON(w, http.StatusOK, map[string]any{"success": true})
 }
 
@@ -136,6 +138,6 @@ func (s *Server) handleCSRFToken(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, err)
 		return
 	}
-	http.SetCookie(w, &http.Cookie{Name: "idswyft_csrf", Value: token, Path: "/", HttpOnly: false, SameSite: http.SameSiteLaxMode})
-	writeJSON(w, http.StatusOK, map[string]any{"csrf_token": token})
+	http.SetCookie(w, &http.Cookie{Name: csrfCookie, Value: token, Path: "/", HttpOnly: false, SameSite: http.SameSiteLaxMode})
+	writeJSON(w, http.StatusOK, map[string]any{"csrfToken": token, "csrf_token": token})
 }

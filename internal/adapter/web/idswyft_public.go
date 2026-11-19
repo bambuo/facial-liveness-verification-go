@@ -132,6 +132,7 @@ func (s *Server) handleSetupInitialize(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, err)
 		return
 	}
+	setAuthCookie(w, r, developerSessionCookie, token, 12*60*60)
 	writeJSON(w, http.StatusCreated, map[string]any{
 		"success": true, "token": token,
 		"developer": map[string]any{"id": developer.ID, "email": developer.Email, "name": developer.Name, "company": developer.Company},
@@ -289,8 +290,14 @@ func (s *Server) handleOTPVerify(w http.ResponseWriter, r *http.Request) {
 	var token string
 	if strings.Contains(r.URL.Path, "/reviewer/") {
 		token, err = s.signAdminToken(developer.Email)
+		if err == nil {
+			setAuthCookie(w, r, adminSessionCookie, token, 8*60*60)
+		}
 	} else {
 		token, err = s.signDeveloperToken(developer.ID, developer.Email)
+		if err == nil {
+			setAuthCookie(w, r, developerSessionCookie, token, 12*60*60)
+		}
 	}
 	if err != nil {
 		writeError(w, r, err)
@@ -304,7 +311,7 @@ func (s *Server) handleOTPVerify(w http.ResponseWriter, r *http.Request) {
 
 // handleGitHubURL 只在配置 GitHub OAuth 时返回跳转地址。
 func (s *Server) handleGitHubURL(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusServiceUnavailable, map[string]any{"success": false, "message": "GitHub OAuth 未配置"})
+	writeJSON(w, http.StatusOK, map[string]any{"configured": false})
 }
 
 // handleGitHubCallback 是公开 OAuth 回调入口；P1 先返回明确的未实现信号。

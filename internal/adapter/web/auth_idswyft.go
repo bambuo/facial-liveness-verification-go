@@ -18,6 +18,26 @@ import (
 
 var hexTokenPattern = regexp.MustCompile(`^[0-9a-f]{64}$`)
 
+const (
+	adminSessionCookie      = "iv_admin_session"
+	developerSessionCookie  = "iv_developer_session"
+	csrfCookie              = "iv_csrf"
+)
+
+// setAuthCookie 写入 HttpOnly 会话 Cookie；HTTPS 或反向代理终止 TLS 时加 Secure。
+func setAuthCookie(w http.ResponseWriter, r *http.Request, name, value string, maxAge int) {
+	secure := r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https")
+	http.SetCookie(w, &http.Cookie{
+		Name: name, Value: value, Path: "/", MaxAge: maxAge,
+		HttpOnly: true, Secure: secure, SameSite: http.SameSiteLaxMode,
+	})
+}
+
+// clearAuthCookie 删除会话 Cookie。
+func clearAuthCookie(w http.ResponseWriter, name string) {
+	http.SetCookie(w, &http.Cookie{Name: name, Value: "", Path: "/", MaxAge: -1, HttpOnly: true})
+}
+
 // idswyftPrincipal 是 API Key、handoff 或 session token 解析后的请求主体。
 type idswyftPrincipal struct {
 	DeveloperID    uuid.UUID
@@ -50,10 +70,12 @@ func (s *Server) authenticateAPIKeyOrHandoff(w http.ResponseWriter, r *http.Requ
 		return s.authenticateSession(w, r, secret)
 	case strings.HasPrefix(r.Header.Get("Authorization"), "Bearer "):
 		return s.authenticateDeveloperBearer(w, r)
-	default:
-		writeError(w, r, domain.New(domain.CodeAuthInvalid, "缺少 X-API-Key、X-Handoff-Token 或 X-Session-Token"))
-		return nil, false
 	}
+	if cookie, err := r.Cookie(developerSessionCookie); err == nil && cookie.Value != "" {
+		return s.authenticateDeveloperTokenValue(w, r, cookie.Value)
+	}
+	writeError(w, r, domain.New(domain.CodeAuthInvalid, "缺少 X-API-Key、X-Handoff-Token、X-Session-Token 或登录 Cookie"))
+	return nil, false
 }
 
 func (s *Server) authenticateAPIKey(w http.ResponseWriter, r *http.Request, secret string) (*idswyftPrincipal, bool) {
@@ -160,15 +182,19 @@ func (s *Server) signDeveloperToken(developerID uuid.UUID, email string) (string
 	return "dev_" + body + "." + hashToken(s.apiKeySecret(), body), nil
 }
 
-// authenticateDeveloperBearer 校验开发者门户 token。
+// authenticateDeveloperBearer 校验 Authorization Bearer 开发者 token。
 func (s *Server) authenticateDeveloperBearer(w http.ResponseWriter, r *http.Request) (*idswyftPrincipal, bool) {
-	raw := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	return s.authenticateDeveloperTokenValue(w, r, strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer "))
+}
+
+// authenticateDeveloperTokenValue 校验开发者 token 原文，兼容 Bearer 与登录 Cookie。
+func (s *Server) authenticateDeveloperTokenValue(w http.ResponseWriter, r *http.Request, raw string) (*idswyftPrincipal, bool) {
 	if !strings.HasPrefix(raw, "dev_") {
 		writeError(w, r, domain.New(domain.CodeAuthInvalid, "开发者 token 无效"))
 		return nil, false
 	}
 	parts := strings.Split(strings.TrimPrefix(raw, "dev_"), ".")
-	if len(parts) != 2 || hmac.Equal([]byte(hashToken(s.apiKeySecret(), parts[0])), []byte(parts[1])) == false {
+	if len(parts) != 2 || !hmac.Equal([]byte(hashToken(s.apiKeySecret(), parts[0])), []byte(parts[1])) {
 		writeError(w, r, domain.New(domain.CodeAuthInvalid, "开发者 token 无效"))
 		return nil, false
 	}

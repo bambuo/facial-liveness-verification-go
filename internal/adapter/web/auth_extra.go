@@ -44,6 +44,7 @@ func (s *Server) handleOTPCompleteRegistration(w http.ResponseWriter, r *http.Re
 		writeError(w, r, err)
 		return
 	}
+	setAuthCookie(w, r, developerSessionCookie, token, 12*60*60)
 	writeJSON(w, http.StatusOK, map[string]any{"success": true, "verified": true, "token": token, "developer": map[string]any{
 		"id": developer.ID, "email": developer.Email, "name": developer.Name,
 	}})

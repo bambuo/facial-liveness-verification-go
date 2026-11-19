@@ -170,6 +170,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /api/v2/verify/page-config", s.handlePageConfig)
 	mux.HandleFunc("GET /api/v2/verify/session-info", s.handleSessionInfo)
 	mux.HandleFunc("GET /api/health/api-key-diagnostic", s.handleAPIKeyDiagnostic)
+	mux.HandleFunc("GET /api/docs/markdown", s.handleDocsMarkdown)
 	mux.HandleFunc("POST /api/auth/logout", s.handleLogout)
 	mux.HandleFunc("GET /api/auth/csrf-token", s.handleCSRFToken)
 

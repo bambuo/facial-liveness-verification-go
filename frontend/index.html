@@ -1,13 +1,73 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f172a" />
-    <title>Identity Verification Portal</title>
+    <title>Identity Verification — Open-source identity verification API</title>
+    <meta name="description" content="Open-source identity verification API with OCR, liveness detection, and face matching. Self-host via Docker or run on managed cloud. Deterministic decisions, GDPR-friendly." />
+
+    <!-- Open Graph (Facebook, LinkedIn, Slack, Discord, iMessage) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Identity Verification" />
+    <meta property="og:title" content="Identity Verification — Open-source identity verification API" />
+    <meta property="og:description" content="OCR, liveness, and face matching with deterministic decisions. Self-host via Docker or run on managed cloud." />
+    <meta property="og:url" content="https://www.example.com/" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Identity Verification — Open-source identity verification API" />
+    <meta name="twitter:description" content="OCR, liveness, and face matching with deterministic decisions. Self-host via Docker or run on managed cloud." />
+
+    <!-- LLM-readable docs (AI search: ChatGPT, Claude, Perplexity) -->
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable documentation summary" />
+    <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="LLM-readable full API documentation" />
+
+    <!-- Structured data: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Identity Verification",
+      "url": "https://www.example.com",
+      "logo": "https://www.example.com/identity-logo.svg",
+      "description": "Open-source identity verification platform. Verify government-issued IDs with OCR, cross-validation, liveness detection, and face matching.",
+      "sameAs": [
+        "https://github.com/example/identity-verification",
+        "https://www.npmjs.com/package/@identity-verification/sdk",
+        "https://www.npmjs.com/package/@identity-verification/react"
+      ]
+    }
+    </script>
+
+    <!-- Structured data: SoftwareApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Identity Verification",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Cross-platform (Docker, Linux, macOS, Windows)",
+      "url": "https://www.example.com",
+      "description": "Identity verification API: OCR, liveness detection, face matching, AML screening. Self-hostable open source (MIT) or managed cloud.",
+      "license": "https://opensource.org/licenses/MIT"
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+      // Initialize theme before first paint to prevent flash
+      (function() {
+        var t = localStorage.getItem('identity-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <div id="root"></div>
+    <script async src="/vendor/opencv.js" onload="window.cv = cv;"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

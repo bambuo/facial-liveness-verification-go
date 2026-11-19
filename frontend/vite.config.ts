@@ -1,13 +1,35 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
-  plugins: [vue()],
-  server: {
-    port: 5173,
-    proxy: {
-      '/api': { target: 'http://localhost:8080', changeOrigin: true },
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  build: { outDir: 'dist', sourcemap: false },
+  server: {
+    port: Number(process.env.VITE_DEV_PORT || 5173),
+    host: true,
+    strictPort: true,
+    watch: {
+      usePolling: true,
+      interval: 100,
+    },
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_TARGET || 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    chunkSizeWarningLimit: 1000,
+    target: 'baseline-widely-available',
+  },
 })

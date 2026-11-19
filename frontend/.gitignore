@@ -1,4 +1,6 @@
+.vercel
+out/
+public/narration/
 node_modules/
 dist/
-*.local
-tests/baselines/*.diff.png
+.env.local

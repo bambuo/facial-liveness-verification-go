@@ -2,42 +2,45 @@
 
 ## 结论
 
-P3 前端已完成参考布局与交互的 1:1 代码复刻：22 个页面全部按参考页结构移植，使用 Vue3 + Arco 标准组件；开发者端、OTP 登录、文档、核验流程、管理端、Demo 与 Page Builder 均已接入。Vue3 + Arco 独立前端已落地，22 个页面组件、24 条必需路由（另有 2 条扩展路由），并通过类型检查、生产构建、路由可达、鉴权 UI 冒烟与 24 路由截图回归。
+P3 前端已切换为**直接复用参考 React 实现**：22 个页面、24 条必需路由全部保留，UI 交互组件已统一迁移到 Ant Design 6，源码已去品牌，并通过同源 `/api` 代理接入 Go 服务。前端已完成 React 19 语法现代化、Bun/Vite 8 工具链升级与历史依赖清理；Go 侧补齐开发者/审核员登录 Cookie、CSRF 字段、管理端统计与列表字段别名；React 路由检查 24/24 无控制台错误。
 
 ## 交付
 
 | 项 | 结果 | 证据 |
 | --- | --- | --- |
-| 技术栈 | Vue 3 + Vite + Arco + Pinia + Vue Router | `frontend/package.json` |
-| 页面 | 22 个视图组件 | `frontend/src/views` |
-| 路由 | 24 必需 + `/admin/thresholds`、`/operator/login` | `frontend/src/router/index.ts` |
-| 用户采集 | 初始化、正/反面、活体相机、语音挑战/WAV、finalize | `UserVerificationPage.vue`、`LiveCapturePage.vue` |
-| 移动交接 | handoff token 会话读取与继续 | `MobileVerificationPage.vue` |
-| 管理端 | 验证列表/详情/审核、开发者、阈值 | `VerificationManagement.vue` 等 |
-| 开发者端 | API Key、统计、Page Builder | `DeveloperPage.vue`、`PageBuilderPage.vue` |
-| 凭证/文档/初始化/法务 | 已实现 | 对应 views |
-| 路由检查 | 26/26 可达且无 console error | `npm run check:routes` |
-| 鉴权 UI 冒烟 | 5/5 页面通过 mock API | `npm run check:ui` |
-| 截图回归 | 24/24 基线 0% diff | `npm run check:visual` |
+| 技术栈 | React 19 + Vite 8 + TypeScript 6 + Ant Design 6 + Tailwind 4 + Bun 1.4 | `frontend/package.json`、`frontend/bun.lock` |
+| 页面 | 22 个参考页面组件 | `frontend/src/pages` |
+| 路由 | 24 必需（含 `/verify`、`/admin/*` 重定向） | `frontend/src/App.tsx` |
+| 源码复用 | 参考 React 实现直接迁入，不再维护 Vue 平行实现 | `frontend/src` |
+| 去品牌 | UI、i18n、元信息、Logo 与 API 文档中的参考品牌已替换 | `frontend/src`、`frontend/public`、`frontend/index.html` |
+| 会话兼容 | 开发者/审核员 OTP 同时签发 HttpOnly Cookie 与 Bearer token | `internal/adapter/web/auth_idswyft.go`、`admin.go` |
+| 管理端适配 | 概览统计折叠为 total/pending/verified/failed/manual_review；列表补 `id` 与状态分类 | `internal/adapter/web/admin.go` |
+| 文档 | `/api/docs/markdown` 返回去品牌 Markdown | `internal/adapter/web/docs_markdown.go` |
+| OpenCV | 本地 `public/vendor/opencv.js`，不依赖外部 CDN | `frontend/public/vendor/opencv.js` |
+| 路由检查 | 24/24 可达且无控制台错误 | `bun run check:routes` |
+| antd 规范 | 0 deprecated / 0 usage / 0 a11y 告警 | `bunx antd lint ./src` |
+| 语法现代化 | 0 `React.FC`、0 `forwardRef`、0 默认 React 导入、0 浏览器 `process.env` | `grep` 审计 |
+| 单元测试 | 8 文件 / 49 用例通过 | `npx vitest run` |
 
 ## 验证命令
 
 ```bash
 cd frontend
-npm run type-check
-npm run build
-npm run check:routes
-npm run check:ui
-npm run check:visual
+bun install
+bun run type-check
+bun run build
+bun run test
+bunx vitest run
+bun run lint
+bunx antd lint ./src
+FRONTEND_URL=http://localhost:5173 bun run check:routes
 ```
 
-本地联调：`npm run dev`，默认 `127.0.0.1:5173`，`/api` 代理到 `localhost:8080`。
+本地联调：`VITE_DEV_PORT=5180 VITE_API_TARGET=http://localhost:8090 bun run dev`。默认 `5173`，`/api` 代理到 `localhost:8080`。
 
 ## 边界
 
-0. 22 页主体内容/交互已按参考移植；仍有少量参考专有资产未复刻（QR 图、凭证装饰卡、演示视频/长文案）。
-
-1. 视觉基线是本实现自身的回归基线；尚未取得参考页同环境截图做逐像素 diff。
+0. 相机、OCR、语音与真实证件链路需要后端模型与样本，当前只验证页面与鉴权骨架。
+1. 参考的演示旁白/视频生成脚本保留，但未重新生成媒体资产。
 2. 生产静态托管与 Go API 同源部署尚未接入，当前通过 Vite 代理联调。
-3. 相机需要 HTTPS 或 localhost；音频上传当前接受 WAV；ContinueOnPhone 无二维码依赖，改为链接复制。
-4. 参考专有的凭证装饰卡、PNG/PDF 导出、演示视频未复刻；后台部分证据字段依赖 API 返回。
+3. 管理端部分证据字段依赖存储与后台返回；存储未启用时自拍预签名 URL 不返回。

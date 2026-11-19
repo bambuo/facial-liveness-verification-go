@@ -13,3 +13,6 @@ deploy/.env
 
 # 契约抽取工具的本地依赖
 contracts/tools/node_modules/
+
+# 参考前端截图对比的运行产物
+frontend/tests/reference/diffs/

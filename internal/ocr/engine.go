@@ -101,13 +101,29 @@ func (e *Engine) Close() {
 // DictionarySize 返回词典长度。
 func (e *Engine) DictionarySize() int { return len(e.dict) }
 
-// RecognizeBytes 解码图片并识别。
+// RecognizeBytes 解码图片并识别；JPEG 带 EXIF 方向标记时先单次旋转，
+// 并跳过 auto 方向循环（EXIF 已给出权威方向）。
 func (e *Engine) RecognizeBytes(data []byte, opts Options) (Result, error) {
 	img, _, err := image.Decode(bytes.NewReader(data))
 	if err != nil {
 		return Result{}, fmt.Errorf("解码图片: %w", err)
 	}
+	if angle := exifRotationAngle(exifOrientation(data)); angle != 0 {
+		img = rotate(img, angle)
+		opts.Orientation = effectiveOrientation(opts.Orientation, e.cfg.Orientation, true)
+	}
 	return e.RecognizeImage(img, opts)
+}
+
+// effectiveOrientation 解析本次请求的方向；EXIF 已给出权威方向时跳过 auto 循环。
+func effectiveOrientation(requested, cfg string, hasExif bool) string {
+	if hasExif && requested == "" && cfg == "auto" {
+		return "0"
+	}
+	if requested == "" {
+		return cfg
+	}
+	return requested
 }
 
 // RecognizeImage 执行检测与识别；auto 方向会尝试 0/90/180/270 并取最佳。
